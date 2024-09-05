@@ -1,0 +1,67 @@
+<div class="bg-light min-vh-100 d-flex flex-row align-items-center">
+  <c-container>
+    <c-row class="justify-content-center">
+      <c-col xs="12" sm="10" md="8">
+        <c-card-group>
+          <c-card class="p-4">
+            <c-card-body>
+              <form [formGroup]="formLogin" (ngSubmit)="login()">
+                <h3 class="pb-2 text-center">Inicio de sesión</h3>
+                <c-input-group class="mb-3 pt-4">
+                  <span cInputGroupText>
+                    <svg cIcon name="cilUser"></svg>
+                  </span>
+                  <input autoComplete="username" cFormControl formControlName="correoElectronico"
+                    placeholder="Correo electrónico" class="form-control" />
+                </c-input-group>
+                <div class="p-0 text-center"
+                  *ngIf=" formLogin.get('correoElectronico')?.invalid && formLogin.get('correoElectronico')?.touched">
+                  <small class="text-danger" *ngIf="formLogin.get('correoElectronico')?.errors?.['required']">
+                    El correo electrónico es requerido.
+                  </small>
+                  <small class="text-danger" *ngIf="formLogin.get('correoElectronico')?.errors?.['email']">
+                    El formato del correo no es válido.
+                  </small>
+                </div>
+                <c-input-group class="mb-4 pt-4">
+                  <span cInputGroupText>
+                    <svg cIcon name="cilLockLocked"></svg>
+                  </span>
+                  <input autoComplete="current-password" cFormControl formControlName="contraseña"
+                    placeholder="Contraseña" type="password" class="form-control" />
+                </c-input-group>
+                <div class="p-0 text-center"
+                  *ngIf="formLogin.get('contraseña')?.invalid && formLogin.get('contraseña')?.touched">
+                  <small class="text-danger" *ngIf="formLogin.get('contraseña')?.errors?.['required']">
+                    La contraseña es requerida.
+                  </small>
+                  <small class="text-danger" *ngIf="formLogin.get('contraseña')?.errors?.['minlength']">
+                    La contraseña debe tener al menos 6 caracteres.
+                  </small>
+                </div>
+                <c-row class="text-center pt-4">
+                  <c-col>
+                    <button cButton class="px-4" color="primary" type="submit"
+                      [disabled]="btnLogin || formLogin.invalid">
+                      Ingresar
+                    </button>
+                  </c-col>
+                </c-row>
+                <c-row class="text-center mt-3" *ngIf="mesageError">
+                  <c-col>
+                    <small class="text-danger">{{ mesageError }}</small>
+                  </c-col>
+                </c-row>
+              </form>
+            </c-card-body>
+          </c-card>
+          <c-card class="container-photo d-none d-lg-block p-3">
+            <c-card-body class="text-center">
+              <div class="photo-login"></div>
+            </c-card-body>
+          </c-card>
+        </c-card-group>
+      </c-col>
+    </c-row>
+  </c-container>
+</div>
