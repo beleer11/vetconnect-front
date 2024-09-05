@@ -19,28 +19,27 @@ import { ChartjsModule } from '@coreui/angular-chartjs';
 
 import { UserRoutingModule } from './user-routing.module';
 import { UserComponent } from './user.component';
+import { SharedModule } from '../../shared/shared.module';
 
 @NgModule({
+  declarations: [UserComponent],
   imports: [
+    CommonModule,
     UserRoutingModule,
+    SharedModule,
+    ReactiveFormsModule,
     CardModule,
     NavModule,
     IconModule,
     TabsModule,
-    CommonModule,
     GridModule,
     ProgressModule,
-    ReactiveFormsModule,
     ButtonModule,
     FormModule,
-    ButtonModule,
     ButtonGroupModule,
     ChartjsModule,
     AvatarModule,
-    TableModule,
-    UserComponent
-  ],
-  declarations: []
+    TableModule
+  ]
 })
-export class UserModule {
-}
+export class UserModule { }
