@@ -1,37 +1,20 @@
 <!--sidebar-->
-<c-sidebar
-  #sidebar="cSidebar"
-  class="d-print-none sidebar sidebar-fixed"
-  id="sidebar"
-  visible
->
-  <c-sidebar-brand
-    [brandFull]="{
-      src: 'assets/img/brand/coreui-angular.svg',
+<c-sidebar #sidebar="cSidebar" class="d-print-none sidebar sidebar-fixed" id="sidebar" visible>
+  <c-sidebar-brand [brandFull]="{
+      src: 'assets/images/horizontal-logo.png',
       width: 200,
-      height: 46,
-      alt: 'CoreUI Logo'
-    }"
-    [brandNarrow]="{
-      src: 'assets/img/brand/coreui-signet-white.svg',
+      alt: 'VetConnect'
+    }" [brandNarrow]="{
+      src: 'assets/images/mobile-logo.png',
       width: 46,
       height: 46,
-      alt: 'CoreUI Logo'
-    }"
-    routerLink="./"
-  />
+      alt: 'VetConnect'
+    }" routerLink="/dashboard" />
 
   <ng-scrollbar pointerEventsMethod="scrollbar">
-    <c-sidebar-nav
-      [navItems]="navItems"
-      dropdownMode="close"
-    />
+    <c-sidebar-nav [navItems]="navItems" dropdownMode="close" />
   </ng-scrollbar>
-  <c-sidebar-toggler
-    *ngIf="!sidebar.narrow"
-    toggle="unfoldable"
-    cSidebarToggle="sidebar"
-  />
+  <c-sidebar-toggler *ngIf="!sidebar.narrow" toggle="unfoldable" cSidebarToggle="sidebar" />
 </c-sidebar>
 
 <!--main-->
