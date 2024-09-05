@@ -12,18 +12,17 @@ export const navItems: INavData[] = [
   },
   {
     title: true,
-    name: 'Theme'
+    name: 'Usuarios'
   },
   {
-    name: 'Colors',
-    url: '/theme/colors',
-    iconComponent: { name: 'cil-drop' }
+    name: 'Listar usuarios',
+    url: '/user/list-user',
+    iconComponent: { name: 'cil-user' }
   },
   {
-    name: 'Typography',
-    url: '/theme/typography',
-    linkProps: { fragment: 'someAnchor' },
-    iconComponent: { name: 'cil-pencil' }
+    name: 'Nuevo',
+    url: '/user/user',
+    iconComponent: { name: 'cil-user-follow' }
   },
   {
     name: 'Components',

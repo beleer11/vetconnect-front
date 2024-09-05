@@ -31,6 +31,13 @@ const routes: Routes = [
           ),
       },
       {
+        path: 'user',
+        loadChildren: () =>
+          import('./views/user/user.module').then(
+            (m) => m.UserModule
+          ),
+      },
+      {
         path: 'theme',
         loadChildren: () =>
           import('./views/theme/theme.module').then((m) => m.ThemeModule),
@@ -84,4 +91,4 @@ const routes: Routes = [
   imports: [RouterModule.forRoot(routes, { useHash: false })],
   exports: [RouterModule],
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }
