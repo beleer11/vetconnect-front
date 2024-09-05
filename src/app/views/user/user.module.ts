@@ -18,8 +18,7 @@ import { IconModule } from '@coreui/icons-angular';
 import { ChartjsModule } from '@coreui/angular-chartjs';
 
 import { UserRoutingModule } from './user-routing.module';
-import { ListUserComponent } from './list-user/list-user.component';
-import { UserComponent } from './user/user.component';
+import { UserComponent } from './user.component';
 
 @NgModule({
   imports: [
@@ -39,8 +38,7 @@ import { UserComponent } from './user/user.component';
     ChartjsModule,
     AvatarModule,
     TableModule,
-    UserComponent,
-    ListUserComponent
+    UserComponent
   ],
   declarations: []
 })
