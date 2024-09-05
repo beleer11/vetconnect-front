@@ -18,7 +18,7 @@ import { IconModule } from '@coreui/icons-angular';
 import { ChartjsModule } from '@coreui/angular-chartjs';
 
 import { UserRoutingModule } from './user-routing.module';
-import { UserComponent } from './user.component';
+import { UserComponent } from './user/user.component';
 import { SharedModule } from '../../shared/shared.module';
 
 @NgModule({
