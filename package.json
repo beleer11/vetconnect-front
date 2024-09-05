@@ -1,10 +1,9 @@
 {
-  "name": "coreui-free-angular-admin-template",
+  "name": "vetconnect",
   "version": "4.7.15",
-  "copyright": "Copyright 2024 creativeLabs Łukasz Holeczek",
+  "copyright": "Copyright 2024 VetConnet",
   "license": "MIT",
-  "author": "The CoreUI Team (https://github.com/orgs/coreui/people) and contributors",
-  "homepage": "https://coreui.io/angular",
+  "author": "beeler11",
   "config": {
     "coreui_library_short_version": "4.7",
     "coreui_library_docs_url": "https://coreui.io/angular/docs/"
