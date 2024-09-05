@@ -26,7 +26,7 @@ export const navItems: INavData[] = [
   {
     name: 'Modulos',
     url: '/module',
-    iconComponent: { name: 'cil-apple' }
+    iconComponent: { name: 'cil-view-module' }
   },
 
 

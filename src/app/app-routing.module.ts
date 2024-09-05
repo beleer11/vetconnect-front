@@ -38,6 +38,13 @@ const routes: Routes = [
           ),
       },
       {
+        path: 'module',
+        loadChildren: () =>
+          import('./views/parameter/parameter.module').then(
+            (m) => m.ParameterModule
+          ),
+      },
+      {
         path: 'theme',
         loadChildren: () =>
           import('./views/theme/theme.module').then((m) => m.ThemeModule),
