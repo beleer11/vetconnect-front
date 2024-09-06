@@ -1,0 +1,53 @@
+.position-relative {
+    position: relative;
+}
+
+.position-absolute {
+    position: absolute;
+}
+
+.translate-middle-y {
+    transform: translateY(-50%);
+}
+
+.end-0 {
+    right: 0;
+}
+
+th {
+    cursor: pointer;
+    position: relative;
+    padding: 0.75rem;
+    user-select: none;
+}
+
+th.sortable {
+    background-color: #f8f9fa;
+}
+
+th.sortable:hover {
+    background-color: #e9ecef;
+}
+
+th .sort-icon {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1rem;
+}
+
+th .sort-icon ng-container {
+    font-size: 1.25rem;
+    color: #007bff;
+}
+
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pagination button {
+    margin: 0 5px;
+}

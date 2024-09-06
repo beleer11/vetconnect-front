@@ -2,16 +2,41 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 30vh;
+  height: 40vh;
   background-image: url(../../../assets/images/vertical-logo.png);
   background-size: cover;
   background-position: center;
 }
 
 .container-photo {
-  background-color: #0010f5;
+  background-color: rgb(50,31,219);
 }
 
 .text-blue {
   color: #0010f5;
+}
+
+.photo-login-mobile {
+  display: none;
+}
+
+@media (max-width: 991.98px) {
+  .photo-login-mobile {
+    display: flex;
+    margin-bottom: 1rem;
+    margin-left: 1rem;
+    margin-right: 1rem;
+    justify-content: center;
+    align-items: center;
+    height: 6rem;
+    background-image: url(../../../assets/images/wordmark-logo.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    box-sizing: border-box;
+  }
+
+  .container-photo-mobile {
+    background-color: rgb(50,31,219);
+  }
 }

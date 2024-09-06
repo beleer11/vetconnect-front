@@ -8,8 +8,8 @@ import { BrowserModule, Title } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-
 import { NgScrollbarModule } from 'ngx-scrollbar';
+import { FormsModule } from '@angular/forms';
 
 // Import routing module
 import { AppRoutingModule } from './app-routing.module';
@@ -51,6 +51,7 @@ import {
 } from '@coreui/angular';
 
 import { IconModule, IconSetService } from '@coreui/icons-angular';
+import { iconSubset } from './icons/icon-subset';
 import { RouterModule } from '@angular/router';
 
 const APP_CONTAINERS = [
@@ -85,6 +86,7 @@ const APP_CONTAINERS = [
     UtilitiesModule,
     ButtonGroupModule,
     ReactiveFormsModule,
+    FormsModule,
     SharedModule,
     TabsModule,
     ListGroupModule,
@@ -100,9 +102,17 @@ const APP_CONTAINERS = [
       provide: LocationStrategy,
       useClass: PathLocationStrategy,
     },
+    {
+      provide: IconSetService,
+      useFactory: () => {
+        const iconSetService = new IconSetService();
+        iconSetService.icons = iconSubset as any;
+        return iconSetService;
+      },
+    },
     IconSetService,
     Title,
   ],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule { }
