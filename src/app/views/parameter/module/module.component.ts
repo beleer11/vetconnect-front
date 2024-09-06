@@ -34,15 +34,13 @@ export class ModuleComponent implements OnInit {
       this.moduleService.getDataModule().subscribe(
         response => {
           this.dataModule = response;
+          console.log(this.dataModule)
           const transformedData = response.map((item: any) => {
             return {
               "id": item.id,
-              "Nombres": item.name,
-              "Usuario": item.username,
-              "Correo": item.email,
-              "Foto": environment.apiStorage + item.image_profile,
-              "Fecha de creación": new Date(item.created_at).toLocaleDateString(),
-              "Fecha ultima actualización": new Date(item.updated_at).toLocaleDateString()
+              "Nombre": item.name,
+              "Icono": item.icon,
+              "Ruta": item.url,
             };
           });
           resolve(transformedData);
@@ -53,11 +51,11 @@ export class ModuleComponent implements OnInit {
   }
 
   private getFieldsTable() {
-    return ['Nombres', 'Usuario', 'Correo', 'Foto', 'Fecha de creación', 'Fecha ultima actualización'];
+    return ['Nombres', 'Icono', 'Ruta'];
   }
 
   private getColumnAlignments() {
-    return ['left', 'left', 'left', 'center', 'center', 'center'];
+    return ['left', 'left', 'left'];
   }
 
 }

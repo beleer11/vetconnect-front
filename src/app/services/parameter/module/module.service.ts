@@ -24,6 +24,6 @@ export class ModuleService {
   constructor(private http: HttpClient) { }
 
   getDataModule(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/user/index`, this.httpOptions);
+    return this.http.get<any>(`${this.apiUrl}/module/index`, this.httpOptions);
   }
 }
