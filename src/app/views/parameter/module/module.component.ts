@@ -15,6 +15,7 @@ export class ModuleComponent implements OnInit {
   public dataModuleTrasnform: any = [];
   public fieldsTable: any = [];
   public columnAlignments: any = [];
+  public showForm: boolean = false;
 
   constructor(
     private moduleService: ModuleService,
