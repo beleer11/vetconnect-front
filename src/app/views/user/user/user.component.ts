@@ -41,8 +41,8 @@ export class UserComponent implements OnInit {
               "Usuario": item.username,
               "Correo": item.email,
               "Foto": environment.apiStorage + item.image_profile,
-              "Fecha de creación": new Date(item.created_at).toLocaleDateString(),
-              "Fecha ultima actualización": new Date(item.updated_at).toLocaleDateString()
+              "Fecha creación": new Date(item.created_at).toLocaleDateString(),
+              "Ultima actualización": new Date(item.updated_at).toLocaleDateString()
             };
           });
           resolve(transformedData);
@@ -53,7 +53,7 @@ export class UserComponent implements OnInit {
   }
 
   private getFieldsTable() {
-    return ['Nombres', 'Usuario', 'Correo', 'Foto', 'Fecha de creación', 'Fecha ultima actualización'];
+    return ['Nombres', 'Usuario', 'Correo', 'Foto', 'Fecha creación', 'Ultima actualización'];
   }
 
   private getColumnAlignments() {
