@@ -24,6 +24,6 @@ export class UserService {
   constructor(private http: HttpClient) { }
 
   getDataUser(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/user/getData`, this.httpOptions);
+    return this.http.get<any>(`${this.apiUrl}/user/index`, this.httpOptions);
   }
 }
