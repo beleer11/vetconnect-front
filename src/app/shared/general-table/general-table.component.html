@@ -15,10 +15,11 @@
                 </div>
             </c-card-header>
             <c-card-body>
-                <table [hover]="true" [responsive]="true" [striped]="true" align="middle" cTable class="mb-0 border">
+                <table [hover]="true" [responsive]="true" [striped]="true" align="middle" cTable
+                class="mb-0 border table-user">
                     <thead cTableColor="light">
                         <tr>
-                            <th style="text-align: center;" *ngIf="pagedData.length > 0;">#</th>
+                            <th *ngIf="pagedData.length > 0;">#</th>
                             <th *ngFor="let column of columns; let i = index"
                                 [ngStyle]="{'text-align': columnAlignments[i] || 'left'}" (click)="sortColumn(column)">
                                 {{ column }}
