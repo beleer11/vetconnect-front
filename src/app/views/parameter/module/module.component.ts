@@ -35,7 +35,6 @@ export class ModuleComponent implements OnInit {
       this.moduleService.getDataModule().subscribe(
         response => {
           this.dataModule = response;
-          console.log(this.dataModule)
           const transformedData = response.map((item: any) => {
             return {
               "id": item.id,
