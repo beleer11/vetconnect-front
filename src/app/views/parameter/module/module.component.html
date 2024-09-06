@@ -1,1 +1,3 @@
-<p>module works!</p>
+<app-general-table *ngIf="dataModule.length > 0" [columns]="fieldsTable" [transformedData]="dataModuleTrasnform"
+    [data]="dataModule" [acciones]="true" [columnAlignments]="columnAlignments" [title]="'Modulos'">
+</app-general-table>
