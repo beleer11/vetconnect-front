@@ -62,5 +62,4 @@ export class UserComponent implements OnInit {
   private getColumnAlignments() {
     return ['left', 'left', 'left', 'center', 'center', 'center'];
   }
-
 }
