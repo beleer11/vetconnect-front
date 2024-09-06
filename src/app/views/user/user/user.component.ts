@@ -1,4 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
+import { Router } from '@angular/router';
+import { UserService } from 'src/app/services/user/user.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-user',
