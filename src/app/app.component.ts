@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { IconSetService } from '@coreui/icons-angular';
-import { iconSubset } from './icons/icon-subset'; // Asegúrate de la ruta correcta
+import { iconSubset } from './icons/icon-subset';
 import { Title } from '@angular/platform-browser';
 
 @Component({
@@ -18,7 +18,7 @@ export class AppComponent implements OnInit {
   ) {
     titleService.setTitle(this.title);
     // iconSet singleton
-    iconSetService.icons = iconSubset as any; // Cast necesario para evitar problemas de tipo
+    iconSetService.icons = iconSubset as any;
   }
 
   ngOnInit(): void { }

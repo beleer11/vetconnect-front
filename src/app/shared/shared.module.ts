@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 
 import {
     AvatarModule,
@@ -36,7 +37,8 @@ import { GeneralTableComponent } from './general-table/general-table.component';
         ButtonGroupModule,
         ChartjsModule,
         AvatarModule,
-        TableModule
+        TableModule,
+        FormsModule
     ]
 })
 export class SharedModule { }

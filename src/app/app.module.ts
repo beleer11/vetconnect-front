@@ -8,8 +8,8 @@ import { BrowserModule, Title } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-
 import { NgScrollbarModule } from 'ngx-scrollbar';
+import { FormsModule } from '@angular/forms';
 
 // Import routing module
 import { AppRoutingModule } from './app-routing.module';
@@ -86,6 +86,7 @@ const APP_CONTAINERS = [
     UtilitiesModule,
     ButtonGroupModule,
     ReactiveFormsModule,
+    FormsModule,
     SharedModule,
     TabsModule,
     ListGroupModule,
@@ -105,7 +106,7 @@ const APP_CONTAINERS = [
       provide: IconSetService,
       useFactory: () => {
         const iconSetService = new IconSetService();
-        iconSetService.icons = iconSubset as any; // Cast necesario para evitar problemas de tipo
+        iconSetService.icons = iconSubset as any;
         return iconSetService;
       },
     },
