@@ -2,14 +2,19 @@
     <c-col xs>
         <c-card class="mb-4">
             <c-card-header>
-                <div class="d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">{{ title }}</h5>
-                    <div class="search-container">
-                        <input type="text" class="form-control search-input" placeholder="Buscar..."
-                            (keyup)="onSearch($event)" [(ngModel)]="searchValue" />
-                        <button *ngIf="searchValue" type="button" class="btn search-button" (click)="clearSearch()">
-                            <svg cIcon name="cil-x"></svg>
-                        </button>
+                <div class="container">
+                    <div class="row justify-content-between align-items-center mb-3">
+                        <div class="col-12 col-md-auto text-center text-md-start">
+                            <h5 class="mb-0">{{ title }}</h5>
+                        </div>
+                        <div class="col-12 col-md-auto d-flex align-items-center justify-content-between mt-3 mt-md-0">
+                            <input type="text" class="form-control btn-search" placeholder="Buscar..."
+                                (keyup)="onSearch($event)" [(ngModel)]="searchValue" />
+                            <button *ngIf="searchValue" type="button" class="btn btn-outline-secondary ms-2"
+                                style="width: 3rem;" (click)="clearSearch()">
+                                <svg cIcon name="cil-x"></svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </c-card-header>
@@ -75,26 +80,22 @@
                     </table>
                 </div>
                 <!-- Paginación -->
-                <div class="pagination-container mt-3">
-                    <div class="pagination-controls">
+                <div class="pagination mt-3 d-flex flex-column flex-md-row align-items-center">
+                    <div class="d-flex align-items-center mb-2 mb-md-0">
                         <button class="btn btn-outline-secondary btn-sm me-2" (click)="prevPage()">
                             <svg cIcon name="cil-chevron-left"></svg>
                         </button>
                         <span class="mx-2">Página {{ currentPage }} de {{ totalPages }}</span>
-
                         <button class="btn btn-outline-secondary btn-sm me-2" (click)="nextPage()">
                             <svg cIcon name="cil-chevron-right"></svg>
                         </button>
                     </div>
-                    <div class="pagination-info">
-                        <select (change)="onPageSizeChange($event)" class="form-select d-inline w-auto ms-2">
-                            <option *ngFor="let size of [10, 25, 50]" [value]="size">{{ size }} por página</option>
-                        </select>
-                    </div>
-                    <div class="pagination-total mt-2">
-                        <span class="mx-2">Total de registros: {{ totalRecords }}</span>
-                    </div>
+                    <select (change)="onPageSizeChange($event)" class="form-select d-inline w-auto ms-2">
+                        <option *ngFor="let size of [10, 25, 50]" [value]="size">{{ size }} por página</option>
+                    </select>
+                    <span class="mx-2 mt-1 mt-md-0">Total de registros: {{ totalRecords }}</span>
                 </div>
+
             </c-card-body>
         </c-card>
     </c-col>

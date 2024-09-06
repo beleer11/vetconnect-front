@@ -1,4 +1,3 @@
-/* Estilos básicos para la tabla */
 .position-relative {
     position: relative;
 }
@@ -20,12 +19,6 @@ th {
     position: relative;
     padding: 0.75rem;
     user-select: none;
-    text-align: center;
-    /* Alinea el texto al centro por defecto */
-    vertical-align: middle;
-    /* Alinea verticalmente el contenido */
-    box-sizing: border-box;
-    /* Asegura que el padding y el border no afecten el tamaño total */
 }
 
 th.sortable {
@@ -49,31 +42,10 @@ th .sort-icon ng-container {
     color: #007bff;
 }
 
-/* Estilos para la paginación */
-.pagination-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.pagination-controls {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 1rem;
-}
-
-.pagination-info {
+.pagination {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 1rem;
-}
-
-.pagination-total {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 1rem;
 }
 
 .pagination button {
@@ -82,144 +54,28 @@ th .sort-icon ng-container {
 
 /* Estilos para pantallas pequeñas */
 @media (max-width: 576px) {
-    th {
-        font-size: 12px;
-        padding: 0.5rem;
-    }
-
-    .sort-icon {
-        right: 0.5rem;
-        font-size: 0.75rem;
-    }
-
-    .pagination-container {
-        flex-direction: column;
-    }
-
-    .pagination-controls {
-        flex-direction: row;
-        margin-bottom: 0.5rem;
-    }
-
-    .pagination-info {
-        flex-direction: column;
-        text-align: center;
-        margin-bottom: 0.5rem;
-    }
-
-    .pagination-total {
-        margin-top: 0.5rem;
-    }
 
     .pagination {
         font-size: 12px;
+        text-align: center;
     }
 
     .pagination button {
         padding: 0.25rem 0.5rem;
     }
+
 }
 
 /* Estilos para pantallas medianas (tablets) */
 @media (min-width: 576px) and (max-width: 768px) {
-    th {
-        font-size: 14px;
-        padding: 0.75rem;
-    }
-
-    .sort-icon {
-        right: 0.75rem;
-        font-size: 0.875rem;
-    }
-
-    .pagination-container {
-        flex-direction: column;
-    }
-
-    .pagination-controls {
-        flex-direction: row;
-        margin-bottom: 1rem;
-    }
-
-    .pagination-info {
-        flex-direction: row;
-        text-align: center;
-        margin-bottom: 1rem;
-    }
-
-    .pagination-total {
-        margin-top: 1rem;
-    }
 
     .pagination {
         font-size: 14px;
+        text-align: center;
     }
 
     .pagination button {
         padding: 0.5rem 1rem;
     }
-}
 
-/* Estilos para pantallas grandes */
-@media (min-width: 992px) {
-    .pagination-container {
-        flex-direction: row;
-        justify-content: center;
-        align-items: center;
-        gap: 1rem;
-    }
-
-    .pagination-controls {
-        flex-direction: row;
-        justify-content: center;
-    }
-
-    .pagination-info {
-        flex-direction: row;
-        justify-content: center;
-    }
-
-    .pagination-total {
-        margin-top: 1rem;
-    }
-
-    .pagination {
-        font-size: 16px;
-    }
-
-    .pagination button {
-        padding: 0.75rem 1.5rem;
-    }
-}
-
-/* Estilos para pantallas extra grandes */
-@media (min-width: 1200px) {
-    .pagination-container {
-        flex-direction: row;
-        justify-content: center;
-        align-items: center;
-        gap: 1rem;
-    }
-
-    .pagination-controls {
-        flex-direction: row;
-        justify-content: center;
-    }
-
-    .pagination-info {
-        flex-direction: row;
-        justify-content: center;
-    }
-
-    .pagination-total {
-        margin-top: 1rem;
-    }
-
-    .pagination {
-        font-size: 18px;
-    }
-
-    .pagination button {
-        padding: 1rem 2rem;
-    }
 }
