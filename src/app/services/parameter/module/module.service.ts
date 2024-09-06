@@ -6,7 +6,7 @@ import { environment } from 'src/environments/environment';
 @Injectable({
   providedIn: 'root'
 })
-export class UserService {
+export class ModuleService {
 
   private apiUrl: string = environment.apiUrl;
 
@@ -23,7 +23,7 @@ export class UserService {
 
   constructor(private http: HttpClient) { }
 
-  getDataUser(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/user/index`, this.httpOptions);
+  getDataModule(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/module/index`, this.httpOptions);
   }
 }

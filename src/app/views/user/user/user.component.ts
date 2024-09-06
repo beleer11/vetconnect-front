@@ -14,7 +14,6 @@ export class UserComponent implements OnInit {
   public dataUser: any = [];
   public dataTransformada: any = [];
   public fieldsTable: any = [];
-  public environment = environment;
   public columnAlignments: any = [];
 
   constructor(
@@ -35,7 +34,6 @@ export class UserComponent implements OnInit {
       this.userService.getDataUser().subscribe(
         response => {
           this.dataUser = response;
-          // Transformar los datos
           const transformedData = response.map((item: any) => {
             return {
               "id": item.id,
@@ -53,7 +51,6 @@ export class UserComponent implements OnInit {
       );
     });
   }
-
 
   private getFieldsTable() {
     return ['Nombres', 'Usuario', 'Correo', 'Foto', 'Fecha de creación', 'Fecha ultima actualización'];

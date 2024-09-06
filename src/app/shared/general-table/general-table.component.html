@@ -18,7 +18,7 @@
                 <table [hover]="true" [responsive]="true" [striped]="true" align="middle" cTable class="mb-0 border">
                     <thead cTableColor="light">
                         <tr>
-                            <th style="text-align: center;">#</th>
+                            <th style="text-align: center;" *ngIf="pagedData.length > 0;">#</th>
                             <th *ngFor="let column of columns; let i = index"
                                 [ngStyle]="{'text-align': columnAlignments[i] || 'left'}" (click)="sortColumn(column)">
                                 {{ column }}
@@ -32,33 +32,43 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr *ngFor="let row of pagedData; let i = index">
-                            <td style="text-align: center;">{{ i + 1 + (currentPage - 1) * pageSize }}</td>
-                            <td *ngFor="let column of columns; let i = index"
-                                [ngStyle]="{'text-align': columnAlignments[i] || 'left'}">
-                                <ng-container *ngIf="column === 'Foto'; else defaultCell">
-                                    <img [src]="row['Foto']" alt="User Image" width="50" height="50"
-                                        style="border-radius: 50%;">
-                                </ng-container>
-                                <ng-template #defaultCell>{{ row[column] || 'N/A' }}</ng-template>
-                            </td>
-                            <td *ngIf="acciones" class="text-center">
-                                <div class="d-flex justify-content-center align-items-center">
-                                    <button class="btn btn-primary btn-sm me-2">
-                                        <svg cIcon name="cil-pencil"></svg>
-                                    </button>
-                                    <button class="btn btn-danger btn-sm me-2">
-                                        <svg cIcon name="cil-trash"></svg>
-                                    </button>
-                                    <button class="btn btn-info btn-sm me-2">
-                                        <svg cIcon name="cil-search"></svg>
-                                    </button>
-                                    <button class="btn btn-secondary btn-sm">
-                                        <svg cIcon name="cil-ban"></svg>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
+                        <ng-container *ngIf="pagedData.length > 0; else noData">
+                            <tr *ngFor="let row of pagedData; let i = index">
+                                <td style="text-align: center;">{{ i + 1 + (currentPage - 1) * pageSize }}</td>
+                                <td *ngFor="let column of columns; let i = index"
+                                    [ngStyle]="{'text-align': columnAlignments[i] || 'left'}">
+                                    <ng-container *ngIf="column === 'Foto'; else defaultCell">
+                                        <img [src]="row['Foto']" alt="User Image" width="50" height="50"
+                                            style="border-radius: 50%;">
+                                    </ng-container>
+                                    <ng-template #defaultCell>{{ row[column] || 'N/A' }}</ng-template>
+                                </td>
+                                <td *ngIf="acciones" class="text-center">
+                                    <div class="d-flex justify-content-center align-items-center">
+                                        <button class="btn btn-primary btn-sm me-2">
+                                            <svg cIcon name="cil-pencil"></svg>
+                                        </button>
+                                        <button class="btn btn-danger btn-sm me-2">
+                                            <svg cIcon name="cil-trash"></svg>
+                                        </button>
+                                        <button class="btn btn-info btn-sm me-2">
+                                            <svg cIcon name="cil-search"></svg>
+                                        </button>
+                                        <button class="btn btn-secondary btn-sm">
+                                            <svg cIcon name="cil-ban"></svg>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </ng-container>
+                        <!-- Template para cuando no hay datos -->
+                        <ng-template #noData>
+                            <tr>
+                                <td [attr.colspan]="columns.length + (acciones ? 2 : 1)" class="text-center">
+                                    No hay datos disponibles en la tabla.
+                                </td>
+                            </tr>
+                        </ng-template>
                     </tbody>
                 </table>
                 <!-- Paginación -->

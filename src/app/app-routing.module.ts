@@ -7,6 +7,7 @@ import { Page500Component } from './pages/page500/page500.component';
 import { LoginComponent } from './pages/login/login.component';
 import { AuthGuard } from './guard/auth.guard';
 
+
 const routes: Routes = [
   {
     path: '',
