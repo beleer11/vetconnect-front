@@ -1,0 +1,63 @@
+.invalid-feedback {
+    display: block;
+}
+
+.icon-scroll-container {
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+}
+
+.icon-container {
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.icon-container:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.selected {
+    border: 2px solid #007bff;
+    padding: 10px;
+}
+
+
+.input-group {
+    display: flex;
+    align-items: center;
+}
+
+.info-icon {
+    background-color: #f8f9fa;
+    /* Fondo blanco */
+    border: 1px solid #ced4da;
+    /* Borde gris */
+    border-radius: 0 0.25rem 0.25rem 0;
+    /* Bordes redondeados en la parte inferior derecha */
+    cursor: pointer;
+    padding: 0.375rem 0.75rem;
+    /* Espaciado */
+    font-size: 1.25rem;
+    /* Tamaño del icono */
+    color: #007bff;
+    /* Color del icono */
+}
+
+.info-icon:hover {
+    background-color: #e9ecef;
+    /* Color de fondo cuando se pasa el cursor */
+}
+
+.tooltip-inner {
+    max-width: 200px;
+    /* Ajusta el tamaño del tooltip */
+    font-size: 0.875rem;
+    /* Tamaño de la fuente */
+}

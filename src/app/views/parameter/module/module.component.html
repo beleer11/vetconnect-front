@@ -1,36 +1,80 @@
-<div>
-    <div class="d-flex justify-content-end align-items-center mb-3" *ngIf="!showForm">
-        <button class="btn btn-primary" (click)="showForm = true">Agregar</button>
-    </div>
-    <app-general-table *ngIf="!showForm" [columns]="fieldsTable" [transformedData]="dataModuleTrasnform"
-        [data]="dataModule" [acciones]="true" [columnAlignments]="columnAlignments" [title]="'Módulos'">
-    </app-general-table>
-    <div *ngIf="showForm">
-
-        <!-- app.component.html -->
-        <ul class="nav nav-tabs" id="myTab" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button"
-                    role="tab" aria-controls="home" aria-selected="true">Home</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button"
-                    role="tab" aria-controls="profile" aria-selected="false">Profile</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button"
-                    role="tab" aria-controls="contact" aria-selected="false">Contact</button>
-            </li>
-        </ul>
-        <div class="tab-content" id="myTabContent">
-            <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">Home content...
-            </div>
-            <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">Profile content...
-            </div>
-            <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">Contact content...
-            </div>
-        </div>
-
-        <button class="btn btn-secondary mb-3" (click)="showForm = false">Atras</button>
-    </div>
+<div class="col-12 col-md-auto d-flex justify-content-end align-items-center mb-2 mt-md-0" *ngIf="showForm">
+    <button class="btn btn-primary" (click)="showForm = true">Agregar</button>
 </div>
+<app-general-table *ngIf="showForm" [columns]="fieldsTable" [transformedData]="dataModuleTrasnform" [data]="dataModule"
+    [acciones]="true" [columnAlignments]="columnAlignments" [title]="'Módulos'">
+</app-general-table>
+<c-row *ngIf="!showForm">
+    <c-col xs>
+        <c-card class="mb-4">
+            <c-card-header>
+                <div class="container">
+                    <div class="row justify-content-between align-items-center mb-2">
+                        <div class="col-12 col-md-auto text-center text-md-start pt-2">
+                            <h5 class="mb-0">Agregar Módulo</h5>
+                        </div>
+                    </div>
+                </div>
+            </c-card-header>
+            <c-card-body>
+                <form [formGroup]="formModule" (ngSubmit)="onSubmit()">
+                    <div class="row">
+                        <!-- Campos en la misma fila -->
+                        <div class="mb-3 col-12 col-md-4">
+                            <label for="name" class="form-label">Nombre</label>
+                            <input id="name" formControlName="name" class="form-control" />
+                            <div *ngIf="formModule.controls['name'].invalid && formModule.controls['name'].touched"
+                                class="invalid-feedback">
+                                El nombre es requerido.
+                            </div>
+                        </div>
+                        <div class="mb-3 col-12 col-md-4">
+                            <label for="url" class="form-label">URL</label>
+                            <div class="input-group">
+                                <input id="url" formControlName="url" type="url" class="form-control" />
+                                <span class="input-group-text" data-bs-toggle="tooltip" data-bs-placement="top"
+                                    title="Debe ingresar la url de la ruta para el módulo ejemplo: /home">?</span>
+                            </div>
+                            <div *ngIf="formModule.controls['url'].invalid && formModule.controls['url'].touched"
+                                class="invalid-feedback">
+                                La URL es requerida y debe ser válida.
+                            </div>
+                        </div>
+                        <div class="mb-3 col-12 col-md-4">
+                            <label for="group" class="form-label">Grupo</label>
+                            <select id="group" formControlName="group" class="form-select">
+                                <option value="">Seleccionar un grupo</option>
+                                <option value="1">Grupo 1</option>
+                                <option value="2">Grupo 2</option>
+                            </select>
+                            <div *ngIf="formModule.controls['group'].invalid && formModule.controls['group'].touched"
+                                class="invalid-feedback">
+                                El grupo es requerido.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sección de Iconos con Scroll -->
+                    <div class="mb-3">
+                        <label class="form-label">Seleccionar Ícono</label>
+                        <div class="icon-scroll-container">
+                            <c-row class="text-center">
+                                <c-col *ngFor="let icon of icons" class="mb-4 icon-container" md="3" sm="4" xl="2"
+                                    xs="6" (click)="selectIcon(toKebabCase(icon[0]))"
+                                    [ngClass]="{'selected': isIconSelected(toKebabCase(icon[0]))}">
+                                    <svg cIcon [name]="icon[0]" [title]="icon[0]" size="3xl" class="icon-svg"
+                                        title=""></svg>
+                                </c-col>
+                            </c-row>
+                        </div>
+                    </div>
+
+                    <!-- Botón Guardar -->
+                    <div class="d-flex justify-content-center align-items-center">
+                        <button type="submit" class="btn btn-primary" [disabled]="formModule.invalid">Guardar</button>
+                    </div>
+                </form>
+            </c-card-body>
+        </c-card>
+    </c-col>
+</c-row>
