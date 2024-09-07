@@ -1,6 +1,9 @@
 <div class="col-12 col-md-auto d-flex justify-content-end align-items-center mb-2 mt-md-0" *ngIf="!showForm">
     <button class="btn btn-primary" (click)="!showForm = true">Agregar</button>
 </div>
+<div class="col-12 col-md-auto d-flex justify-content-start align-items-center mb-2 mt-md-0" *ngIf="showForm">
+    <button class="btn btn-danger text-white" (click)="!showForm = false">Regresar</button>
+</div>
 <app-general-table *ngIf="!showForm && dataModule.length > 0" [columns]="fieldsTable"
     [transformedData]="dataModuleTrasnform" [data]="dataModule" [acciones]="true" [columnAlignments]="columnAlignments"
     [title]="'Módulos'">
