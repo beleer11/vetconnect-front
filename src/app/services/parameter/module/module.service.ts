@@ -26,4 +26,12 @@ export class ModuleService {
   getDataModule(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/module/index`, this.httpOptions);
   }
+
+  sendGroup(data: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/module/groupModule/setData`, data, this.httpOptions);
+  }
+
+  getDataGroupModule(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/module/groupModule/index`, this.httpOptions);
+  }
 }

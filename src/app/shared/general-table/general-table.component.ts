@@ -17,7 +17,7 @@ export class GeneralTableComponent implements OnInit, OnChanges {
   public searchValue: string = '';
   public filteredData: any[] = [];
   public currentSortColumn: string = '';
-  public sortOrder: 'asc' | 'desc' = 'desc';
+  public sortOrder: 'asc' | 'desc' = 'asc';
 
   // Paginador
   public currentPage: number = 1;
@@ -76,7 +76,7 @@ export class GeneralTableComponent implements OnInit, OnChanges {
       return;
     }
     if (this.currentSortColumn === column) {
-      this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
+      this.sortOrder = this.sortOrder === 'desc' ? 'desc' : 'asc';
     } else {
       this.currentSortColumn = column;
       this.sortOrder = 'asc';

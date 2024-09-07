@@ -61,3 +61,31 @@ th .sort-icon ng-container {
 .pagination button {
     margin: 0 5px;
 }
+
+/* Estilos para pantallas pequeñas */
+@media (max-width: 576px) {
+
+    .pagination {
+        font-size: 12px;
+        text-align: center;
+    }
+
+    .pagination button {
+        padding: 0.25rem 0.5rem;
+    }
+
+}
+
+/* Estilos para pantallas medianas (tablets) */
+@media (min-width: 576px) and (max-width: 768px) {
+
+    .pagination {
+        font-size: 14px;
+        text-align: center;
+    }
+
+    .pagination button {
+        padding: 0.5rem 1rem;
+    }
+
+}

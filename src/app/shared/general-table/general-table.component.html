@@ -2,90 +2,100 @@
     <c-col xs>
         <c-card class="mb-4">
             <c-card-header>
-                <div class="d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">{{ title }}</h5>
-                    <div class="d-flex align-items-center">
-                        <input type="text" class="form-control" style="width: 350px;" placeholder="Buscar..."
-                            (keyup)="onSearch($event)" [(ngModel)]="searchValue" />
-                        <button *ngIf="searchValue" type="button" class="btn btn-outline-secondary ms-2"
-                            style="width: 3rem;" (click)="clearSearch()">
-                            <svg cIcon name="cil-x"></svg>
-                        </button>
+                <div class="container">
+                    <div class="row justify-content-between align-items-center mb-2">
+                        <div class="col-12 col-md-auto text-center text-md-start pt-2">
+                            <h5 class="mb-0">{{ title }}</h5>
+                        </div>
+                        <div class="col-12 col-md-auto d-flex align-items-center justify-content-between mt-3 mt-md-0">
+                            <input type="text" class="form-control btn-search" placeholder="Buscar..."
+                                (keyup)="onSearch($event)" [(ngModel)]="searchValue" />
+                            <button *ngIf="searchValue" type="button" class="btn btn-outline-secondary ms-2"
+                                style="width: 3rem;" (click)="clearSearch()">
+                                <svg cIcon name="cil-x"></svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </c-card-header>
             <c-card-body>
-                <table [hover]="true" [responsive]="true" [striped]="true" align="middle" cTable
-                class="mb-0 border table-user">
-                    <thead cTableColor="light">
-                        <tr>
-                            <th *ngIf="pagedData.length > 0;">#</th>
-                            <th *ngFor="let column of columns; let i = index"
-                                [ngStyle]="{'text-align': columnAlignments[i] || 'left'}" (click)="sortColumn(column)">
-                                {{ column }}
-                                <svg *ngIf="currentSortColumn === column && sortOrder === 'asc'" cIcon
-                                    name="cil-arrow-top"></svg>
-                                <svg *ngIf="currentSortColumn === column && sortOrder === 'desc'" cIcon
-                                    name="cil-arrow-bottom"></svg>
-                                <svg *ngIf="currentSortColumn !== column" cIcon name="cil-arrow-both"></svg>
-                            </th>
-                            <th *ngIf="acciones" [ngStyle]="{'text-align': 'center'}">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <ng-container *ngIf="pagedData.length > 0; else noData">
-                            <tr *ngFor="let row of pagedData; let i = index">
-                                <td style="text-align: center;">{{ i + 1 + (currentPage - 1) * pageSize }}</td>
-                                <td *ngFor="let column of columns; let i = index"
-                                    [ngStyle]="{'text-align': columnAlignments[i] || 'left'}">
-                                    <ng-container *ngIf="column === 'Foto'; else defaultCell">
-                                        <img [src]="row['Foto']" alt="User Image" width="50" height="50"
-                                            style="border-radius: 50%;">
-                                    </ng-container>
-                                    <ng-template #defaultCell>{{ row[column] || 'N/A' }}</ng-template>
-                                </td>
-                                <td *ngIf="acciones" class="text-center">
-                                    <div class="d-flex justify-content-center align-items-center">
-                                        <button class="btn btn-primary btn-sm me-2">
-                                            <svg cIcon name="cil-pencil"></svg>
-                                        </button>
-                                        <button class="btn btn-danger btn-sm me-2">
-                                            <svg cIcon name="cil-trash"></svg>
-                                        </button>
-                                        <button class="btn btn-info btn-sm me-2">
-                                            <svg cIcon name="cil-search"></svg>
-                                        </button>
-                                        <button class="btn btn-secondary btn-sm">
-                                            <svg cIcon name="cil-ban"></svg>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </ng-container>
-                        <!-- Template para cuando no hay datos -->
-                        <ng-template #noData>
+                <div class="table-responsive">
+                    <table [hover]="true" [responsive]="true" [striped]="true" align="middle" cTable
+                        class="mb-0 border table-user">
+                        <thead cTableColor="light">
                             <tr>
-                                <td [attr.colspan]="columns.length + (acciones ? 2 : 1)" class="text-center">
-                                    No hay datos disponibles en la tabla.
-                                </td>
+                                <th *ngIf="pagedData.length > 0;" style="text-align: center;">#</th>
+                                <th *ngFor="let column of columns; let i = index"
+                                    [ngStyle]="{'text-align': columnAlignments[i] || 'left'}"
+                                    (click)="sortColumn(column)">
+                                    {{ column }}
+                                    <svg *ngIf="currentSortColumn === column && sortOrder === 'asc'" cIcon
+                                        name="cil-arrow-top"></svg>
+                                    <svg *ngIf="currentSortColumn === column && sortOrder === 'desc'" cIcon
+                                        name="cil-arrow-bottom"></svg>
+                                    <svg *ngIf="currentSortColumn !== column" cIcon name="cil-arrow-both"></svg>
+                                </th>
+                                <th *ngIf="acciones" [ngStyle]="{'text-align': 'center'}">Acciones</th>
                             </tr>
-                        </ng-template>
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            <ng-container *ngIf="pagedData.length > 0; else noData">
+                                <tr *ngFor="let row of pagedData; let i = index">
+                                    <td style="text-align: center;">{{ i + 1 + (currentPage - 1) * pageSize }}</td>
+                                    <td *ngFor="let column of columns; let i = index"
+                                        [ngStyle]="{'text-align': columnAlignments[i] || 'left'}">
+                                        <ng-container *ngIf="column === 'Foto'; else defaultCell">
+                                            <img [src]="row['Foto']" alt="User Image" width="50" height="50"
+                                                style="border-radius: 50%;">
+                                        </ng-container>
+                                        <ng-template #defaultCell>{{ row[column] || 'N/A' }}</ng-template>
+                                    </td>
+                                    <td *ngIf="acciones" class="text-center">
+                                        <div class="d-flex justify-content-center align-items-center">
+                                            <button class="btn btn-primary btn-sm me-2">
+                                                <svg cIcon name="cil-pencil"></svg>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm me-2">
+                                                <svg cIcon name="cil-trash"></svg>
+                                            </button>
+                                            <button class="btn btn-info btn-sm me-2">
+                                                <svg cIcon name="cil-search"></svg>
+                                            </button>
+                                            <button class="btn btn-secondary btn-sm">
+                                                <svg cIcon name="cil-ban"></svg>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </ng-container>
+                            <!-- Template para cuando no hay datos -->
+                            <ng-template #noData>
+                                <tr>
+                                    <td [attr.colspan]="columns.length + (acciones ? 2 : 1)" class="text-center">
+                                        No hay datos disponibles en la tabla.
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        </tbody>
+                    </table>
+                </div>
                 <!-- Paginación -->
-                <div class="pagination mt-3">
-                    <button class="btn btn-outline-secondary btn-sm me-2" (click)="prevPage()">
-                        <svg cIcon name="cil-chevron-left"></svg>
-                    </button>
-                    <span class="mx-2">Página {{ currentPage }} de {{ totalPages }}</span>
-                    <button class="btn btn-outline-secondary btn-sm me-2" (click)="nextPage()">
-                        <svg cIcon name="cil-chevron-right"></svg>
-                    </button>
+                <div class="pagination mt-3 d-flex flex-column flex-md-row align-items-center">
+                    <div class="d-flex align-items-center mb-2 mb-md-0">
+                        <button class="btn btn-outline-secondary btn-sm me-2" (click)="prevPage()">
+                            <svg cIcon name="cil-chevron-left"></svg>
+                        </button>
+                        <span class="mx-2">Página {{ currentPage }} de {{ totalPages }}</span>
+                        <button class="btn btn-outline-secondary btn-sm me-2" (click)="nextPage()">
+                            <svg cIcon name="cil-chevron-right"></svg>
+                        </button>
+                    </div>
                     <select (change)="onPageSizeChange($event)" class="form-select d-inline w-auto ms-2">
                         <option *ngFor="let size of [10, 25, 50]" [value]="size">{{ size }} por página</option>
                     </select>
-                    <span class="mx-2">Total de registros: {{ totalRecords }}</span>
+                    <span class="mx-2 mt-1 mt-md-0">Total de registros: {{ totalRecords }}</span>
                 </div>
+
             </c-card-body>
         </c-card>
     </c-col>

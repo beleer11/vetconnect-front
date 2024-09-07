@@ -10,18 +10,22 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { NgScrollbarModule } from 'ngx-scrollbar';
 import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { ChartjsModule } from '@coreui/angular-chartjs';
+import { WidgetsModule } from './views/widgets/widgets.module';
 
-
-// Import routing module
 import { AppRoutingModule } from './app-routing.module';
-
-// Import app component
 import { AppComponent } from './app.component';
 
 //pages
 import { LoginComponent } from './pages/login/login.component';
 import { Page404Component } from './pages/page404/page404.component';
 import { Page500Component } from './pages/page500/page500.component';
+import { GroupModuleComponent } from './views/parameter/group-module/group-module.component';
+import { ModuleComponent } from './views/parameter/module/module.component';
+import { GeneralTableComponent } from './shared/general-table/general-table.component';
+import { UserComponent } from './views/user/user/user.component';
+import { DashboardComponent } from './views/dashboard/dashboard.component';
 
 //spinner loading
 import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinner.component'
@@ -51,6 +55,7 @@ import {
   SidebarModule,
   TabsModule,
   UtilitiesModule,
+  TableModule
 } from '@coreui/angular';
 
 import { IconModule, IconSetService } from '@coreui/icons-angular';
@@ -62,7 +67,6 @@ const APP_CONTAINERS = [
   DefaultHeaderComponent,
   DefaultLayoutComponent,
 ];
-
 @NgModule({
   declarations: [
     AppComponent,
@@ -70,7 +74,12 @@ const APP_CONTAINERS = [
     LoginComponent,
     Page404Component,
     Page500Component,
-    LoadingSpinnerComponent
+    LoadingSpinnerComponent,
+    GroupModuleComponent,
+    ModuleComponent,
+    GeneralTableComponent,
+    UserComponent,
+    DashboardComponent
   ],
   imports: [
     BrowserModule,
@@ -99,6 +108,10 @@ const APP_CONTAINERS = [
     CardModule,
     NgScrollbarModule,
     HttpClientModule,
+    TableModule,
+    CommonModule,
+    ChartjsModule,
+    WidgetsModule,
     RouterModule.forRoot([], { useHash: false }),
   ],
   providers: [

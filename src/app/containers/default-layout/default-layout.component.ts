@@ -11,5 +11,5 @@ export class DefaultLayoutComponent {
 
   public navItems = navItems;
 
-  constructor() {}
+  constructor() { }
 }
