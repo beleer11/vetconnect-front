@@ -24,7 +24,7 @@
                         class="mb-0 border table-user">
                         <thead cTableColor="light">
                             <tr>
-                                <th *ngIf="pagedData.length > 0;">#</th>
+                                <th *ngIf="pagedData.length > 0;" style="text-align: center;">#</th>
                                 <th *ngFor="let column of columns; let i = index"
                                     [ngStyle]="{'text-align': columnAlignments[i] || 'left'}"
                                     (click)="sortColumn(column)">

@@ -1,1 +1,44 @@
-<p>group-module works!</p>
+<div class="col-12 col-md-auto d-flex justify-content-end align-items-center mb-2 mt-md-0" *ngIf="!showForm">
+    <button class="btn btn-primary" (click)="!showForm = true">Agregar</button>
+</div>
+<app-general-table *ngIf="!showForm && dataModule.length > 0" [columns]="fieldsTable"
+    [transformedData]="dataModuleTrasnform" [data]="dataModule" [acciones]="true" [columnAlignments]="columnAlignments"
+    [title]="'Módulos'">
+</app-general-table>
+<c-row *ngIf="showForm">
+    <c-col xs>
+        <c-card class="mb-4">
+            <c-card-header>
+                <div class="container">
+                    <div class="row justify-content-between align-items-center mb-2">
+                        <div class="col-12 col-md-auto text-center text-md-start pt-2">
+                            <h5 class="mb-0">Agregar Grupo de módulo</h5>
+                        </div>
+                    </div>
+                </div>
+            </c-card-header>
+            <c-card-body>
+                <form [formGroup]="formGroupModule" (ngSubmit)="onSubmit()">
+                    <div class="d-flex flex-column">
+                        <div class="form-group mb-0">
+                            <label for="nombre">Nombre</label>
+                            <input id="nombre" formControlName="nombre" type="text" class="form-control"
+                                [ngClass]="{ 'is-invalid': formGroupModule.get('nombre')?.invalid && (formGroupModule.get('nombre')?.touched || formGroupModule.get('nombre')?.dirty) }" />
+                            <div *ngIf="formGroupModule.get('nombre')?.invalid && (formGroupModule.get('nombre')?.touched || formGroupModule.get('nombre')?.dirty)"
+                                class="invalid-feedback">
+                                <div *ngIf="formGroupModule.get('nombre')?.errors?.['required']">Nombre es requerido.
+                                </div>
+                                <div *ngIf="formGroupModule.get('nombre')?.errors?.['minlength']">Nombre debe tener al
+                                    menos 3 caracteres.</div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-end mt-2">
+                            <button type="submit" class="btn btn-primary"
+                                [disabled]="formGroupModule.invalid">Enviar</button>
+                        </div>
+                    </div>
+                </form>
+            </c-card-body>
+        </c-card>
+    </c-col>
+</c-row>

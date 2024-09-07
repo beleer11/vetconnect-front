@@ -40,11 +40,10 @@ export class ModuleComponent implements AfterViewInit {
     this.createForm();
     let prefix = 'cil';
     this.icons = this.getIconsView(prefix);
-    console.log('Icons:', this.icons); // Verifica los valores
 
     this.dataModuleTrasnform = await this.getData();
-    this.fieldsTable = this.getFieldsTable();
-    this.columnAlignments = this.getColumnAlignments();
+    this.fieldsTable = await this.getFieldsTable();
+    this.columnAlignments = await this.getColumnAlignments();
   }
 
   ngAfterViewInit(): void {
@@ -76,7 +75,7 @@ export class ModuleComponent implements AfterViewInit {
   }
 
   private getFieldsTable() {
-    return ['Nombre', 'Icono', 'Ruta'];
+    return new Promise((resolve, reject) => { ['Nombre', 'Icono', 'Ruta'] });
   }
 
   private getColumnAlignments() {
