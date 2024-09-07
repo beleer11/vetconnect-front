@@ -11,6 +11,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { NgScrollbarModule } from 'ngx-scrollbar';
 import { FormsModule } from '@angular/forms';
 
+
 // Import routing module
 import { AppRoutingModule } from './app-routing.module';
 
@@ -22,6 +23,8 @@ import { LoginComponent } from './pages/login/login.component';
 import { Page404Component } from './pages/page404/page404.component';
 import { Page500Component } from './pages/page500/page500.component';
 
+//spinner loading
+import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinner.component'
 // Import containers
 import {
   DefaultFooterComponent,
@@ -67,6 +70,7 @@ const APP_CONTAINERS = [
     LoginComponent,
     Page404Component,
     Page500Component,
+    LoadingSpinnerComponent
   ],
   imports: [
     BrowserModule,
