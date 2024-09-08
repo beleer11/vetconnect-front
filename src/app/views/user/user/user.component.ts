@@ -3,6 +3,8 @@ import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UserService } from 'src/app/services/user/user.service';
 import { environment } from 'src/environments/environment';
+import Swal from 'sweetalert2';
+import moment from 'moment';
 
 @Component({
   selector: 'app-user',
@@ -41,8 +43,8 @@ export class UserComponent implements OnInit {
               "Usuario": item.username,
               "Correo": item.email,
               "Foto": environment.apiStorage + item.image_profile,
-              "Fecha creación": new Date(item.created_at).toLocaleDateString(),
-              "Ultima actualización": new Date(item.updated_at).toLocaleDateString()
+              "Fecha creación": moment(item.created_at).format('DD/MM/YYYY hh:mm:ss A'),
+              "Ultima actualización": moment(item.updated_at).format('DD/MM/YYYY hh:mm:ss A')
             };
           });
           resolve(transformedData);
