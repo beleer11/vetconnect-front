@@ -10,6 +10,7 @@ import { UserComponent } from './views/user/user/user.component';
 import { ModuleComponent } from './views/parameter/module/module.component';
 import { GroupModuleComponent } from './views/parameter/group-module/group-module.component';
 import { DashboardComponent } from './views/dashboard/dashboard.component';
+import { PermissionComponent } from './views/parameter/permission/permission.component';
 
 // Define las rutas directamente aquí
 const routes: Routes = [
@@ -30,19 +31,23 @@ const routes: Routes = [
     children: [
       {
         path: 'dashboard',
-        component: DashboardComponent // Debes importar y declarar este componente en AppModule
+        component: DashboardComponent
       },
       {
         path: 'user',
-        component: UserComponent // Debes importar y declarar este componente en AppModule
+        component: UserComponent
       },
       {
         path: 'module',
-        component: ModuleComponent // Debes importar y declarar este componente en AppModule
+        component: ModuleComponent
       },
       {
         path: 'group-module',
-        component: GroupModuleComponent // Debes importar y declarar este componente en AppModule
+        component: GroupModuleComponent
+      },
+      {
+        path: 'permission',
+        component: PermissionComponent
       }
     ],
   },
