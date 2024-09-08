@@ -17,6 +17,7 @@ export class UserComponent implements OnInit {
   public dataTransformada: any = [];
   public fieldsTable: any = [];
   public columnAlignments: any = [];
+  public loading: boolean = true;
 
   constructor(
     private userService: UserService,
@@ -29,6 +30,7 @@ export class UserComponent implements OnInit {
     this.dataTransformada = await this.getDataUser();
     this.fieldsTable = this.getFieldsTable();
     this.columnAlignments = this.getColumnAlignments();
+    this.loading = false;
   }
 
   private async getDataUser(): Promise<any> {

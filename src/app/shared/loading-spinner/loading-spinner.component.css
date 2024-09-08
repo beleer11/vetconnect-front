@@ -8,16 +8,17 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(22, 21, 21, 0.8);
+  background-color: rgba(22, 21, 21, 0.9);
   z-index: 9999;
-  opacity: 200;
 }
 
 .spinner-image {
-  margin-bottom: -12rem;
   width: 250px;
 }
 
-.second-image {
-  width: 400px;
+.random-text {
+  margin-top: 10px;
+  font-size: 1.2rem;
+  color: #fff;
+  text-align: center;
 }

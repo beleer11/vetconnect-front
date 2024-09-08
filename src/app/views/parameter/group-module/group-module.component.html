@@ -12,6 +12,7 @@
     [data]="dataModule" [acciones]="true" [columnAlignments]="columnAlignments" [title]="'Grupo de Módulos'"
     (actionEvent)="handleAction($event)">
   </app-general-table>
+  
   <c-row *ngIf="showForm">
     <c-col xs>
       <c-card class="mb-4">
