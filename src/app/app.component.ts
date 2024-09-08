@@ -26,8 +26,8 @@ export class AppComponent implements OnInit {
 
     // Simulación de una carga para probar el spinner
     setTimeout(() => {
-      this.isLoading = true; // Se detiene el spinner después de 3 segundos
-    }, 1000);
+      this.isLoading = false; // Se detiene el spinner después de 3 segundos
+    }, 2000);
   }
 
   ngOnInit(): void { }
