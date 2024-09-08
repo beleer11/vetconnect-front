@@ -10,9 +10,6 @@ import { Title } from '@angular/platform-browser';
 })
 export class AppComponent implements OnInit {
   title = 'VetConnect';
-
-  //controla la visibilidad del spinner de carga
-
   public isLoading = true;
 
   constructor(
@@ -21,14 +18,11 @@ export class AppComponent implements OnInit {
     private iconSetService: IconSetService
   ) {
     titleService.setTitle(this.title);
-    // iconSet singleton
     iconSetService.icons = iconSubset as any;
 
-    // Simulación de una carga para probar el spinner
-    setTimeout(() => {
-      this.isLoading = false; // Se detiene el spinner después de 3 segundos
-    }, 2000);
   }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {
+    this.isLoading = false;
+  }
 }

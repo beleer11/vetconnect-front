@@ -1,3 +1,2 @@
-<app-loading-spinner [isLoading]="isLoading" spinnerImage="assets/images/boomerang.gif"></app-loading-spinner>
-
-<router-outlet></router-outlet>
+<app-loading-spinner *ngIf="isLoading"></app-loading-spinner>
+<router-outlet *ngIf="!isLoading"></router-outlet>

@@ -21,6 +21,7 @@ export class GroupModuleComponent implements OnInit {
   public formGroupModule!: FormGroup;
   public action: string = 'save';
   public dataTemp: any = [];
+  public loading: boolean = true;
 
   constructor(
     private moduleService: ModuleService,
@@ -33,6 +34,7 @@ export class GroupModuleComponent implements OnInit {
     this.dataModuleTrasnform = await this.getData();
     this.fieldsTable = this.getFieldsTable();
     this.columnAlignments = this.getColumnAlignments();
+    this.loading = false;
   }
 
   private async getData(): Promise<any> {
@@ -108,6 +110,7 @@ export class GroupModuleComponent implements OnInit {
   }
 
   public saveNewGroupModule(nombre: string) {
+    this.loading = true;
     this.moduleService.sendGroup({ "name": nombre }).subscribe({
       next: (response) => {
         if (response.original.success) {
@@ -118,13 +121,16 @@ export class GroupModuleComponent implements OnInit {
             this.dataModuleTrasnform = [];
           }
 
+          this.loading = false;
           this.showForm = false;
           this.alertMessage('¡Éxito!', response.original.message, 'success');
         } else {
+          this.loading = false;
           this.alertMessage('Advertencia', response.original.message, 'warning');
         }
       },
       error: (error) => {
+        this.loading = false;
         this.alertMessage('Error', 'Hubo un problema al procesar tu solicitud. Por favor, inténtalo de nuevo.', 'error');
       }
     });
