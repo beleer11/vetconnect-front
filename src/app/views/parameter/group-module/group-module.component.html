@@ -1,12 +1,12 @@
 <div class="col-12 col-md-auto d-flex justify-content-end align-items-center mb-2 mt-md-0" *ngIf="!showForm">
-    <button class="btn btn-primary" (click)="!showForm = true">Agregar</button>
+    <button class="btn btn-primary" (click)="addGroupModule()">Agregar</button>
 </div>
 <div class="col-12 col-md-auto d-flex justify-content-start align-items-center mb-2 mt-md-0" *ngIf="showForm">
-    <button class="btn btn-danger text-white" (click)="!showForm = false">Regresar</button>
+    <button class="btn btn-danger text-white" (click)="backToTable()">Regresar</button>
 </div>
-<app-general-table *ngIf="!showForm && dataModule.length > 0" [columns]="fieldsTable"
-    [transformedData]="dataModuleTrasnform" [data]="dataModule" [acciones]="true" [columnAlignments]="columnAlignments"
-    [title]="'Módulos'">
+<app-general-table *ngIf="!showForm" [columns]="fieldsTable" [transformedData]="dataModuleTrasnform" [data]="dataModule"
+    [acciones]="true" [columnAlignments]="columnAlignments" [title]="'Grupo de Módulos'"
+    (actionEvent)="handleAction($event)">
 </app-general-table>
 <c-row *ngIf="showForm">
     <c-col xs>
@@ -45,3 +45,22 @@
         </c-card>
     </c-col>
 </c-row>
+
+<div class="modal fade" id="grupoModeloModal" tabindex="-1" aria-labelledby="grupoModeloModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="grupoModeloModalLabel">Grupo Módelo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Nombre:</strong> <span id="modalNombre"></span></p>
+                <p><strong>Descripción:</strong> <span id="modalDescripcion"></span></p>
+                <p><strong>Fecha de Creación:</strong> <span id="modalFechaCreacion"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>

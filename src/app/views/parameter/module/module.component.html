@@ -1,10 +1,13 @@
-<div class="col-12 col-md-auto d-flex justify-content-end align-items-center mb-2 mt-md-0" *ngIf="showForm">
-    <button class="btn btn-primary" (click)="showForm = true">Agregar</button>
+<div class="col-12 col-md-auto d-flex justify-content-end align-items-center mb-2 mt-md-0" *ngIf="!showForm">
+    <button class="btn btn-primary" (click)="addGroupModule()">Agregar</button>
 </div>
-<app-general-table *ngIf="showForm" [columns]="fieldsTable" [transformedData]="dataModuleTrasnform" [data]="dataModule"
-    [acciones]="true" [columnAlignments]="columnAlignments" [title]="'Módulos'">
+<div class="col-12 col-md-auto d-flex justify-content-start align-items-center mb-2 mt-md-0" *ngIf="showForm">
+    <button class="btn btn-danger text-white" (click)="backToTable()">Regresar</button>
+</div>
+<app-general-table *ngIf="!showForm" [columns]="fieldsTable" [transformedData]="dataModuleTrasnform" [data]="dataModule"
+    [acciones]="true" [columnAlignments]="columnAlignments" [title]="'Módulos'" (actionEvent)="handleAction($event)">
 </app-general-table>
-<c-row *ngIf="!showForm">
+<c-row *ngIf="showForm">
     <c-col xs>
         <c-card class="mb-4">
             <c-card-header>
@@ -43,9 +46,8 @@
                         <div class="mb-3 col-12 col-md-4">
                             <label for="group" class="form-label">Grupo</label>
                             <select id="group" formControlName="group" class="form-select">
-                                <option value="">Seleccionar un grupo</option>
-                                <option value="1">Grupo 1</option>
-                                <option value="2">Grupo 2</option>
+                                <option disabled selected>Seleccionar un grupo</option>
+                                <option *ngFor="let group of groupsModule" [value]="group.id">{{ group.name }}</option>
                             </select>
                             <div *ngIf="formModule.controls['group'].invalid && formModule.controls['group'].touched"
                                 class="invalid-feedback">
@@ -78,3 +80,7 @@
         </c-card>
     </c-col>
 </c-row>
+
+<div id="svg-container" style="display:none;">
+    <svg cIcon [name]="dataTemp.icon" size="3xl" class="icon-svg"></svg>
+</div>

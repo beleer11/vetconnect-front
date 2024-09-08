@@ -6,16 +6,14 @@ import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-root',
-  template: `
-    <app-loading-spinner [isLoading]="isLoading" spinnerImage="assets/my-spinner.gif"></app-loading-spinner>
-    <router-outlet></router-outlet>
-  `,
+  templateUrl: './app.component.html',
 })
 export class AppComponent implements OnInit {
   title = 'VetConnect';
 
   //controla la visibilidad del spinner de carga
-  isLoading = true;
+
+  public isLoading = true;
 
   constructor(
     private router: Router,
@@ -28,8 +26,8 @@ export class AppComponent implements OnInit {
 
     // Simulación de una carga para probar el spinner
     setTimeout(() => {
-      this.isLoading = false; // Se detiene el spinner después de 3 segundos
-    }, 3000);
+      this.isLoading = true; // Se detiene el spinner después de 3 segundos
+    }, 1000);
   }
 
   ngOnInit(): void { }

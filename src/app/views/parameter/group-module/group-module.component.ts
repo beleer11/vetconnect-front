@@ -2,6 +2,9 @@ import { Component, AfterViewInit, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ModuleService } from '../../../services/parameter/module/module.service';
+import Swal from 'sweetalert2';
+import moment from 'moment';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-group-module',
@@ -16,6 +19,8 @@ export class GroupModuleComponent implements OnInit {
   public columnAlignments: any = [];
   public showForm: boolean = false;
   public formGroupModule!: FormGroup;
+  public action: string = 'save';
+  public dataTemp: any = [];
 
   constructor(
     private moduleService: ModuleService,
@@ -35,13 +40,7 @@ export class GroupModuleComponent implements OnInit {
       this.moduleService.getDataGroupModule().subscribe(
         response => {
           this.dataModule = response;
-          const transformedData = response.map((item: any) => {
-            return {
-              id: item.id,
-              Nombre: item.name
-            };
-          });
-          resolve(transformedData);
+          resolve(this.formatedData(response));
         },
         error => reject(error)
       );
@@ -49,11 +48,11 @@ export class GroupModuleComponent implements OnInit {
   }
 
   private getFieldsTable() {
-    return ['Nombre'];
+    return ['Nombre', 'Fecha creación', 'Ultima actualización'];
   }
 
   private getColumnAlignments() {
-    return ['left'];
+    return ['left', 'center', 'center'];
   }
 
   public createForm() {
@@ -64,19 +63,194 @@ export class GroupModuleComponent implements OnInit {
 
   onSubmit() {
     if (this.formGroupModule.valid) {
-      const nombre = this.formGroupModule.get('nombre')?.value;
+      if (this.action === 'save') {
+        this.saveNewGroupModule(this.formGroupModule.get('nombre')?.value);
+      }
 
-      this.moduleService.sendGroup({ "name": nombre }).subscribe({
-        next: (response) => {
-          // Manejar la respuesta del servidor
-          console.log('Grupo enviado con éxito', response);
-        },
-        error: (error) => {
-          // Manejar errores
-          console.error('Error al enviar el grupo', error);
-        }
-      });
+      if (this.action === 'edit') {
+        this.editGroupModule(this.formGroupModule.get('nombre')?.value, this.dataTemp.id);
+      }
     }
+  }
+
+  handleAction(event: { id: number, action: string }) {
+    const { id, action } = event;
+    this.action = action;
+    this.dataTemp = this.dataModule.find((item: any) => item.id === id);
+
+    if (action === "edit") {
+      this.formGroupModule.controls["nombre"].setValue(this.dataTemp.name);
+      this.showForm = true;
+    }
+
+    if (action === "delete") {
+      this.deleteRecord(id);
+    }
+
+    if (action === "view") {
+      this.openModalView(this.dataTemp);
+    }
+
+    if (action === "ban") {
+      this.disableOrEnableRecord(this.dataTemp);
+    }
+  }
+
+  public addGroupModule() {
+    this.showForm = true;
+    this.formGroupModule.reset();
+    this.action = 'save';
+  }
+
+  public backToTable() {
+    this.showForm = false;
+    this.formGroupModule.reset();
+  }
+
+  public saveNewGroupModule(nombre: string) {
+    this.moduleService.sendGroup({ "name": nombre }).subscribe({
+      next: (response) => {
+        if (response.original.success) {
+          this.dataModule = response.original.data;
+          if (Array.isArray(this.dataModule)) {
+            this.dataModuleTrasnform = this.formatedData(this.dataModule);
+          } else {
+            this.dataModuleTrasnform = [];
+          }
+
+          this.showForm = false;
+          this.alertMessage('¡Éxito!', response.original.message, 'success');
+        } else {
+          this.alertMessage('Advertencia', response.original.message, 'warning');
+        }
+      },
+      error: (error) => {
+        this.alertMessage('Error', 'Hubo un problema al procesar tu solicitud. Por favor, inténtalo de nuevo.', 'error');
+      }
+    });
+  }
+
+  public editGroupModule(nombre: string, id: number) {
+    this.moduleService.editGroup(nombre, id).subscribe({
+      next: (response) => {
+        if (response && response.original.data) {
+          this.dataModule = response.original.data;
+
+          if (Array.isArray(this.dataModule)) {
+            this.dataModuleTrasnform = this.formatedData(this.dataModule);
+          } else {
+            this.dataModuleTrasnform = [];
+          }
+
+          this.showForm = false;
+          this.alertMessage('¡Éxito!', response.original.message, 'success');
+        } else {
+          this.alertMessage('Advertencia', response.original.message, 'warning');
+        }
+      },
+      error: (error) => {
+        this.alertMessage('Error', 'Hubo un problema al procesar tu solicitud. Por favor, inténtalo de nuevo.', 'error');
+      }
+    });
+  }
+
+  public formatedData(response: any) {
+    return response.map((item: any) => {
+      return {
+        id: item.id,
+        is_disabled: item.is_disabled,
+        "Nombre": item.name,
+        "Fecha creación": moment(item.created_at).format('DD/MM/YYYY hh:mm:ss A'),
+        "Ultima actualización": moment(item.updated_at).format('DD/MM/YYYY hh:mm:ss A')
+      };
+    });
+  }
+
+  deleteRecord(id: number) {
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: "Esta acción eliminará el registro permanentemente. ¡No podrás revertirlo!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminarlo',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Realizar eliminación del registro
+        this.moduleService.deleteRecordGroupModuleById(id).subscribe({
+          next: (response) => {
+            this.dataModule = response.data;
+            this.dataModuleTrasnform = this.formatedData(this.dataModule);
+            this.alertMessage('¡Eliminado!', 'El registro ha sido eliminado correctamente.', 'success');
+          },
+          error: (error) => {
+            this.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.', 'error');
+          }
+        });
+      }
+    });
+  }
+
+  disableOrEnableRecord(data: any) {
+    const actionText = data.is_disabled === 0 ? 'habilitar' : 'inhabilitar';
+    const confirmButtonText = data.is_disabled === 0 ? 'Sí, habilitar' : 'Sí, inhabilitar';
+    const successMessage = data.is_disabled === 0 ? 'El registro ha sido habilitado correctamente.' : 'El registro ha sido inhabilitado correctamente.';
+
+    Swal.fire({
+      title: `¿Deseas ${actionText} este registro?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#f39c12',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: confirmButtonText,
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const action = data.is_disabled === 0 ? 'enable' : 'disable';
+        this.actionMap[action](data.id).subscribe({
+          next: (response) => {
+            this.dataModule = response.data;
+            this.dataModuleTrasnform = this.formatedData(this.dataModule);
+            this.alertMessage('¡Éxito!', successMessage, 'success');
+          },
+          error: (error) => {
+            this.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.', 'error');
+          }
+        });
+      }
+    });
+
+  }
+
+  private actionMap: { [key: string]: (id: number) => Observable<any> } = {
+    enable: (id: number) => this.moduleService.enableRecordGroupModuleById(id),
+    disable: (id: number) => this.moduleService.disableRecordGroupModuleById(id),
+  };
+
+  openModalView(data: any) {
+    Swal.fire({
+      title: 'Grupo Módulo',
+      html: `
+        <div>
+        <p><strong>Nombre : </strong> <span>${data.name}</span> </p>
+        <p> <strong>Fecha de Creación: </strong> <span>${moment(data.created_at).format('DD/MM / YYYY hh: mm:ss A')}</span></p>
+          <p> <strong>Ultima actualización: </strong> <span>${moment(data.updated_at).format('DD/MM / YYYY hh: mm:ss A')}</span></p>
+            </div>
+              `,
+      icon: 'info',
+      confirmButtonText: 'Cerrar'
+    });
+  }
+
+  public alertMessage(title: any, text: any, icon: any) {
+    Swal.fire({
+      title: title,
+      text: text,
+      icon: icon,
+      confirmButtonText: 'OK'
+    });
   }
 
 }
