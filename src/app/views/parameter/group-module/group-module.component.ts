@@ -32,7 +32,6 @@ export class GroupModuleComponent implements OnInit {
     this.fieldsTable = this.getFieldsTable();
     this.columnAlignments = this.getColumnAlignments();
     this.createForm();
-    this.loading = false;
   }
 
   private async getData(): Promise<any> {
@@ -59,6 +58,7 @@ export class GroupModuleComponent implements OnInit {
     this.formGroupModule = this.fb.group({
       nombre: ['', [Validators.required, Validators.minLength(3)]],
     });
+    this.loading = false;
   }
 
   onSubmit() {

@@ -32,6 +32,7 @@ export class ModuleComponent implements AfterViewInit {
   public groupsModule: any;
   public action: string = 'save';
   public dataTemp: any = [];
+  public loading: boolean = true;
 
   constructor(
     private moduleService: ModuleService,
@@ -43,9 +44,9 @@ export class ModuleComponent implements AfterViewInit {
   }
 
   async ngOnInit(): Promise<void> {
-    this.createForm();
     this.icons = this.getIconsView('cil');
     this.dataModuleTrasnform = await this.getData();
+    this.createForm();
   }
 
   ngAfterViewInit(): void {
@@ -86,6 +87,7 @@ export class ModuleComponent implements AfterViewInit {
       url: ['', Validators.required],
       group: ['', Validators.required],
     });
+    this.loading = false;
   }
 
   onSubmit() {
@@ -173,6 +175,7 @@ export class ModuleComponent implements AfterViewInit {
   }
 
   public saveNewModule(data: any) {
+    this.loading = true;
     this.moduleService.sendModule(data).subscribe({
       next: (response) => {
         if (response.original.success) {
@@ -184,21 +187,25 @@ export class ModuleComponent implements AfterViewInit {
             this.dataModuleTrasnform = [];
           }
 
+          this.loading = false;
           this.showForm = false;
           this.formModule.reset();
           this.selectedIcon = null;
           this.alertMessage('¡Éxito!', response.original.message, 'success');
         } else {
+          this.loading = false;
           this.alertMessage('Advertencia', response.original.message, 'warning');
         }
       },
       error: (error) => {
+        this.loading = false;
         this.alertMessage('Error', 'Hubo un problema al procesar tu solicitud. Por favor, inténtalo de nuevo.', 'error');
       }
     });
   }
 
   public editModule(data: any, id: number) {
+    this.loading = true;
     this.moduleService.editModule(data, id).subscribe({
       next: (response) => {
         if (response && response.original.data) {
@@ -209,15 +216,18 @@ export class ModuleComponent implements AfterViewInit {
           } else {
             this.dataModuleTrasnform = [];
           }
+          this.loading = false;
           this.showForm = false;
           this.formModule.reset();
           this.selectedIcon = null;
           this.alertMessage('¡Éxito!', response.original.message, 'success');
         } else {
+          this.loading = false;
           this.alertMessage('Advertencia', response.original.message, 'warning');
         }
       },
       error: (error) => {
+        this.loading = false;
         this.alertMessage('Error', 'Hubo un problema al procesar tu solicitud. Por favor, inténtalo de nuevo.', 'error');
       }
     });
@@ -271,14 +281,16 @@ export class ModuleComponent implements AfterViewInit {
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
-        // Realizar eliminación del registro
+        this.loading = true;
         this.moduleService.deleteRecordModuleById(id).subscribe({
           next: (response) => {
             this.dataModule = response.data;
             this.dataModuleTrasnform = this.formatedData(this.dataModule);
+            this.loading = false;
             this.alertMessage('¡Eliminado!', 'El registro ha sido eliminado correctamente.', 'success');
           },
           error: (error) => {
+            this.loading = false;
             this.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.', 'error');
           }
         });
@@ -306,14 +318,17 @@ export class ModuleComponent implements AfterViewInit {
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
+        this.loading = true;
         const action = data.is_disabled === 0 ? 'enable' : 'disable';
         this.actionMap[action](data.id).subscribe({
           next: (response) => {
             this.dataModule = response.data;
             this.dataModuleTrasnform = this.formatedData(this.dataModule);
+            this.loading = false;
             this.alertMessage('¡Éxito!', successMessage, 'success');
           },
           error: (error) => {
+            this.loading = false;
             this.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.', 'error');
           }
         });

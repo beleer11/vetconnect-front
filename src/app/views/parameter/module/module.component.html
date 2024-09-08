@@ -1,3 +1,4 @@
+<app-loading-spinner *ngIf="loading"></app-loading-spinner>
 <div class="col-12 col-md-auto d-flex justify-content-end align-items-center mb-2 mt-md-0" *ngIf="!showForm">
     <button class="btn btn-primary" (click)="addGroupModule()">Agregar</button>
 </div>
@@ -66,6 +67,7 @@
                                     [ngClass]="{'selected': isIconSelected(toKebabCase(icon[0]))}">
                                     <svg cIcon [name]="icon[0]" [title]="icon[0]" size="3xl" class="icon-svg"
                                         title=""></svg>
+                                    <div>{{ toKebabCase(icon[0]) }}</div>
                                 </c-col>
                             </c-row>
                         </div>
