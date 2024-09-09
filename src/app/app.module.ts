@@ -13,7 +13,9 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ChartjsModule } from '@coreui/angular-chartjs';
 import { WidgetsModule } from './views/widgets/widgets.module';
-
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatCheckbox } from '@angular/material/checkbox';
+import { MatTableModule } from '@angular/material/table';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
@@ -62,6 +64,7 @@ import {
 import { IconModule, IconSetService } from '@coreui/icons-angular';
 import { iconSubset } from './icons/icon-subset';
 import { RouterModule } from '@angular/router';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 const APP_CONTAINERS = [
   DefaultFooterComponent,
@@ -114,6 +117,9 @@ const APP_CONTAINERS = [
     CommonModule,
     ChartjsModule,
     WidgetsModule,
+    MatExpansionModule,
+    MatCheckbox,
+    MatTableModule,
     RouterModule.forRoot([], { useHash: false }),
   ],
   providers: [
@@ -131,6 +137,7 @@ const APP_CONTAINERS = [
     },
     IconSetService,
     Title,
+    provideAnimationsAsync(),
   ],
   bootstrap: [AppComponent],
 })

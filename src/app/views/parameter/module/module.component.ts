@@ -363,4 +363,26 @@ export class ModuleComponent implements AfterViewInit {
     });
   }
 
+  openInformation() {
+    Swal.fire({
+      title: 'Información Importante',
+      html: `
+        <div id="custom-icon-container">
+          <p>Debe ingresar la url de la ruta para el módulo ejemplo: /home. </p>
+          <p>Esta ruta se debe parametrizar en el código</p>
+        </div>
+      `,
+      icon: 'info',
+      confirmButtonText: 'Cerrar',
+      didOpen: () => {
+        const iconPlaceholder = document.getElementById('icon-placeholder');
+        const svgContainer = document.getElementById('svg-container');
+
+        if (iconPlaceholder && svgContainer) {
+          iconPlaceholder.innerHTML = svgContainer.innerHTML;
+        }
+      }
+    });
+  }
+
 }
