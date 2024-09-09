@@ -11,6 +11,7 @@ import { ModuleComponent } from './views/parameter/module/module.component';
 import { GroupModuleComponent } from './views/parameter/group-module/group-module.component';
 import { DashboardComponent } from './views/dashboard/dashboard.component';
 import { PermissionComponent } from './views/parameter/permission/permission.component';
+import { CompanyComponent } from './views/parameter/company/company.component';
 
 // Define las rutas directamente aquí
 const routes: Routes = [
@@ -48,6 +49,10 @@ const routes: Routes = [
       {
         path: 'permission',
         component: PermissionComponent
+      },
+      {
+        path: 'company',
+        component: CompanyComponent
       }
     ],
   },
