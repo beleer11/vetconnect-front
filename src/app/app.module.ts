@@ -82,7 +82,6 @@ const APP_CONTAINERS = [
     UserComponent,
     DashboardComponent,
     PermissionComponent,
-    CompanyComponent,
   ],
   imports: [
     BrowserModule,
