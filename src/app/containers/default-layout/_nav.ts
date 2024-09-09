@@ -33,5 +33,14 @@ export const navItems: INavData[] = [
     name: 'Permisos',
     url: '/permission',
     iconComponent: { name: 'cil-door' }
+  },
+  {
+    title: true,
+    name: 'Parametros'
+  },
+  {
+    name: 'Compañía',
+    url: '/company', //ruta del componente que se instacia en routing module
+    iconComponent: { name: 'cil-industry' }
   }
 ];
