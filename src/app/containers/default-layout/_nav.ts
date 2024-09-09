@@ -17,7 +17,7 @@ export const navItems: INavData[] = [
   },
   {
     title: true,
-    name: 'Configuración'
+    name: 'Parametros'
   },
   {
     name: 'Módulos',
@@ -36,7 +36,7 @@ export const navItems: INavData[] = [
   },
   {
     title: true,
-    name: 'Parametros'
+    name: 'Configuración'
   },
   {
     name: 'Compañía',

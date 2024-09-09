@@ -30,7 +30,7 @@ import { UserComponent } from './views/user/user/user.component';
 import { DashboardComponent } from './views/dashboard/dashboard.component';
 import { PermissionComponent } from './views/parameter/permission/permission.component';
 import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinner.component';
-import { CompanyComponent } from './views/parameter/company/company.component';
+import { CompanyComponent } from './views/settings/company/company.component';
 
 // Import containers
 import {
