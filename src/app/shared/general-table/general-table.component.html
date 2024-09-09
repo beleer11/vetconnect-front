@@ -23,7 +23,7 @@
                 <ng-container *ngIf="pagedData.length > 0; else noData">
                     <div class="table-responsive">
                         <table [hover]="true" [responsive]="true" [striped]="true" align="middle" cTable
-                            class="mb-0 border table-user">
+                            class="mb-0 border table">
                             <thead cTableColor="light">
                                 <tr>
                                     <th *ngIf="pagedData.length > 0;" style="text-align: center;">#</th>
@@ -117,14 +117,15 @@
                 </ng-container>
                 <!-- Template para cuando no hay datos -->
                 <ng-template #noData>
-                    <c-card class="text-center p-4">
+                    <c-card class="text-center p-4 no-data-card">
                         <c-card-body>
-                            <svg cIcon name="cil-info" width="50" height="50" class="mb-3"></svg>
+                            <img src="../../../assets/images/logo-no hay datos.gif" alt="No hay datos">
                             <h5>No hay datos disponibles</h5>
                             <p class="mb-3">¡Parece que no tienes ningún registro! Puedes agregar uno nuevo.</p>
                         </c-card-body>
                     </c-card>
                 </ng-template>
+
             </c-card-body>
         </c-card>
     </c-col>

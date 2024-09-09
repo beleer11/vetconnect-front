@@ -26,9 +26,9 @@ import { ModuleComponent } from './views/parameter/module/module.component';
 import { GeneralTableComponent } from './shared/general-table/general-table.component';
 import { UserComponent } from './views/user/user/user.component';
 import { DashboardComponent } from './views/dashboard/dashboard.component';
-
-//spinner loading
+import { PermissionComponent } from './views/parameter/permission/permission.component';
 import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinner.component'
+
 // Import containers
 import {
   DefaultFooterComponent,
@@ -79,7 +79,8 @@ const APP_CONTAINERS = [
     ModuleComponent,
     GeneralTableComponent,
     UserComponent,
-    DashboardComponent
+    DashboardComponent,
+    PermissionComponent
   ],
   imports: [
     BrowserModule,

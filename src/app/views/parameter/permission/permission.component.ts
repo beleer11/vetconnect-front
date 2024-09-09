@@ -1,49 +1,60 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ModuleService } from '../../../services/parameter/module/module.service';
-import Swal from 'sweetalert2';
+import { PermissionService } from '../../../services/parameter/permission/permission.service';
 import moment from 'moment';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import Swal from 'sweetalert2';
 import { Observable } from 'rxjs';
 
 @Component({
-  selector: 'app-group-module',
-  templateUrl: './group-module.component.html',
-  styleUrls: ['./group-module.component.css'],
+  selector: 'app-permission',
+  templateUrl: './permission.component.html',
+  styleUrl: './permission.component.css'
 })
-
-export class GroupModuleComponent implements OnInit {
-  public dataModule: any = [];
+export class PermissionComponent implements OnInit {
+  public loading: boolean = true;
   public dataModuleTrasnform: any = [];
+  public dataModule: any = [];
   public fieldsTable: any = [];
   public columnAlignments: any = [];
   public showForm: boolean = false;
-  public formGroupModule!: FormGroup;
+  public formPermission!: FormGroup;
   public action: string = 'save';
   public dataTemp: any = [];
-  public loading: boolean = true;
 
   constructor(
-    private moduleService: ModuleService,
+    private permissionService: PermissionService,
     private fb: FormBuilder
   ) { }
 
   async ngOnInit(): Promise<void> {
     this.dataModuleTrasnform = await this.getData();
+    console.log(this.dataModuleTrasnform)
     this.fieldsTable = this.getFieldsTable();
     this.columnAlignments = this.getColumnAlignments();
     this.createForm();
-    this.loading = false;
   }
 
   private async getData(): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.moduleService.getDataGroupModule().subscribe(
+      this.permissionService.getDataPermission().subscribe(
         response => {
           this.dataModule = response;
           resolve(this.formatedData(response));
         },
         error => reject(error)
       );
+    });
+  }
+
+  public formatedData(response: any) {
+    return response.map((item: any) => {
+      return {
+        id: item.id,
+        is_disabled: item.is_disabled,
+        "Nombre": item.name,
+        "Fecha creación": moment(item.created_at).format('DD/MM/YYYY hh:mm:ss A'),
+        "Ultima actualización": moment(item.updated_at).format('DD/MM/YYYY hh:mm:ss A')
+      };
     });
   }
 
@@ -56,21 +67,21 @@ export class GroupModuleComponent implements OnInit {
   }
 
   public createForm() {
-    this.formGroupModule = this.fb.group({
+    this.formPermission = this.fb.group({
       nombre: ['', [Validators.required, Validators.minLength(3)]],
     });
+    this.loading = false;
   }
 
-  onSubmit() {
-    if (this.formGroupModule.valid) {
-      if (this.action === 'save') {
-        this.saveNewGroupModule(this.formGroupModule.get('nombre')?.value);
-      }
+  public addNewPermission() {
+    this.showForm = true;
+    this.formPermission.reset();
+    this.action = 'save';
+  }
 
-      if (this.action === 'edit') {
-        this.editGroupModule(this.formGroupModule.get('nombre')?.value, this.dataTemp.id);
-      }
-    }
+  public backToTable() {
+    this.showForm = false;
+    this.formPermission.reset();
   }
 
   handleAction(event: { id: number, action: string }) {
@@ -79,7 +90,7 @@ export class GroupModuleComponent implements OnInit {
     this.dataTemp = this.dataModule.find((item: any) => item.id === id);
 
     if (action === "edit") {
-      this.formGroupModule.controls["nombre"].setValue(this.dataTemp.name);
+      this.formPermission.controls["nombre"].setValue(this.dataTemp.name);
       this.showForm = true;
     }
 
@@ -88,7 +99,7 @@ export class GroupModuleComponent implements OnInit {
     }
 
     if (action === "view") {
-      this.openModalView(this.dataTemp);
+      //this.openModalView(this.dataTemp);
     }
 
     if (action === "ban") {
@@ -96,20 +107,21 @@ export class GroupModuleComponent implements OnInit {
     }
   }
 
-  public addGroupModule() {
-    this.showForm = true;
-    this.formGroupModule.reset();
-    this.action = 'save';
+  onSubmit() {
+    if (this.formPermission.valid) {
+      if (this.action === 'save') {
+        this.saveNewPermission(this.formPermission.get('nombre')?.value);
+      }
+
+      if (this.action === 'edit') {
+        this.editPermission(this.formPermission.get('nombre')?.value, this.dataTemp.id);
+      }
+    }
   }
 
-  public backToTable() {
-    this.showForm = false;
-    this.formGroupModule.reset();
-  }
-
-  public saveNewGroupModule(nombre: string) {
+  public saveNewPermission(nombre: string) {
     this.loading = true;
-    this.moduleService.sendGroup({ "name": nombre }).subscribe({
+    this.permissionService.sendPermission({ "name": nombre }).subscribe({
       next: (response) => {
         if (response.original.success) {
           this.dataModule = response.original.data;
@@ -119,8 +131,8 @@ export class GroupModuleComponent implements OnInit {
             this.dataModuleTrasnform = [];
           }
 
-          this.loading = false;
           this.showForm = false;
+          this.loading = false;
           this.alertMessage('¡Éxito!', response.original.message, 'success');
         } else {
           this.loading = false;
@@ -134,9 +146,9 @@ export class GroupModuleComponent implements OnInit {
     });
   }
 
-  public editGroupModule(nombre: string, id: number) {
+  public editPermission(nombre: string, id: number) {
     this.loading = true;
-    this.moduleService.editGroup(nombre, id).subscribe({
+    this.permissionService.editPermission({ "name": nombre }, id).subscribe({
       next: (response) => {
         if (response && response.original.data) {
           this.dataModule = response.original.data;
@@ -162,15 +174,12 @@ export class GroupModuleComponent implements OnInit {
     });
   }
 
-  public formatedData(response: any) {
-    return response.map((item: any) => {
-      return {
-        id: item.id,
-        is_disabled: item.is_disabled,
-        "Nombre": item.name,
-        "Fecha creación": moment(item.created_at).format('DD/MM/YYYY hh:mm:ss A'),
-        "Ultima actualización": moment(item.updated_at).format('DD/MM/YYYY hh:mm:ss A')
-      };
+  public alertMessage(title: any, text: any, icon: any) {
+    Swal.fire({
+      title: title,
+      text: text,
+      icon: icon,
+      confirmButtonText: 'OK'
     });
   }
 
@@ -187,7 +196,7 @@ export class GroupModuleComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.loading = true;
-        this.moduleService.deleteRecordGroupModuleById(id).subscribe({
+        this.permissionService.deleteRecordById(id).subscribe({
           next: (response) => {
             this.dataModule = response.data;
             this.dataModuleTrasnform = this.formatedData(this.dataModule);
@@ -237,32 +246,9 @@ export class GroupModuleComponent implements OnInit {
   }
 
   private actionMap: { [key: string]: (id: number) => Observable<any> } = {
-    enable: (id: number) => this.moduleService.enableRecordGroupModuleById(id),
-    disable: (id: number) => this.moduleService.disableRecordGroupModuleById(id),
+    enable: (id: number) => this.permissionService.enableRecordById(id),
+    disable: (id: number) => this.permissionService.disableRecordById(id),
   };
 
-  openModalView(data: any) {
-    Swal.fire({
-      title: 'Grupo Módulo',
-      html: `
-        <div>
-        <p><strong>Nombre : </strong> <span>${data.name}</span> </p>
-        <p> <strong>Fecha de Creación: </strong> <span>${moment(data.created_at).format('DD/MM / YYYY hh: mm:ss A')}</span></p>
-          <p> <strong>Ultima actualización: </strong> <span>${moment(data.updated_at).format('DD/MM / YYYY hh: mm:ss A')}</span></p>
-            </div>
-              `,
-      icon: 'info',
-      confirmButtonText: 'Cerrar'
-    });
-  }
-
-  public alertMessage(title: any, text: any, icon: any) {
-    Swal.fire({
-      title: title,
-      text: text,
-      icon: icon,
-      confirmButtonText: 'OK'
-    });
-  }
 
 }

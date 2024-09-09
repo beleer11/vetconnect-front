@@ -17,7 +17,7 @@ export const navItems: INavData[] = [
   },
   {
     title: true,
-    name: 'Parametros'
+    name: 'Configuración'
   },
   {
     name: 'Módulos',
@@ -28,5 +28,10 @@ export const navItems: INavData[] = [
     name: 'Grupo de Módulo',
     url: '/group-module',
     iconComponent: { name: 'cil-object-group' }
+  },
+  {
+    name: 'Permisos',
+    url: '/permission',
+    iconComponent: { name: 'cil-door' }
   }
 ];

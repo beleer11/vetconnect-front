@@ -62,6 +62,19 @@ th .sort-icon ng-container {
     margin: 0 5px;
 }
 
+.no-data-card {
+    text-align: center;
+}
+
+.no-data-card img {
+    width: 200px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    filter: grayscale(100%) brightness(0%);
+}
+
+
 /* Estilos para pantallas pequeñas */
 @media (max-width: 576px) {
 
