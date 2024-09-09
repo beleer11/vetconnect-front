@@ -16,6 +16,9 @@
   width: 250px;
 }
 
-.second-image {
-  width: 400px;
+.random-text {
+  margin-top: 10px;
+  font-size: 1.2rem;
+  color: #fff;
+  text-align: center;
 }
