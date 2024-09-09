@@ -26,4 +26,12 @@ export class UserService {
   getDataUser(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/user/index`, this.httpOptions);
   }
+
+  generateUsername(nombre: string): Observable<string> {
+    return this.http.get<string>(`${this.apiUrl}/user/generate-username?name=${nombre}`, this.httpOptions);
+  }
+
+  listPermission() {
+    return this.http.get<string>(`${this.apiUrl}/user/listPermission`, this.httpOptions);
+  }
 }

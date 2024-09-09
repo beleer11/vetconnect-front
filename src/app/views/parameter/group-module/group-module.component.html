@@ -2,9 +2,6 @@
 <div class="col-12 col-md-auto d-flex justify-content-end align-items-center mb-2 mt-md-0" *ngIf="!showForm">
   <button class="btn btn-primary" (click)="addGroupModule()">Agregar</button>
 </div>
-<div class="col-12 col-md-auto d-flex justify-content-start align-items-center mb-2 mt-md-0" *ngIf="showForm">
-  <button class="btn btn-danger text-white" (click)="backToTable()">Regresar</button>
-</div>
 <app-general-table *ngIf="!showForm" [columns]="fieldsTable" [transformedData]="dataModuleTrasnform" [data]="dataModule"
   [acciones]="true" [columnAlignments]="columnAlignments" [title]="'Grupo de Módulos'"
   (actionEvent)="handleAction($event)">
@@ -16,7 +13,7 @@
         <div class="container">
           <div class="row justify-content-between align-items-center mb-2">
             <div class="col-12 col-md-auto text-center text-md-start pt-2">
-              <h5 class="mb-0">Agregar permiso</h5>
+              <h1 class="mb-0">Agregar permiso</h1>
             </div>
           </div>
         </div>
@@ -25,7 +22,7 @@
         <form [formGroup]="formGroupModule" (ngSubmit)="onSubmit()">
           <div class="d-flex flex-column">
             <div class="form-group mb-0">
-              <label for="nombre">Nombre</label>
+              <label for="nombre" class="bolder">Nombre</label>
               <input id="nombre" formControlName="nombre" type="text" class="form-control"
                 [ngClass]="{ 'is-invalid': formGroupModule.get('nombre')?.invalid && (formGroupModule.get('nombre')?.touched || formGroupModule.get('nombre')?.dirty) }" />
               <div
@@ -42,6 +39,9 @@
             </div>
           </div>
         </form>
+        <div class="d-flex justify-content-center mt-3">
+          <button class="btn btn-danger text-white" (click)="backToTable()">Atrás</button>
+        </div>
       </c-card-body>
     </c-card>
   </c-col>

@@ -21,3 +21,27 @@ $enable-rtl: true;
 
 // If you want to add something do it here
 @import "custom";
+
+.bolder {
+  font-weight: 600;
+}
+
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-size: 16px !important;
+}
+
+.font-size-16 {
+  font-size: 16px !important;
+}
+
+@media (max-width: 576px) {
+  body {
+    font-size: 14px !important;
+  }
+}
