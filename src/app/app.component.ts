@@ -6,10 +6,11 @@ import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-root',
-  template: '<router-outlet></router-outlet>',
+  templateUrl: './app.component.html',
 })
 export class AppComponent implements OnInit {
   title = 'VetConnect';
+  public isLoading = true;
 
   constructor(
     private router: Router,
@@ -17,9 +18,11 @@ export class AppComponent implements OnInit {
     private iconSetService: IconSetService
   ) {
     titleService.setTitle(this.title);
-    // iconSet singleton
     iconSetService.icons = iconSubset as any;
+
   }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {
+    this.isLoading = false;
+  }
 }

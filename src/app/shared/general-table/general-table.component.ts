@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Input, OnInit, OnChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit, OnChanges, Output, EventEmitter } from '@angular/core';
 
 @Component({
   selector: 'app-general-table',
@@ -13,11 +13,12 @@ export class GeneralTableComponent implements OnInit, OnChanges {
   @Input() acciones: boolean = false;
   @Input() columnAlignments: string[] = [];
   @Input() title: string = '';
+  @Output() actionEvent: EventEmitter<{ id: number, action: string }> = new EventEmitter();
 
   public searchValue: string = '';
   public filteredData: any[] = [];
   public currentSortColumn: string = '';
-  public sortOrder: 'asc' | 'desc' = 'desc';
+  public sortOrder: 'asc' | 'desc' = 'asc';
 
   // Paginador
   public currentPage: number = 1;
@@ -30,9 +31,6 @@ export class GeneralTableComponent implements OnInit, OnChanges {
   constructor(private cdr: ChangeDetectorRef) { }
 
   ngOnInit(): void {
-    if (this.columns.length > 0) {
-      this.currentSortColumn = this.columns[0];
-    }
     this.applySortingAndPagination();
   }
 
@@ -72,7 +70,7 @@ export class GeneralTableComponent implements OnInit, OnChanges {
 
 
   sortColumn(column: string): void {
-    if (column === 'Foto') {
+    if (column === 'Foto' || column === 'Icono') {
       return;
     }
     if (this.currentSortColumn === column) {
@@ -135,5 +133,9 @@ export class GeneralTableComponent implements OnInit, OnChanges {
     this.pageSize = +event.target.value;
     this.currentPage = 1;
     this.applySortingAndPagination();
+  }
+
+  onAction(id: number, action: string): void {
+    this.actionEvent.emit({ id, action });
   }
 }

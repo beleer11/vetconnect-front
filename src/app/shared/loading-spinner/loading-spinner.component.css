@@ -1,0 +1,23 @@
+.spinner-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(22, 21, 21, 0.9);
+  z-index: 9999;
+}
+
+.spinner-image {
+  width: 250px;
+}
+
+.random-text {
+  font-size: 1.2rem;
+  color: #fff;
+  text-align: center;
+}

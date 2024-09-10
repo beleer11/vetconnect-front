@@ -10,17 +10,28 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { NgScrollbarModule } from 'ngx-scrollbar';
 import { FormsModule } from '@angular/forms';
-
-// Import routing module
+import { CommonModule } from '@angular/common';
+import { ChartjsModule } from '@coreui/angular-chartjs';
+import { WidgetsModule } from './views/widgets/widgets.module';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatCheckbox } from '@angular/material/checkbox';
+import { MatTableModule } from '@angular/material/table';
 import { AppRoutingModule } from './app-routing.module';
-
-// Import app component
 import { AppComponent } from './app.component';
 
 //pages
 import { LoginComponent } from './pages/login/login.component';
 import { Page404Component } from './pages/page404/page404.component';
 import { Page500Component } from './pages/page500/page500.component';
+import { GroupModuleComponent } from './views/settings/group-module/group-module.component';
+import { ModuleComponent } from './views/settings/module/module.component';
+import { GeneralTableComponent } from './shared/general-table/general-table.component';
+import { UserComponent } from './views/user/user/user.component';
+import { DashboardComponent } from './views/dashboard/dashboard.component';
+import { PermissionComponent } from './views/user/permission/permission.component';
+import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinner.component';
+import { CompanyComponent } from './views/parameter/company/company.component';
+import { RolComponent } from './views/user/rol/rol.component';
 
 // Import containers
 import {
@@ -48,18 +59,19 @@ import {
   SidebarModule,
   TabsModule,
   UtilitiesModule,
+  TableModule
 } from '@coreui/angular';
 
 import { IconModule, IconSetService } from '@coreui/icons-angular';
 import { iconSubset } from './icons/icon-subset';
 import { RouterModule } from '@angular/router';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 const APP_CONTAINERS = [
   DefaultFooterComponent,
   DefaultHeaderComponent,
   DefaultLayoutComponent,
 ];
-
 @NgModule({
   declarations: [
     AppComponent,
@@ -67,6 +79,15 @@ const APP_CONTAINERS = [
     LoginComponent,
     Page404Component,
     Page500Component,
+    LoadingSpinnerComponent,
+    GroupModuleComponent,
+    ModuleComponent,
+    GeneralTableComponent,
+    UserComponent,
+    DashboardComponent,
+    PermissionComponent,
+    CompanyComponent,
+    RolComponent
   ],
   imports: [
     BrowserModule,
@@ -95,6 +116,13 @@ const APP_CONTAINERS = [
     CardModule,
     NgScrollbarModule,
     HttpClientModule,
+    TableModule,
+    CommonModule,
+    ChartjsModule,
+    WidgetsModule,
+    MatExpansionModule,
+    MatCheckbox,
+    MatTableModule,
     RouterModule.forRoot([], { useHash: false }),
   ],
   providers: [
@@ -112,6 +140,7 @@ const APP_CONTAINERS = [
     },
     IconSetService,
     Title,
+    provideAnimationsAsync(),
   ],
   bootstrap: [AppComponent],
 })

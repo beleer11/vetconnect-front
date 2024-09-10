@@ -14,6 +14,16 @@
     right: 0;
 }
 
+/*
+tr{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  display: table;
+}
+  */
+
 th {
     cursor: pointer;
     position: relative;
@@ -50,4 +60,45 @@ th .sort-icon ng-container {
 
 .pagination button {
     margin: 0 5px;
+}
+
+.no-data-card {
+    text-align: center;
+}
+
+.no-data-card img {
+    width: 200px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    filter: grayscale(100%) brightness(0%);
+}
+
+
+/* Estilos para pantallas pequeñas */
+@media (max-width: 576px) {
+
+    .pagination {
+        font-size: 12px;
+        text-align: center;
+    }
+
+    .pagination button {
+        padding: 0.25rem 0.5rem;
+    }
+
+}
+
+/* Estilos para pantallas medianas (tablets) */
+@media (min-width: 576px) and (max-width: 768px) {
+
+    .pagination {
+        font-size: 14px;
+        text-align: center;
+    }
+
+    .pagination button {
+        padding: 0.5rem 1rem;
+    }
+
 }

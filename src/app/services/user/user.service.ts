@@ -9,6 +9,9 @@ import { environment } from 'src/environments/environment';
 export class UserService {
 
   private apiUrl: string = environment.apiUrl;
+  private opcion: string = '';
+  private id: number = 0;
+  private data: any = null;
 
   private accessToken = localStorage
     .getItem('access_token')
@@ -23,7 +26,42 @@ export class UserService {
 
   constructor(private http: HttpClient) { }
 
+  /** Usuarios */
   getDataUser(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/user/getData`, this.httpOptions);
+    return this.http.get<any>(`${this.apiUrl}/user/index`, this.httpOptions);
   }
+
+  generateUsername(nombre: string): Observable<string> {
+    return this.http.get<string>(`${this.apiUrl}/user/generate-username?name=${nombre}`, this.httpOptions);
+  }
+
+  listPermission() {
+    return this.http.get<string>(`${this.apiUrl}/user/listPermission`, this.httpOptions);
+  }
+
+  /** Roles */
+
+  getDataRoles(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/rol/index`, this.httpOptions);
+  }
+
+  getPermissionByRol(id: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/permission/getPermissionByRol/${id}`, this.httpOptions);
+  }
+
+  sendRol(data: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/rol/setData`, data, this.httpOptions);
+  }
+
+  editRol(data: any, id: number): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/rol/editData/${id}`, data, this.httpOptions);
+  }
+
+
+  /** Getter Setter Rol */
+
+  public setData(data: any) {
+    this.data = data;
+  }
+
 }

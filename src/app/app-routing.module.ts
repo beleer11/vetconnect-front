@@ -1,12 +1,20 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { DefaultLayoutComponent } from './containers';
+import { DefaultLayoutComponent } from './containers/default-layout/default-layout.component';
 import { Page404Component } from './pages/page404/page404.component';
 import { Page500Component } from './pages/page500/page500.component';
 import { LoginComponent } from './pages/login/login.component';
 import { AuthGuard } from './guard/auth.guard';
+import { UserComponent } from './views/user/user/user.component';
+import { ModuleComponent } from './views/settings/module/module.component';
+import { GroupModuleComponent } from './views/settings/group-module/group-module.component';
+import { DashboardComponent } from './views/dashboard/dashboard.component';
+import { PermissionComponent } from './views/user/permission/permission.component';
+import { CompanyComponent } from './views/parameter/company/company.component';
+import { RolComponent } from './views/user/rol/rol.component';
 
+// Define las rutas directamente aquí
 const routes: Routes = [
   {
     path: '',
@@ -25,67 +33,32 @@ const routes: Routes = [
     children: [
       {
         path: 'dashboard',
-        loadChildren: () =>
-          import('./views/dashboard/dashboard.module').then(
-            (m) => m.DashboardModule
-          ),
+        component: DashboardComponent
       },
       {
         path: 'user',
-        loadChildren: () =>
-          import('./views/user/user.module').then(
-            (m) => m.UserModule
-          ),
+        component: UserComponent
+      },
+      {
+        path: 'rol',
+        component: RolComponent
       },
       {
         path: 'module',
-        loadChildren: () =>
-          import('./views/parameter/parameter.module').then(
-            (m) => m.ParameterModule
-          ),
+        component: ModuleComponent
       },
       {
-        path: 'theme',
-        loadChildren: () =>
-          import('./views/theme/theme.module').then((m) => m.ThemeModule),
+        path: 'group-module',
+        component: GroupModuleComponent
       },
       {
-        path: 'base',
-        loadChildren: () =>
-          import('./views/base/base.module').then((m) => m.BaseModule),
+        path: 'permission',
+        component: PermissionComponent
       },
       {
-        path: 'buttons',
-        loadChildren: () =>
-          import('./views/buttons/buttons.module').then((m) => m.ButtonsModule),
-      },
-      {
-        path: 'forms',
-        loadChildren: () =>
-          import('./views/forms/forms.module').then((m) => m.CoreUIFormsModule),
-      },
-      {
-        path: 'charts',
-        loadChildren: () =>
-          import('./views/charts/charts.module').then((m) => m.ChartsModule),
-      },
-      {
-        path: 'icons',
-        loadChildren: () =>
-          import('./views/icons/icons.module').then((m) => m.IconsModule),
-      },
-      {
-        path: 'notifications',
-        loadChildren: () =>
-          import('./views/notifications/notifications.module').then(
-            (m) => m.NotificationsModule
-          ),
-      },
-      {
-        path: 'widgets',
-        loadChildren: () =>
-          import('./views/widgets/widgets.module').then((m) => m.WidgetsModule),
-      },
+        path: 'company',
+        component: CompanyComponent
+      }
     ],
   },
   { path: 'login', component: LoginComponent },
