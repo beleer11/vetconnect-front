@@ -7,11 +7,11 @@ import { Page500Component } from './pages/page500/page500.component';
 import { LoginComponent } from './pages/login/login.component';
 import { AuthGuard } from './guard/auth.guard';
 import { UserComponent } from './views/user/user/user.component';
-import { ModuleComponent } from './views/parameter/module/module.component';
-import { GroupModuleComponent } from './views/parameter/group-module/group-module.component';
+import { ModuleComponent } from './views/settings/module/module.component';
+import { GroupModuleComponent } from './views/settings/group-module/group-module.component';
 import { DashboardComponent } from './views/dashboard/dashboard.component';
 import { PermissionComponent } from './views/user/permission/permission.component';
-import { CompanyComponent } from './views/settings/company/company.component';
+import { CompanyComponent } from './views/parameter/company/company.component';
 import { RolComponent } from './views/user/rol/rol.component';
 
 // Define las rutas directamente aquí
