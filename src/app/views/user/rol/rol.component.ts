@@ -62,6 +62,7 @@ export class RolComponent implements OnInit {
     this.dataTemp = this.dataModule.find((item: any) => item.id === id);
 
     if (action === "edit") {
+      this.loading = true;
       this.formRol.controls["nombre"].setValue(this.dataTemp.name);
       this.formRol.controls["description"].setValue(this.dataTemp.description);
       this.userService.getPermissionByRol(this.dataTemp.id).subscribe(
@@ -239,12 +240,6 @@ export class RolComponent implements OnInit {
     return res;
   }
 
-  /**
-   * @method checkedPermiso
-   * @param permiso
-   * @returns true / false
-   * @funcionalidad Se encarga de checkear los permisos seleccionados al componente
-   */
   public checkedPermiso(moduleId: number, permisoId: number): boolean {
     // Encuentra el módulo específico en dataPermissionSelected
     const module = this.dataPermissionSelected.find((item: any) => item.module === moduleId);
@@ -257,7 +252,6 @@ export class RolComponent implements OnInit {
     // Si el módulo no está en dataPermissionSelected, retorna false
     return false;
   }
-
 
   public togglePermission(moduleId: number, permisoId: number) {
     // Encuentra el módulo seleccionado
@@ -287,7 +281,6 @@ export class RolComponent implements OnInit {
       }
     }
   }
-
 
   selectAllPermissions() {
     if (this.selectAllCheck) {
@@ -352,7 +345,7 @@ export class RolComponent implements OnInit {
         // Si el módulo no existe, crea una nueva entrada con permisos
         this.dataPermissionSelected.push({
           module: p.module,
-          permissions: [...p.permissions]  // Copia los permisos directamente
+          permissions: [...p.permissions]
         });
       }
     });
@@ -360,9 +353,11 @@ export class RolComponent implements OnInit {
     // Actualiza el estado de los checkboxes
     this.dataPermissionSelected.forEach((moduleData: any) => {
       moduleData.permissions.forEach((permiso: any) => {
-        this.checkedPermiso(moduleData.module, permiso); // Verifica cada permiso
+        this.checkedPermiso(moduleData.module, permiso);
       });
     });
+
+    this.loading = false;
   }
 
 
