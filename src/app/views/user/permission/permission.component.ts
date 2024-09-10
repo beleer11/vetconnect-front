@@ -28,7 +28,6 @@ export class PermissionComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this.dataModuleTrasnform = await this.getData();
-    console.log(this.dataModuleTrasnform)
     this.fieldsTable = this.getFieldsTable();
     this.columnAlignments = this.getColumnAlignments();
     this.createForm();
