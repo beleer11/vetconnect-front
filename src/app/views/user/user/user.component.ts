@@ -110,17 +110,16 @@ export class UserComponent implements OnInit {
 
   onSubmit() {
     //if (this.formUser.valid) {
+    let data = {
+      name: this.formUser.get('name')?.value,
+      username: this.formUser.get('username')?.value,
+      email: this.formUser.get('email')?.value,
+      password: this.formUser.get('password')?.value,
+      image_profile: this.formUser.get('image_profile')?.value,
+      is_disabled: this.formUser.get('is_disabled')?.value,
+      permissions: this.dataPermissionSelected
+    }
     if (this.action === 'save') {
-      let data = {
-        name: this.formUser.get('name')?.value,
-        username: this.formUser.get('username')?.value,
-        email: this.formUser.get('email')?.value,
-        password: this.formUser.get('password')?.value,
-        image_profile: this.formUser.get('image_profile')?.value,
-        is_disabled: this.formUser.get('is_disabled')?.value,
-        permissions: this.dataPermissionSelected
-      }
-
       console.log(data);
     }
 
@@ -268,7 +267,7 @@ export class UserComponent implements OnInit {
       case 4:
         return 'Contraseña muy fuerte';
       case 5:
-        return 'Contraseña extremadamente fuerte';  // Nueva categoría añadida
+        return 'Contraseña extremadamente fuerte';
       default:
         return 'Contraseña insegura';
     }
@@ -287,7 +286,7 @@ export class UserComponent implements OnInit {
       case 4:
         return 'password-very-strong';
       case 5:
-        return 'password-extremely-strong';  // Nueva clase añadida
+        return 'password-extremely-strong';
       default:
         return '';
     }
