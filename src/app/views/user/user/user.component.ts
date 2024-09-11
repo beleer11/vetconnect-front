@@ -1,5 +1,5 @@
 import { Component, OnInit, signal } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UserService } from 'src/app/services/user/user.service';
 import { environment } from 'src/environments/environment';
@@ -35,6 +35,9 @@ export class UserComponent implements OnInit {
   public searchTerm = '';
   public dataRol: any = [];
   filteredRoles: any[] = this.dataRol;
+  searchControl = new FormControl('');
+  public permissionSuggested: any = [];
+
 
   constructor(
     private userService: UserService,
@@ -478,17 +481,19 @@ export class UserComponent implements OnInit {
     return this.formUser.get('is_disabled')?.value ? 'text-success' : 'text-red';
   }
 
-  applyFilter(filterValue: any): void {
-    this.searchTerm = filterValue.target.value;
-    filterValue = filterValue.toLowerCase();
-    this.filteredRoles = this.dataRol.filter((role: any) =>
-      role.name.toLowerCase().includes(filterValue)
+  selectRol(id: number) {
+    this.userService.getPermissionByRol(id).subscribe(
+      response => {
+        this.permissionSuggested = response.original;
+      },
+      error => {
+        console.log(error.message);
+      }
     );
   }
 
-  clearSearch(): void {
-    this.searchTerm = '';
-    this.filteredRoles = [];
+  suggestedPermission() {
+    this.checkedPermisosAsignados(this.permissionSuggested);
   }
 
 }

@@ -42,8 +42,8 @@
                         <form [formGroup]="formUser" class="pt-3">
                             <div class="container">
                                 <!-- Nombre y Nombre de Usuario -->
-                                <div class="row mb-3">
-                                    <div class="col-md-6">
+                                <div class="row mb-4">
+                                    <div class="col-md-6 mb-3 mb-md-0">
                                         <div class="form-group">
                                             <label for="name" class="bolder">Nombre</label>
                                             <input id="name" formControlName="name" type="text" class="form-control"
@@ -78,7 +78,7 @@
                                     </div>
                                 </div>
                                 <!-- Correo Electrónico y Rol -->
-                                <div class="row mb-3">
+                                <div class="row mb-4">
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="email" class="bolder">Correo Electrónico</label>
@@ -97,21 +97,36 @@
                                         <div class="form-group">
                                             <label for="role" class="bolder">Rol</label>
                                             <mat-form-field>
-                                                <mat-select formControlName="rol_id" placeholder="Bank" #singleSelect>
-                                                    <mat-option>
-                                                        <ngx-mat-select-search></ngx-mat-select-search>
-                                                    </mat-option>
-                                                    <mat-option *ngFor="let rol of dataRol | filterRol : searchTerm"
-                                                        [value]="rol">
+                                                <mat-select formControlName="rol_id" placeholder="Seleccionar rol"
+                                                    (selectionChange)="selectRol($event.value)">
+                                                    <ngx-mat-select-search [formControl]="searchControl"
+                                                        placeholderLabel="Buscar rol"
+                                                        noEntriesFoundLabel="No se encontraron resultados">
+                                                    </ngx-mat-select-search>
+                                                    <mat-option
+                                                        *ngFor="let rol of dataRol | filterRol : searchControl.value"
+                                                        [value]="rol.id">
                                                         {{rol.name}}
                                                     </mat-option>
                                                 </mat-select>
+
+                                                <div *ngIf="formUser.get('rol_id')?.invalid && (formUser.get('rol_id')?.touched || formUser.get('rol_id')?.dirty)"
+                                                    class="invalid-feedback">
+                                                    <div *ngIf="formUser.get('rol_id')?.errors?.['required']">Rol es
+                                                        requerido.</div>
+                                                </div>
                                             </mat-form-field>
+
+                                            <div *ngIf="formUser.get('rol_id')?.invalid && (formUser.get('rol_id')?.touched || formUser.get('rol_id')?.dirty)"
+                                                class="invalid-feedback">
+                                                <div *ngIf="formUser.get('rol_id')?.errors?.['required']">Correo
+                                                    electrónico es requerido.</div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                                 <!-- Foto de Perfil y Contraseña -->
-                                <div class="row mb-3">
+                                <div class="row mb-4">
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="image_profile" class="bolder">Foto de Perfil</label>
@@ -157,9 +172,10 @@
                                     </div>
                                 </div>
                                 <!-- Activo y Botón Siguiente -->
-                                <div class="row mb-3">
-                                    <div class="col-md-6 d-flex align-items-center">
-                                        <div class="form-group form-switch mt-4 d-flex align-items-center me-3">
+                                <div class="row mb-4">
+                                    <div class="col-12 col-md-6">
+                                        <div
+                                            class="form-group form-switch d-flex justify-content-center align-items-center">
                                             <input class="form-check-input switch-custom" type="checkbox"
                                                 id="is_disabled" formControlName="is_disabled" />
                                             <label class="form-check-label ms-4 bolder" for="is_disabled"
@@ -167,12 +183,12 @@
                                                 {{ formUser.get('is_disabled')?.value ? 'Activo' : 'Inactivo' }}
                                             </label>
                                         </div>
-                                        <div class="d-flex align-items-center mb-2">
-                                            <button type="button" class="btn btn-primary" [disabled]="formUser.invalid"
-                                                (click)="goToNextTab()">
-                                                Siguiente
-                                            </button>
-                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 d-flex justify-content-end">
+                                        <button type="button" class="btn btn-primary" [disabled]="formUser.invalid"
+                                            (click)="goToNextTab()">
+                                            Siguiente
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -183,7 +199,7 @@
                         <div class="container pt-3">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <div class="d-flex align-items-center">
-                                    <button class="btn btn-warning" (click)="selectAllPermissions()">Sugerir
+                                    <button class="btn btn-warning" (click)="suggestedPermission()">Sugerir
                                         permisos</button>
                                     <span class="input-group-text" data-bs-toggle="tooltip" data-bs-placement="top"
                                         (click)="openInformation(3)" style="cursor: pointer;">?</span>
