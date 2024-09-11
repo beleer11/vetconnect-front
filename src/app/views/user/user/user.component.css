@@ -126,3 +126,45 @@
 .text-success {
     color: green;
 }
+
+.select-container {
+    position: relative;
+}
+
+.clear-icon {
+    position: absolute;
+    top: 51%;
+    right: 82px;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    outline: none;
+    padding: 0;
+    cursor: pointer;
+    color: rgba(0, 0, 0, 0.54);
+}
+
+.clear-icon:hover {
+    color: rgba(0, 0, 0, 0.87);
+}
+
+.clear-icon mat-icon {
+    font-size: 18px;
+}
+
+@media (max-width: 576px) {
+
+    .clear-icon {
+        position: absolute;
+        top: 53%;
+        right: 82px;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        outline: none;
+        padding: 0;
+        cursor: pointer;
+        color: rgba(0, 0, 0, 0.54);
+    }
+
+}

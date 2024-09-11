@@ -1,10 +1,12 @@
 <app-loading-spinner *ngIf="loading"></app-loading-spinner>
-<div class="col-12 col-md-auto d-flex justify-content-end align-items-center mb-2 mt-md-0" *ngIf="!showForm">
-    <button class="btn btn-primary" (click)="addGroupModule()">Agregar</button>
+<div *ngIf="!showForm && dataUser.length > 0">
+    <div class="col-12 col-md-auto d-flex justify-content-end align-items-center mb-2 mt-md-0" *ngIf="!showForm">
+        <button class="btn btn-primary" (click)="addUser()">Agregar</button>
+    </div>
+    <app-general-table [columns]="fieldsTable" [transformedData]="dataTransformada" [data]="dataUser" [acciones]="true"
+        [columnAlignments]="columnAlignments" [title]="'Usuarios'" (actionEvent)="handleAction($event)">
+    </app-general-table>
 </div>
-<app-general-table *ngIf="!showForm" [columns]="fieldsTable" [transformedData]="dataTransformada" [data]="dataUser"
-    [acciones]="true" [columnAlignments]="columnAlignments" [title]="'Usuarios'">
-</app-general-table>
 <c-row *ngIf="showForm">
     <c-col xs>
         <c-card class="mb-4">
@@ -27,11 +29,9 @@
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <!-- [class.disabled]="!formUser.valid"
-                            [attr.aria-disabled]="!formUser.valid"-->
-                        <button class="nav-link tab-custom" id="permissions-tab" data-bs-toggle="tab"
-                            data-bs-target="#permissions" type="button" role="tab" aria-controls="permissions"
-                            aria-selected="false">
+                        <button class="nav-link tab-custom" id="permissions-tab" [class.disabled]="!formUser.valid"
+                            [attr.aria-disabled]="!formUser.valid" data-bs-toggle="tab" data-bs-target="#permissions"
+                            type="button" role="tab" aria-controls="permissions" aria-selected="false">
                             <span class="bolder">Permisos</span>
                         </button>
                     </li>
@@ -43,9 +43,9 @@
                             <div class="container">
                                 <!-- Nombre y Nombre de Usuario -->
                                 <div class="row mb-4">
-                                    <div class="col-md-6 mb-3 mb-md-0">
+                                    <div class="col-md-6 mb-4 mb-md-0">
                                         <div class="form-group">
-                                            <label for="name" class="bolder">Nombre</label>
+                                            <label for="name" class="bolder mb-1">Nombre</label>
                                             <input id="name" formControlName="name" type="text" class="form-control"
                                                 [ngClass]="getValidationClass('name')" />
                                             <div *ngIf="formUser.get('name')?.invalid && (formUser.get('name')?.touched || formUser.get('name')?.dirty)"
@@ -59,7 +59,7 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="username" class="bolder">Nombre de Usuario</label>
+                                            <label for="username" class="bolder mb-1">Nombre de Usuario</label>
                                             <div class="d-flex">
                                                 <div class="input-group">
                                                     <input id="username" type="text" class="form-control"
@@ -79,9 +79,9 @@
                                 </div>
                                 <!-- Correo Electrónico y Rol -->
                                 <div class="row mb-4">
-                                    <div class="col-md-6">
+                                    <div class="col-md-6 mb-4 mb-md-0">
                                         <div class="form-group">
-                                            <label for="email" class="bolder">Correo Electrónico</label>
+                                            <label for="email" class="bolder mb-1">Correo Electrónico</label>
                                             <input id="email" formControlName="email" type="email" class="form-control"
                                                 [ngClass]="getValidationClass('email')" />
                                             <div *ngIf="formUser.get('email')?.invalid && (formUser.get('email')?.touched || formUser.get('email')?.dirty)"
@@ -95,45 +95,42 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="role" class="bolder">Rol</label>
-                                            <mat-form-field>
-                                                <mat-select formControlName="rol_id" placeholder="Seleccionar rol"
-                                                    (selectionChange)="selectRol($event.value)">
-                                                    <ngx-mat-select-search [formControl]="searchControl"
-                                                        placeholderLabel="Buscar rol"
-                                                        noEntriesFoundLabel="No se encontraron resultados">
-                                                    </ngx-mat-select-search>
-                                                    <mat-option
-                                                        *ngFor="let rol of dataRol | filterRol : searchControl.value"
-                                                        [value]="rol.id">
-                                                        {{rol.name}}
-                                                    </mat-option>
-                                                </mat-select>
-
-                                                <div *ngIf="formUser.get('rol_id')?.invalid && (formUser.get('rol_id')?.touched || formUser.get('rol_id')?.dirty)"
-                                                    class="invalid-feedback">
-                                                    <div *ngIf="formUser.get('rol_id')?.errors?.['required']">Rol es
-                                                        requerido.</div>
-                                                </div>
-                                            </mat-form-field>
-
+                                            <label for="role" class="bolder mb-1">Rol</label>
+                                            <mat-select formControlName="rol_id" placeholder="Seleccionar rol"
+                                                (selectionChange)="selectRol($event.value)" ultiple="false"
+                                                class="form-control" [ngClass]="getValidationClass('rol_id')">
+                                                <ngx-mat-select-search [formControl]="searchControl"
+                                                    placeholderLabel="Buscar rol"
+                                                    noEntriesFoundLabel="No se encontraron resultados">
+                                                </ngx-mat-select-search>
+                                                <mat-option
+                                                    *ngFor="let rol of dataRol | filterRol : searchControl.value"
+                                                    [value]="rol.id">
+                                                    {{rol.name}}
+                                                </mat-option>
+                                            </mat-select>
+                                            <button *ngIf="formUser.get('rol_id')?.value" mat-icon-button
+                                                (click)="clearSelection()" class="clear-icon">
+                                                <mat-icon>close</mat-icon>
+                                            </button>
                                             <div *ngIf="formUser.get('rol_id')?.invalid && (formUser.get('rol_id')?.touched || formUser.get('rol_id')?.dirty)"
                                                 class="invalid-feedback">
-                                                <div *ngIf="formUser.get('rol_id')?.errors?.['required']">Correo
-                                                    electrónico es requerido.</div>
+                                                <div *ngIf="formUser.get('rol_id')?.errors?.['required']">Rol es
+                                                    requerido.</div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                                 <!-- Foto de Perfil y Contraseña -->
                                 <div class="row mb-4">
-                                    <div class="col-md-6">
+                                    <div class="col-md-6 mb-4 mb-md-0">
                                         <div class="form-group">
-                                            <label for="image_profile" class="bolder">Foto de Perfil</label>
+                                            <label for="image_profile" class="bolder mb-1">Foto de Perfil</label>
                                             <div class="input-group">
                                                 <input id="image_profile" formControlName="image_profile" type="file"
                                                     class="form-control" accept="image/png, image/jpeg, image/jpg"
-                                                    [ngClass]="getValidationClass('image_profile')" />
+                                                    [ngClass]="getValidationClass('image_profile')"
+                                                    (change)="onFileSelected($event)" />
                                                 <span class="input-group-text" data-bs-toggle="tooltip"
                                                     data-bs-placement="top" (click)="openInformation(2)"
                                                     style="cursor: pointer;">?</span>
@@ -142,7 +139,7 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group position-relative">
-                                            <label for="password" class="bolder">Contraseña</label>
+                                            <label for="password" class="bolder mb-1">Contraseña</label>
                                             <div class="input-group">
                                                 <input id="password" formControlName="password"
                                                     [type]="passwordVisible ? 'text' : 'password'" class="form-control"
@@ -173,12 +170,12 @@
                                 </div>
                                 <!-- Activo y Botón Siguiente -->
                                 <div class="row mb-4">
-                                    <div class="col-12 col-md-6">
+                                    <div class="col-12 col-md-6 mb-4 mb-md-0">
                                         <div
                                             class="form-group form-switch d-flex justify-content-center align-items-center">
                                             <input class="form-check-input switch-custom" type="checkbox"
                                                 id="is_disabled" formControlName="is_disabled" />
-                                            <label class="form-check-label ms-4 bolder" for="is_disabled"
+                                            <label class="form-check-label ms-4 bolder mb-1" for="is_disabled"
                                                 [ngClass]="getTextClass()">
                                                 {{ formUser.get('is_disabled')?.value ? 'Activo' : 'Inactivo' }}
                                             </label>

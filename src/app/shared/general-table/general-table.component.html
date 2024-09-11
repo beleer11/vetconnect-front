@@ -35,7 +35,6 @@
                                             name="cil-arrow-top"></svg>
                                         <svg *ngIf="currentSortColumn === column && sortOrder === 'desc'" cIcon
                                             name="cil-arrow-bottom"></svg>
-                                        <svg *ngIf="currentSortColumn !== column" cIcon name="cil-arrow-both"></svg>
                                     </th>
                                     <!-- Mostrar columna de acciones solo si hay datos -->
                                     <th *ngIf="acciones" [ngStyle]="{'text-align': 'center'}">Acciones</th>

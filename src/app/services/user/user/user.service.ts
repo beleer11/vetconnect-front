@@ -39,4 +39,24 @@ export class UserService {
     return this.http.get<string>(`${this.apiUrl}/user/listPermission`, this.httpOptions);
   }
 
+  sendUser(data: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/user/setData`, data, this.httpOptions);
+  }
+
+  editUser(data: any, id: number): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/user/editData/${id}`, data, this.httpOptions);
+  }
+
+  deleteRecordById(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/user/remove/${id}`, this.httpOptions);
+  }
+
+  disableRecordById(id: number): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/user/disable/${id}`, {}, this.httpOptions);
+  }
+
+  enableRecordById(id: number): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/user/enable/${id}`, {}, this.httpOptions);
+  }
+
 }
