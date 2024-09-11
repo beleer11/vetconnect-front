@@ -57,6 +57,18 @@ export class UserService {
     return this.http.put<any>(`${this.apiUrl}/rol/editData/${id}`, data, this.httpOptions);
   }
 
+  deleteRecordById(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/rol/remove/${id}`, this.httpOptions);
+  }
+
+  disableRecordById(id: number): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/rol/disable/${id}`, {}, this.httpOptions);
+  }
+
+  enableRecordById(id: number): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/rol/enable/${id}`, {}, this.httpOptions);
+  }
+
 
   /** Getter Setter Rol */
 

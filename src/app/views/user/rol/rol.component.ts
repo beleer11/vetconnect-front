@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import moment from 'moment';
-import { UserService } from 'src/app/services/user/user.service';
+import { UserService } from 'src/app/services/user/user/user.service';
 import Swal from 'sweetalert2';
 import * as bootstrap from 'bootstrap';
 

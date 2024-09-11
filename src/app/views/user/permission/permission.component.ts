@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { PermissionService } from '../../../services/parameter/permission/permission.service';
+import { PermissionService } from '../../../services/user/permission/permission.service';
 import moment from 'moment';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';

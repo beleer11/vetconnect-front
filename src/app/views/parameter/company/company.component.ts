@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ModuleService } from '../../../services/parameter/module/module.service';
+import { ModuleService } from '../../../services/settings/module/module.service';
 import Swal from 'sweetalert2';
 import moment from 'moment';
 import { Observable } from 'rxjs';

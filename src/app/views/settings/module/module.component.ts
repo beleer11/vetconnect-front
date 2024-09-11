@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { IconSetService } from '@coreui/icons-angular';
 import { freeSet } from '@coreui/icons';
-import { ModuleService } from '../../../services/parameter/module/module.service';
+import { ModuleService } from '../../../services/settings/module/module.service';
 import * as bootstrap from 'bootstrap';
 import Swal from 'sweetalert2';
 import moment from 'moment';
