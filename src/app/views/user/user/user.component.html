@@ -27,9 +27,11 @@
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link tab-custom" id="permissions-tab" [class.disabled]="!formUser.valid"
-                            [attr.aria-disabled]="!formUser.valid" data-bs-toggle="tab" data-bs-target="#permissions"
-                            type="button" role="tab" aria-controls="permissions" aria-selected="false">
+                        <!-- [class.disabled]="!formUser.valid"
+                            [attr.aria-disabled]="!formUser.valid"-->
+                        <button class="nav-link tab-custom" id="permissions-tab" data-bs-toggle="tab"
+                            data-bs-target="#permissions" type="button" role="tab" aria-controls="permissions"
+                            aria-selected="false">
                             <span class="bolder">Permisos</span>
                         </button>
                     </li>
@@ -39,13 +41,13 @@
                     <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab">
                         <form [formGroup]="formUser" class="pt-3">
                             <div class="container">
-                                <!-- Nombre y Nombre de usuario -->
+                                <!-- Nombre y Nombre de Usuario -->
                                 <div class="row mb-3">
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="name" class="bolder">Nombre</label>
                                             <input id="name" formControlName="name" type="text" class="form-control"
-                                                [ngClass]="{ 'is-invalid': formUser.get('name')?.invalid && (formUser.get('name')?.touched || formUser.get('name')?.dirty) }" />
+                                                [ngClass]="getValidationClass('name')" />
                                             <div *ngIf="formUser.get('name')?.invalid && (formUser.get('name')?.touched || formUser.get('name')?.dirty)"
                                                 class="invalid-feedback">
                                                 <div *ngIf="formUser.get('name')?.errors?.['required']">Nombre es
@@ -61,7 +63,8 @@
                                             <div class="d-flex">
                                                 <div class="input-group">
                                                     <input id="username" type="text" class="form-control"
-                                                        formControlName="username" />
+                                                        formControlName="username"
+                                                        [ngClass]="getValidationClass('username')" />
                                                     <span class="input-group-text" data-bs-toggle="tooltip"
                                                         data-bs-placement="top" (click)="openInformation(1)"
                                                         style="cursor: pointer;">?</span>
@@ -74,13 +77,13 @@
                                         </div>
                                     </div>
                                 </div>
-                                <!-- Correo electrónico y foto -->
+                                <!-- Correo Electrónico y Rol -->
                                 <div class="row mb-3">
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="email" class="bolder">Correo Electrónico</label>
                                             <input id="email" formControlName="email" type="email" class="form-control"
-                                                [ngClass]="{ 'is-invalid': formUser.get('email')?.invalid && (formUser.get('email')?.touched || formUser.get('email')?.dirty) }" />
+                                                [ngClass]="getValidationClass('email')" />
                                             <div *ngIf="formUser.get('email')?.invalid && (formUser.get('email')?.touched || formUser.get('email')?.dirty)"
                                                 class="invalid-feedback">
                                                 <div *ngIf="formUser.get('email')?.errors?.['required']">Correo
@@ -92,26 +95,43 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
+                                            <label for="role" class="bolder">Rol</label>
+                                            <mat-form-field>
+                                                <mat-select formControlName="rol_id" placeholder="Bank" #singleSelect>
+                                                    <mat-option>
+                                                        <ngx-mat-select-search></ngx-mat-select-search>
+                                                    </mat-option>
+                                                    <mat-option *ngFor="let rol of dataRol | filterRol : searchTerm"
+                                                        [value]="rol">
+                                                        {{rol.name}}
+                                                    </mat-option>
+                                                </mat-select>
+                                            </mat-form-field>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Foto de Perfil y Contraseña -->
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
                                             <label for="image_profile" class="bolder">Foto de Perfil</label>
                                             <div class="input-group">
                                                 <input id="image_profile" formControlName="image_profile" type="file"
-                                                    class="form-control" accept="image/png, image/jpeg, image/jpg" />
+                                                    class="form-control" accept="image/png, image/jpeg, image/jpg"
+                                                    [ngClass]="getValidationClass('image_profile')" />
                                                 <span class="input-group-text" data-bs-toggle="tooltip"
                                                     data-bs-placement="top" (click)="openInformation(2)"
                                                     style="cursor: pointer;">?</span>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <!-- Contraseña y Switch -->
-                                <div class="row mb-3">
                                     <div class="col-md-6">
                                         <div class="form-group position-relative">
                                             <label for="password" class="bolder">Contraseña</label>
                                             <div class="input-group">
                                                 <input id="password" formControlName="password"
                                                     [type]="passwordVisible ? 'text' : 'password'" class="form-control"
-                                                    [ngClass]="{ 'is-invalid': formUser.get('password')?.invalid && (formUser.get('password')?.touched || formUser.get('password')?.dirty) }"
+                                                    [ngClass]="getValidationClass('password')"
                                                     (input)="checkPasswordStrength()" />
                                                 <span class="input-group-text" data-bs-toggle="tooltip"
                                                     data-bs-placement="top" (click)="togglePasswordVisibility()">
@@ -122,14 +142,11 @@
                                                 <div *ngIf="formUser.get('password')?.invalid && (formUser.get('password')?.touched || formUser.get('password')?.dirty)"
                                                     class="invalid-feedback">
                                                     <div *ngIf="formUser.get('password')?.errors?.['required']">
-                                                        Contraseña es requerida.
-                                                    </div>
-                                                    <div *ngIf="formUser.get('password')?.errors?.['minlength']">
-                                                        Debe tener al menos 3 caracteres.
-                                                    </div>
-                                                    <div *ngIf="formUser.get('password')?.errors?.['maxlength']">
-                                                        Debe tener menos de 20 caracteres.
-                                                    </div>
+                                                        Contraseña es requerida.</div>
+                                                    <div *ngIf="formUser.get('password')?.errors?.['minlength']">Debe
+                                                        tener al menos 3 caracteres.</div>
+                                                    <div *ngIf="formUser.get('password')?.errors?.['maxlength']">Debe
+                                                        tener menos de 20 caracteres.</div>
                                                 </div>
                                             </div>
                                             <div *ngIf="passwordStrengthMessage" [ngClass]="passwordStrengthClass"
@@ -138,15 +155,19 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class=" col-md-6">
-                                        <div class="form-group form-switch mt-4 d-flex align-items-center">
-                                            <input class="form-check-input switch-custom mr-2" type="checkbox"
+                                </div>
+                                <!-- Activo y Botón Siguiente -->
+                                <div class="row mb-3">
+                                    <div class="col-md-6 d-flex align-items-center">
+                                        <div class="form-group form-switch mt-4 d-flex align-items-center me-3">
+                                            <input class="form-check-input switch-custom" type="checkbox"
                                                 id="is_disabled" formControlName="is_disabled" />
-                                            <label class="form-check-label ms-4 bolder" for="is_disabled">{{
-                                                formUser.get('is_disabled')?.value ? 'Activo' : 'Inactivo'
-                                                }}</label>
+                                            <label class="form-check-label ms-4 bolder" for="is_disabled"
+                                                [ngClass]="getTextClass()">
+                                                {{ formUser.get('is_disabled')?.value ? 'Activo' : 'Inactivo' }}
+                                            </label>
                                         </div>
-                                        <div class="d-flex justify-content-end mb-2">
+                                        <div class="d-flex align-items-center mb-2">
                                             <button type="button" class="btn btn-primary" [disabled]="formUser.invalid"
                                                 (click)="goToNextTab()">
                                                 Siguiente
@@ -160,6 +181,16 @@
                     <!-- Permisos -->
                     <div class="tab-pane fade" id="permissions" role="tabpanel" aria-labelledby="permissions-tab">
                         <div class="container pt-3">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div class="d-flex align-items-center">
+                                    <button class="btn btn-warning" (click)="selectAllPermissions()">Sugerir
+                                        permisos</button>
+                                    <span class="input-group-text" data-bs-toggle="tooltip" data-bs-placement="top"
+                                        (click)="openInformation(3)" style="cursor: pointer;">?</span>
+                                </div>
+                                <button class="btn btn-primary" (click)="selectAllPermissions()">{{ textSelectAll
+                                    }}</button>
+                            </div>
                             <mat-accordion class="pt-3 pe-2 ps-2">
                                 <mat-expansion-panel *ngFor="let group of dataPermission.groups; let i = index"
                                     [expanded]="i === 0">
@@ -178,29 +209,17 @@
                                                         {{ module.name }}
                                                     </mat-panel-title>
                                                 </mat-expansion-panel-header>
-                                                <form [formGroup]="formPermission" class="pt-3">
-                                                    <div class="row d-flex justify-content-center">
-                                                        <div *ngIf="getPermissionsByModule(module.id).length > 0; else noPermissions"
-                                                            class="row d-flex justify-content-center">
-                                                            <div *ngFor="let permission of getPermissionsByModule(module.id)"
-                                                                class="col-auto mb-2">
-                                                                <mat-checkbox formControlName="checkPermission"
-                                                                    (change)="updatePermissionSelection(permission, module.id)">
-                                                                    {{ permission.name }}
-                                                                </mat-checkbox>
-                                                            </div>
-                                                        </div>
-                                                        <ng-template #noPermissions>
-                                                            <div *ngFor="let permission of dataPermission.permissions"
-                                                                class="col-auto mb-2">
-                                                                <mat-checkbox formControlName="checkPermission"
-                                                                    (change)="updatePermissionSelection(permission, module.id)">
-                                                                    {{ permission.name }}
-                                                                </mat-checkbox>
-                                                            </div>
-                                                        </ng-template>
+                                                <div class="row d-flex justify-content-center">
+                                                    <div *ngFor="let permission of dataPermission.permissions"
+                                                        class="col-auto mb-2">
+                                                        <mat-checkbox
+                                                            [checked]="checkedPermiso(module.id, permission.id)"
+                                                            (change)="togglePermission(module.id, permission.id)"
+                                                            color="primary">
+                                                            {{ permission.name }}
+                                                        </mat-checkbox>
                                                     </div>
-                                                </form>
+                                                </div>
                                             </mat-expansion-panel>
                                         </mat-accordion>
                                     </div>

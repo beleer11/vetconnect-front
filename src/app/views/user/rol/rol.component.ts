@@ -360,5 +360,4 @@ export class RolComponent implements OnInit {
     this.loading = false;
   }
 
-
 }

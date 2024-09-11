@@ -22,7 +22,6 @@ export class UserComponent implements OnInit {
   public loading: boolean = true;
   public showForm: boolean = true;
   public formUser!: FormGroup;
-  public formPermission!: FormGroup;
   public action: string = 'save';
   public generating = false;
   public usernameDisabled = false;
@@ -31,6 +30,11 @@ export class UserComponent implements OnInit {
   public passwordStrengthClass: string | null = null;
   public dataPermission: any = [];
   public dataPermissionSelected: any = [];
+  public selectAllCheck: boolean = true;
+  public textSelectAll: string = 'Seleccionar todo';
+  public searchTerm = '';
+  public dataRol: any = [];
+  filteredRoles: any[] = this.dataRol;
 
   constructor(
     private userService: UserService,
@@ -52,11 +56,9 @@ export class UserComponent implements OnInit {
       username: [{ value: '', disabled: true }, [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(20)]],
-      image_profile: [null, Validators.required],
-      is_disabled: [true]
-    });
-    this.formPermission = this.fb.group({
-      checkPermission: ['', [Validators.required]]
+      image_profile: [null],
+      is_disabled: [true],
+      rol_id: [{}, Validators.required]
     });
     this.loading = false;
     this.listPermission();
@@ -98,14 +100,20 @@ export class UserComponent implements OnInit {
   }
 
   public addGroupModule() {
-    this.showForm = true;
-    this.formUser.reset();
+    this.resetForms();
     this.action = 'save';
+  }
+
+  resetForms() {
+    this.formUser.reset();
+    this.textSelectAll = 'Seleccionar todo';
+    this.dataPermissionSelected = [];
+    this.selectAllCheck = true;
   }
 
   public backToTable() {
     this.showForm = false;
-    this.formUser.reset();
+    this.resetForms();
   }
 
   onSubmit() {
@@ -190,6 +198,11 @@ export class UserComponent implements OnInit {
       html = `
       <div id="custom-icon-container">
         <p>Solo se permiten imágenes en formatos PNG, JPEG y JPG.</p>
+      </div>`;
+    } else if (text === 3) {
+      html = `
+      <div id="custom-icon-container">
+        <p>Esta acción sugiere automáticamente los permisos adecuados según el rol seleccionado. Posteriormente, podrá agregar o eliminar permisos según sus necesidades de manera flexible.</p>
       </div>`;
     }
 
@@ -308,6 +321,19 @@ export class UserComponent implements OnInit {
     this.userService.listPermission().subscribe(
       response => {
         this.dataPermission = response;
+        this.getRol();
+      },
+      error => {
+        console.log(error.message);
+      }
+    );
+  }
+
+  public getRol() {
+    this.userService.getDataRoles().subscribe(
+      response => {
+        this.dataRol = response.original;
+        this.filteredRoles = this.dataRol;
       },
       error => {
         console.log(error.message);
@@ -320,38 +346,149 @@ export class UserComponent implements OnInit {
     return res;
   }
 
-  getPermissionsByModule(moduleId: number) {
-    const res = this.dataPermission.permissions.filter((permission: any) => permission.module_id === moduleId);
-    return res;
+  public checkedPermiso(moduleId: number, permisoId: number): boolean {
+    // Encuentra el módulo específico en dataPermissionSelected
+    const module = this.dataPermissionSelected.find((item: any) => item.module === moduleId);
+
+    // Si el módulo existe, verifica si el permiso está en el array de permisos del módulo
+    if (module) {
+      return module.permissions.includes(permisoId);
+    }
+
+    // Si el módulo no está en dataPermissionSelected, retorna false
+    return false;
   }
 
-  public updatePermissionSelection(permission: any, moduleId: number) {
+  public togglePermission(moduleId: number, permisoId: number) {
+    // Encuentra el módulo seleccionado
     const moduleIndex = this.dataPermissionSelected.findIndex((item: any) => item.module === moduleId);
-    permission.selected = this.formPermission.get('checkPermission')?.value;
 
-    if (moduleIndex > -1) {
-      const permissionIndex = this.dataPermissionSelected[moduleIndex].permissions.indexOf(permission.id);
-
-      if (permission.selected) {
-        if (permissionIndex === -1) {
-          this.dataPermissionSelected[moduleIndex].permissions.push(permission.id);
-        }
-      } else {
-        if (permissionIndex > -1) {
-          this.dataPermissionSelected[moduleIndex].permissions.splice(permissionIndex, 1);
-
-          if (this.dataPermissionSelected[moduleIndex].permissions.length === 0) {
-            this.dataPermissionSelected.splice(moduleIndex, 1);
-          }
-        }
-      }
+    if (moduleIndex === -1) {
+      // Si el módulo no está en dataPermissionSelected, lo agregamos con el permiso seleccionado
+      this.dataPermissionSelected.push({
+        module: moduleId,
+        permissions: [permisoId]
+      });
     } else {
-      if (permission.selected) {
-        this.dataPermissionSelected.push({
-          module: moduleId,
-          permissions: [permission.id]
-        });
+      // Si el módulo ya está en dataPermissionSelected, actualizamos sus permisos
+      const permissionIndex = this.dataPermissionSelected[moduleIndex].permissions.indexOf(permisoId);
+
+      if (permissionIndex === -1) {
+        // Si el permiso no está en la lista, lo agregamos
+        this.dataPermissionSelected[moduleIndex].permissions.push(permisoId);
+      } else {
+        // Si el permiso ya está en la lista, lo eliminamos
+        this.dataPermissionSelected[moduleIndex].permissions.splice(permissionIndex, 1);
+
+        // Si no quedan permisos en el módulo, lo eliminamos
+        if (this.dataPermissionSelected[moduleIndex].permissions.length === 0) {
+          this.dataPermissionSelected.splice(moduleIndex, 1);
+        }
       }
     }
   }
+
+  selectAllPermissions() {
+    if (this.selectAllCheck) {
+      this.dataPermissionSelected = [];
+      this.userService.setData(null);
+
+      // Recorremos los grupos
+      this.dataPermission.groups.map((c: any) => {
+        let modules = this.getModulesByGroup(c.id);
+
+        modules.map((module: any) => {
+          // Verificamos si el módulo ya está en dataPermissionSelected
+          let moduleIndex = this.dataPermissionSelected.findIndex(
+            (item: any) => item.module === module.id
+          );
+
+          if (moduleIndex > -1) {
+            // Si ya existe, agregamos los permisos que faltan
+            this.dataPermission.permissions.map((p: any) => {
+              const permissionIndex = this.dataPermissionSelected[moduleIndex].permissions.indexOf(p.id);
+              if (permissionIndex === -1) {
+                this.dataPermissionSelected[moduleIndex].permissions.push(p.id);
+              }
+            });
+          } else {
+            // Si no existe, creamos una nueva entrada
+            this.dataPermissionSelected.push({
+              module: module.id,
+              permissions: this.dataPermission.permissions.map((p: any) => p.id)
+            });
+          }
+        });
+      });
+
+      this.textSelectAll = 'Deseleccionar todo';
+    } else {
+      this.dataPermissionSelected = [];
+      this.textSelectAll = 'Seleccionar todo';
+    }
+
+    this.selectAllCheck = !this.selectAllCheck;
+  }
+
+  checkedPermisosAsignados(permissions: any) {
+    // Limpia el array de permisos seleccionados
+    this.dataPermissionSelected = [];
+
+    // Recorre los permisos recibidos del backend
+    permissions.forEach((p: any) => {
+      // Verifica si el módulo ya está en dataPermissionSelected
+      const moduleIndex = this.dataPermissionSelected.findIndex((m: any) => m.module === p.module);
+
+      if (moduleIndex > -1) {
+        // Si el módulo ya existe, agrega los permisos si no están presentes
+        p.permissions.forEach((perm: any) => {
+          const permissionIndex = this.dataPermissionSelected[moduleIndex].permissions.indexOf(perm);
+          if (permissionIndex === -1) {
+            this.dataPermissionSelected[moduleIndex].permissions.push(perm);
+          }
+        });
+      } else {
+        // Si el módulo no existe, crea una nueva entrada con permisos
+        this.dataPermissionSelected.push({
+          module: p.module,
+          permissions: [...p.permissions]
+        });
+      }
+    });
+
+    // Actualiza el estado de los checkboxes
+    this.dataPermissionSelected.forEach((moduleData: any) => {
+      moduleData.permissions.forEach((permiso: any) => {
+        this.checkedPermiso(moduleData.module, permiso);
+      });
+    });
+
+    this.loading = false;
+  }
+
+  getValidationClass(controlName: string): { [key: string]: any } {
+    const control = this.formUser.get(controlName);
+    return {
+      'is-invalid': control?.invalid && (control?.touched || control?.dirty),
+      'is-valid': control?.valid && (control?.touched || control?.dirty),
+    };
+  }
+
+  getTextClass() {
+    return this.formUser.get('is_disabled')?.value ? 'text-success' : 'text-red';
+  }
+
+  applyFilter(filterValue: any): void {
+    this.searchTerm = filterValue.target.value;
+    filterValue = filterValue.toLowerCase();
+    this.filteredRoles = this.dataRol.filter((role: any) =>
+      role.name.toLowerCase().includes(filterValue)
+    );
+  }
+
+  clearSearch(): void {
+    this.searchTerm = '';
+    this.filteredRoles = [];
+  }
+
 }

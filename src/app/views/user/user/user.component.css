@@ -118,3 +118,38 @@
 .btn-submit:hover {
     opacity: 0.9;
 }
+
+.text-red {
+    color: red;
+}
+
+.text-success {
+    color: green;
+}
+
+mat-form-field {
+    width: 100%;
+    position: relative;
+
+    .mat-form-field-wrapper {
+        display: flex;
+        align-items: center;
+    }
+
+    mat-icon {
+        color: rgba(0, 0, 0, 0.54);
+    }
+
+    button[mat-icon-button] {
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        padding: 0;
+        margin: 0;
+    }
+
+    mat-select {
+        width: calc(100% - 24px);
+    }
+}

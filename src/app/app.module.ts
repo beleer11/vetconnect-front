@@ -13,11 +13,23 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ChartjsModule } from '@coreui/angular-chartjs';
 import { WidgetsModule } from './views/widgets/widgets.module';
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
+
+//Pipe
+import { PipeModule } from './pipes/pipe.module';
+
+//Angular material
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatTableModule } from '@angular/material/table';
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
+import { MatIconModule } from '@angular/material/icon';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 
 //pages
 import { LoginComponent } from './pages/login/login.component';
@@ -32,6 +44,7 @@ import { PermissionComponent } from './views/user/permission/permission.componen
 import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinner.component';
 import { CompanyComponent } from './views/parameter/company/company.component';
 import { RolComponent } from './views/user/rol/rol.component';
+
 
 // Import containers
 import {
@@ -123,6 +136,14 @@ const APP_CONTAINERS = [
     MatExpansionModule,
     MatCheckbox,
     MatTableModule,
+    MatSelectModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatCheckboxModule,
+    PipeModule,
+    MatIconModule,
+    MatAutocompleteModule,
+    NgxMatSelectSearchModule,
     RouterModule.forRoot([], { useHash: false }),
   ],
   providers: [
