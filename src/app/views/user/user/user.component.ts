@@ -2,6 +2,7 @@ import { Component, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UserService } from 'src/app/services/user/user/user.service';
+import { RolService } from 'src/app/services/user/rol/rol.service';
 import { environment } from 'src/environments/environment';
 import Swal from 'sweetalert2';
 import moment from 'moment';
@@ -41,6 +42,7 @@ export class UserComponent implements OnInit {
 
   constructor(
     private userService: UserService,
+    private rolService: RolService,
     private formBuilder: FormBuilder,
     private fb: FormBuilder
   ) { }
@@ -333,7 +335,7 @@ export class UserComponent implements OnInit {
   }
 
   public getRol() {
-    this.userService.getDataRoles().subscribe(
+    this.rolService.getDataRoles().subscribe(
       response => {
         this.dataRol = response.original;
         this.filteredRoles = this.dataRol;
@@ -394,7 +396,7 @@ export class UserComponent implements OnInit {
   selectAllPermissions() {
     if (this.selectAllCheck) {
       this.dataPermissionSelected = [];
-      this.userService.setData(null);
+      this.rolService.setData(null);
 
       // Recorremos los grupos
       this.dataPermission.groups.map((c: any) => {
@@ -482,7 +484,7 @@ export class UserComponent implements OnInit {
   }
 
   selectRol(id: number) {
-    this.userService.getPermissionByRol(id).subscribe(
+    this.rolService.getPermissionByRol(id).subscribe(
       response => {
         this.permissionSuggested = response.original;
       },

@@ -2,8 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import moment from 'moment';
 import { UserService } from 'src/app/services/user/user/user.service';
+import { RolService } from 'src/app/services/user/rol/rol.service';
 import Swal from 'sweetalert2';
 import * as bootstrap from 'bootstrap';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-rol',
@@ -27,6 +29,7 @@ export class RolComponent implements OnInit {
 
   constructor(
     private userService: UserService,
+    private rolService: RolService,
     private fb: FormBuilder
   ) { }
 
@@ -65,7 +68,7 @@ export class RolComponent implements OnInit {
       this.loading = true;
       this.formRol.controls["nombre"].setValue(this.dataTemp.name);
       this.formRol.controls["description"].setValue(this.dataTemp.description);
-      this.userService.getPermissionByRol(this.dataTemp.id).subscribe(
+      this.rolService.getPermissionByRol(this.dataTemp.id).subscribe(
         response => {
           this.checkedPermisosAsignados(response.original);
         },
@@ -77,7 +80,7 @@ export class RolComponent implements OnInit {
     }
 
     if (action === "delete") {
-      //this.deleteRecord(id);
+      this.deleteRecord(id);
     }
 
     if (action === "view") {
@@ -85,13 +88,13 @@ export class RolComponent implements OnInit {
     }
 
     if (action === "ban") {
-      //this.disableOrEnableRecord(this.dataTemp);
+      this.disableOrEnableRecord(this.dataTemp);
     }
   }
 
   private async getData(): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.userService.getDataRoles().subscribe(
+      this.rolService.getDataRoles().subscribe(
         response => {
           this.dataModule = response.original;
           resolve(this.formatedData(response.original));
@@ -150,7 +153,7 @@ export class RolComponent implements OnInit {
 
   public saveNewRol(data: any) {
     this.loading = true;
-    this.userService.sendRol(data).subscribe({
+    this.rolService.sendRol(data).subscribe({
       next: (response) => {
         if (response.original.success) {
           this.dataModule = response.original.data;
@@ -177,7 +180,7 @@ export class RolComponent implements OnInit {
 
   public editRol(data: any, id: number) {
     this.loading = true;
-    this.userService.editRol(data, id).subscribe({
+    this.rolService.editRol(data, id).subscribe({
       next: (response) => {
         if (response && response.original.data) {
           this.dataModule = response.original.data;
@@ -285,7 +288,7 @@ export class RolComponent implements OnInit {
   selectAllPermissions() {
     if (this.selectAllCheck) {
       this.dataPermissionSelected = [];
-      this.userService.setData(null);
+      this.rolService.setData(null);
 
       // Recorremos los grupos
       this.dataPermission.groups.map((c: any) => {
@@ -358,6 +361,81 @@ export class RolComponent implements OnInit {
     });
 
     this.loading = false;
+  }
+
+  deleteRecord(id: number) {
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: "Esta acción eliminará el registro permanentemente. ¡No podrás revertirlo!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminarlo',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loading = true;
+        this.rolService.deleteRecordById(id).subscribe({
+          next: (response) => {
+            this.dataModule = response.data;
+            this.dataModuleTrasnform = this.formatedData(this.dataModule);
+            this.loading = false;
+            this.alertMessage('¡Eliminado!', 'El registro ha sido eliminado correctamente.', 'success');
+          },
+          error: (error) => {
+            this.loading = false;
+            this.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.', 'error');
+          }
+        });
+      }
+    });
+  }
+
+  disableOrEnableRecord(data: any) {
+    const actionText = data.is_disabled === 0 ? 'habilitar' : 'inhabilitar';
+    const confirmButtonText = data.is_disabled === 0 ? 'Sí, habilitar' : 'Sí, inhabilitar';
+    const successMessage = data.is_disabled === 0 ? 'El registro ha sido habilitado correctamente.' : 'El registro ha sido inhabilitado correctamente.';
+
+    Swal.fire({
+      title: `¿Deseas ${actionText} este registro?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#f39c12',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: confirmButtonText,
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loading = true;
+        const action = data.is_disabled === 0 ? 'enable' : 'disable';
+        this.actionMap[action](data.id).subscribe({
+          next: (response) => {
+            this.dataModule = response.data;
+            this.dataModuleTrasnform = this.formatedData(this.dataModule);
+            this.loading = false;
+            this.alertMessage('¡Éxito!', successMessage, 'success');
+          },
+          error: (error) => {
+            this.loading = false;
+            this.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.', 'error');
+          }
+        });
+      }
+    });
+  }
+
+  private actionMap: { [key: string]: (id: number) => Observable<any> } = {
+    enable: (id: number) => this.rolService.enableRecordById(id),
+    disable: (id: number) => this.rolService.disableRecordById(id),
+  };
+
+  getValidationClass(controlName: string): { [key: string]: any } {
+    const control = this.formRol.get(controlName);
+    return {
+      'is-invalid': control?.invalid && (control?.touched || control?.dirty),
+      'is-valid': control?.valid && (control?.touched || control?.dirty),
+    };
   }
 
 }
