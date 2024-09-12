@@ -11,7 +11,7 @@ export class PermissionService {
   private apiUrl: string = environment.apiUrl;
 
   private accessToken = localStorage
-    .getItem('access_token')
+    .getItem('vet_connect_token')
     ?.replace(/['"]+/g, '');
 
   private httpOptions = {

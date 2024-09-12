@@ -14,7 +14,7 @@ export class UserService {
   private data: any = null;
 
   private accessToken = localStorage
-    .getItem('access_token')
+    .getItem('vet_connect_token')
     ?.replace(/['"]+/g, '');
 
   private httpOptions = {

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 
 import { DashboardChartsData, IChartProps } from './dashboard-charts-data';
+import { GeneralService } from 'src/app/services/general/general.service';
 
 interface IUser {
   name: string;
@@ -22,7 +23,7 @@ interface IUser {
   styleUrls: ['dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit {
-  constructor(private chartsData: DashboardChartsData) {
+  constructor(private chartsData: DashboardChartsData, private generalService: GeneralService) {
   }
 
   public users: IUser[] = [
@@ -112,6 +113,7 @@ export class DashboardComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    console.log(localStorage.getItem('permissions'))
     this.initCharts();
   }
 

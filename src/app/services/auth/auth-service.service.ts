@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { HttpHeaders } from '@angular/common/http';
 
 @Injectable({
@@ -9,8 +9,9 @@ import { HttpHeaders } from '@angular/common/http';
 })
 export class AuthService {
   private apiUrl: string = environment.apiUrl;
-  private accessToken: string | null =
-    localStorage.getItem('access_token')?.replace(/['"]+/g, '') || null;
+  private accessToken = localStorage
+    .getItem('vet_connect_token')
+    ?.replace(/['"]+/g, '');
 
   private httpOptions = {
     headers: new HttpHeaders({
@@ -19,7 +20,7 @@ export class AuthService {
     }),
   };
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   login(credentials: { email: string; password: string }): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/login`, credentials);
@@ -30,8 +31,22 @@ export class AuthService {
   }
 
   logout(): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/logout`, {}, this.httpOptions);
+    const accessToken = localStorage.getItem('vet_connect_token')?.replace(/['"]+/g, '');
+    if (accessToken) {
+      const httpOptions = {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`
+        })
+      };
+
+      return this.http.post<any>(`${this.apiUrl}/logout`, {}, httpOptions);
+    } else {
+      console.warn('No access token found');
+      return of(null);
+    }
   }
+
 
   register(formData: FormData): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/register`, formData);
