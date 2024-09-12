@@ -84,7 +84,7 @@ export class RolComponent implements OnInit {
     }
 
     if (action === "view") {
-      //this.openModalView(this.dataTemp);
+      this.openModalView(this.dataTemp);
     }
 
     if (action === "ban") {
@@ -436,6 +436,22 @@ export class RolComponent implements OnInit {
       'is-invalid': control?.invalid && (control?.touched || control?.dirty),
       'is-valid': control?.valid && (control?.touched || control?.dirty),
     };
+  }
+
+  openModalView(data: any) {
+    Swal.fire({
+      title: 'Roles',
+      html: `
+        <div id="custom-icon-container">
+          <p><strong>Nombre : </strong> <span>${data.name}</span> </p>
+          <p><strong>Descripción : </strong> <span>${data.description}</span> </p>
+          <p><strong>Fecha de Creación: </strong> <span>${moment(data.created_at).format('DD/MM/YYYY hh:mm:ss A')}</span></p>
+          <p><strong>Última actualización: </strong> <span>${moment(data.updated_at).format('DD/MM/YYYY hh:mm:ss A')}</span></p>
+        </div>
+      `,
+      icon: 'info',
+      confirmButtonText: 'Cerrar'
+    });
   }
 
 }

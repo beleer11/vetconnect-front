@@ -65,7 +65,7 @@
                                 <c-col *ngFor="let icon of icons" class="mb-4 icon-container" md="3" sm="4" xl="2"
                                     xs="6" (click)="selectIcon(toKebabCase(icon[0]))"
                                     [ngClass]="{'selected': isIconSelected(toKebabCase(icon[0]))}">
-                                    <svg cIcon [name]="icon[0]" size="lg" class="icon-svg"></svg>
+                                    <svg cIcon [name]="icon[0]" size="3xl" class="icon-svg"></svg>
                                     <div>{{ toKebabCase(icon[0]) }}</div>
                                 </c-col>
                             </c-row>

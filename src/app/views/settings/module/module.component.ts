@@ -342,9 +342,9 @@ export class ModuleComponent implements AfterViewInit {
       title: 'Módulo',
       html: `
         <div id="custom-icon-container">
+          <p><strong>Icono : </strong><p id="icon-placeholder"></p></p>
           <p><strong>Nombre : </strong> <span>${data.name}</span> </p>
           <p><strong>Grupo : </strong> <span>${data.group.name}</span> </p>
-          <p><strong>Icono : </strong><p id="icon-placeholder"></p></p>
           <p><strong>Ruta : </strong> <span>${data.url}</span> </p>
           <p><strong>Fecha de Creación: </strong> <span>${moment(data.created_at).format('DD/MM/YYYY hh:mm:ss A')}</span></p>
           <p><strong>Última actualización: </strong> <span>${moment(data.updated_at).format('DD/MM/YYYY hh:mm:ss A')}</span></p>

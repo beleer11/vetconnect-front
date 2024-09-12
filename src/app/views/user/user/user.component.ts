@@ -9,6 +9,7 @@ import Swal from 'sweetalert2';
 import moment from 'moment';
 import * as bootstrap from 'bootstrap';
 import { PermissionService } from 'src/app/services/user/permission/permission.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-user',
@@ -42,7 +43,6 @@ export class UserComponent implements OnInit {
   public permissionSuggested: any = [];
   public selectedFile: any;
   public dataTemp: any = [];
-
 
   constructor(
     private userService: UserService,
@@ -117,6 +117,9 @@ export class UserComponent implements OnInit {
 
   resetForms() {
     this.formUser.reset();
+    this.formUser.untouched;
+    this.passwordStrengthMessage = '';
+    this.passwordStrengthClass = '';
     this.textSelectAll = 'Seleccionar todo';
     this.dataPermissionSelected = [];
     this.permissionSuggested = [];
@@ -140,7 +143,6 @@ export class UserComponent implements OnInit {
         is_disabled: this.formUser.get('is_disabled')?.value,
         permissions: this.dataPermissionSelected
       };
-      console.log(data)
       if (this.action === 'save') {
         this.saveNewUser(data);
       }
@@ -600,6 +602,7 @@ export class UserComponent implements OnInit {
     if (action === "edit") {
       try {
         this.loading = true;
+        this.resetForms();
         await this.getRol();
         await this.setDataForm();
         await this.selectRol(this.dataTemp.rol_id);
@@ -613,15 +616,16 @@ export class UserComponent implements OnInit {
     }
 
     if (action === "delete") {
-      //this.deleteRecord(id);
+      this.deleteRecord(id);
     }
 
     if (action === "view") {
-      //this.openModalView(this.dataTemp);
+      this.dataTemp.image_profile = environment.apiStorage + this.dataTemp.image_profile;
+      this.openModalView(this.dataTemp);
     }
 
     if (action === "ban") {
-      //this.disableOrEnableRecord(this.dataTemp);
+      this.disableOrEnableRecord(this.dataTemp);
     }
   }
 
@@ -644,5 +648,98 @@ export class UserComponent implements OnInit {
     });
   }
 
+  disableOrEnableRecord(data: any) {
+    const actionText = data.is_disabled === 0 ? 'habilitar' : 'inhabilitar';
+    const confirmButtonText = data.is_disabled === 0 ? 'Sí, habilitar' : 'Sí, inhabilitar';
+    const successMessage = data.is_disabled === 0 ? 'El registro ha sido habilitado correctamente.' : 'El registro ha sido inhabilitado correctamente.';
+
+    Swal.fire({
+      title: `¿Deseas ${actionText} este registro?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#f39c12',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: confirmButtonText,
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loading = true;
+        const action = data.is_disabled === 0 ? 'enable' : 'disable';
+        this.actionMap[action](data.id).subscribe({
+          next: (response: any) => {
+            this.dataUser = response.data;
+            this.dataTransformada = this.formatedData(this.dataUser);
+            this.loading = false;
+            this.alertMessage('¡Éxito!', successMessage, 'success');
+          },
+          error: (error: any) => {
+            this.loading = false;
+            this.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.', 'error');
+          }
+        });
+      }
+    });
+  }
+
+  private actionMap: { [key: string]: (id: number) => Observable<any> } = {
+    enable: (id: number) => this.userService.enableRecordById(id),
+    disable: (id: number) => this.userService.disableRecordById(id),
+  };
+
+  deleteRecord(id: number) {
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: "Esta acción eliminará el registro permanentemente. ¡No podrás revertirlo!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminarlo',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loading = true;
+        this.userService.deleteRecordById(id).subscribe({
+          next: (response) => {
+            this.dataUser = response.data;
+            this.dataTransformada = this.formatedData(this.dataUser);
+            this.loading = false;
+            this.alertMessage('¡Eliminado!', 'El registro ha sido eliminado correctamente.', 'success');
+          },
+          error: (error) => {
+            this.loading = false;
+            this.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.', 'error');
+          }
+        });
+      }
+    });
+  }
+
+  openModalView(data: any) {
+    let rol = this.dataRol.filter((t: any) => t.id === data.id_rol);
+    Swal.fire({
+      title: 'Usuarios',
+      html: `
+        <div id="custom-icon-container">
+          <p><strong>Foto: </strong><p id="foto-placeholder"></p></p>
+          <p><strong>Nombre : </strong> <span>${data.name}</span> </p>
+          <p><strong>Usuario : </strong> <span>${data.username}</span> </p>
+          <p><strong>Rol : </strong> <span>${rol}</span> </p>
+          <p><strong>Fecha de Creación: </strong> <span>${moment(data.created_at).format('DD/MM/YYYY hh:mm:ss A')}</span></p>
+          <p><strong>Última actualización: </strong> <span>${moment(data.updated_at).format('DD/MM/YYYY hh:mm:ss A')}</span></p>
+        </div>
+      `,
+      icon: 'info',
+      confirmButtonText: 'Cerrar',
+      didOpen: () => {
+        const fotoPlaceholder = document.getElementById('foto-placeholder');
+        const svgContainer = document.getElementById('svg-container');
+
+        if (fotoPlaceholder && svgContainer) {
+          fotoPlaceholder.innerHTML = svgContainer.innerHTML;
+        }
+      }
+    });
+  }
 
 }
