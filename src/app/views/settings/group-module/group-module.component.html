@@ -1,11 +1,13 @@
 <app-loading-spinner *ngIf="loading"></app-loading-spinner>
-<div class="col-12 col-md-auto d-flex justify-content-end align-items-center mb-2 mt-md-0" *ngIf="!showForm">
-  <button class="btn btn-primary" (click)="addGroupModule()">Agregar</button>
+<div *ngIf="!showForm && dataModule.length > 0">
+  <div class="col-12 col-md-auto d-flex justify-content-end align-items-center mb-2 mt-md-0">
+    <button class="btn btn-primary" (click)="addGroupModule()">Agregar</button>
+  </div>
+  <app-general-table [columns]="fieldsTable" [transformedData]="dataModuleTrasnform" [data]="dataModule"
+    [acciones]="true" [columnAlignments]="columnAlignments" [title]="'Grupo de Módulos'"
+    (actionEvent)="handleAction($event)">
+  </app-general-table>
 </div>
-<app-general-table *ngIf="!showForm" [columns]="fieldsTable" [transformedData]="dataModuleTrasnform" [data]="dataModule"
-  [acciones]="true" [columnAlignments]="columnAlignments" [title]="'Grupo de Módulos'"
-  (actionEvent)="handleAction($event)">
-</app-general-table>
 <c-row *ngIf="showForm">
   <c-col xs>
     <c-card class="mb-4">

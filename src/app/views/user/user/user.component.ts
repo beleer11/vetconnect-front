@@ -1,11 +1,15 @@
 import { Component, OnInit, signal } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { UserService } from 'src/app/services/user/user.service';
+import { UserService } from 'src/app/services/user/user/user.service';
+import { RolService } from 'src/app/services/user/rol/rol.service';
+import { GeneralService } from 'src/app/services/general/general.service';
 import { environment } from 'src/environments/environment';
 import Swal from 'sweetalert2';
 import moment from 'moment';
 import * as bootstrap from 'bootstrap';
+import { PermissionService } from 'src/app/services/user/permission/permission.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-user',
@@ -20,9 +24,8 @@ export class UserComponent implements OnInit {
   public fieldsTable: any = [];
   public columnAlignments: any = [];
   public loading: boolean = true;
-  public showForm: boolean = true;
+  public showForm: boolean = false;
   public formUser!: FormGroup;
-  public formPermission!: FormGroup;
   public action: string = 'save';
   public generating = false;
   public usernameDisabled = false;
@@ -31,16 +34,28 @@ export class UserComponent implements OnInit {
   public passwordStrengthClass: string | null = null;
   public dataPermission: any = [];
   public dataPermissionSelected: any = [];
+  public selectAllCheck: boolean = true;
+  public textSelectAll: string = 'Seleccionar todo';
+  public searchTerm = '';
+  public dataRol: any = [];
+  filteredRoles: any[] = this.dataRol;
+  searchControl = new FormControl('');
+  public permissionSuggested: any = [];
+  public selectedFile: any;
+  public dataTemp: any = [];
 
   constructor(
     private userService: UserService,
+    private rolService: RolService,
+    private permissionService: PermissionService,
+    private generalService: GeneralService,
     private formBuilder: FormBuilder,
     private fb: FormBuilder
   ) { }
 
 
   async ngOnInit(): Promise<void> {
-    //this.dataTransformada = await this.getDataUser();
+    this.dataTransformada = await this.getDataUser();
     this.fieldsTable = this.getFieldsTable();
     this.columnAlignments = this.getColumnAlignments();
     this.createForm();
@@ -52,13 +67,10 @@ export class UserComponent implements OnInit {
       username: [{ value: '', disabled: true }, [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(20)]],
-      image_profile: [null, Validators.required],
-      is_disabled: [true]
+      image_profile: [null],
+      is_disabled: [true],
+      rol_id: [null, Validators.required]
     });
-    this.formPermission = this.fb.group({
-      checkPermission: ['', [Validators.required]]
-    });
-    this.loading = false;
     this.listPermission();
   }
 
@@ -90,57 +102,69 @@ export class UserComponent implements OnInit {
   }
 
   private getFieldsTable() {
-    return ['Nombres', 'Usuario', 'Correo', 'Foto', 'Fecha creación', 'Ultima actualización'];
+    return ['Nombres', 'Usuario', 'Correo', 'Foto'];
   }
 
   private getColumnAlignments() {
-    return ['left', 'left', 'left', 'center', 'center', 'center'];
+    return ['left', 'left', 'left', 'center'];
   }
 
-  public addGroupModule() {
+  public addUser() {
     this.showForm = true;
-    this.formUser.reset();
+    this.resetForms();
     this.action = 'save';
+  }
+
+  resetForms() {
+    this.formUser.reset();
+    this.formUser.untouched;
+    this.passwordStrengthMessage = '';
+    this.passwordStrengthClass = '';
+    this.textSelectAll = 'Seleccionar todo';
+    this.dataPermissionSelected = [];
+    this.permissionSuggested = [];
+    this.selectAllCheck = true;
   }
 
   public backToTable() {
     this.showForm = false;
-    this.formUser.reset();
+    this.resetForms();
   }
 
   onSubmit() {
-    //if (this.formUser.valid) {
-    let data = {
-      name: this.formUser.get('name')?.value,
-      username: this.formUser.get('username')?.value,
-      email: this.formUser.get('email')?.value,
-      password: this.formUser.get('password')?.value,
-      image_profile: this.formUser.get('image_profile')?.value,
-      is_disabled: this.formUser.get('is_disabled')?.value,
-      permissions: this.dataPermissionSelected
-    }
-    if (this.action === 'save') {
-      console.log(data);
-    }
+    if (this.formUser.valid) {
+      let data = {
+        name: this.formUser.get('name')?.value,
+        username: this.formUser.get('username')?.value,
+        email: this.formUser.get('email')?.value,
+        password: this.formUser.get('password')?.value,
+        rol_id: this.formUser.get('rol_id')?.value,
+        image_profile: this.selectedFile || null,
+        is_disabled: this.formUser.get('is_disabled')?.value,
+        permissions: this.dataPermissionSelected
+      };
+      if (this.action === 'save') {
+        this.saveNewUser(data);
+      }
 
-    if (this.action === 'edit') {
-      //this.editGroupModule(this.formGroupModule.get('nombre')?.value, this.dataTemp.id);
+      if (this.action === 'edit') {
+        this.editUser(data, this.dataTemp.id);
+      }
     }
-    //}
   }
 
-  public saveNewUser(nombre: string) {
+  public saveNewUser(data: {}) {
     this.loading = true;
-    /*this.moduleService.sendGroup({ "name": nombre }).subscribe({
+    this.userService.sendUser(data).subscribe({
       next: (response) => {
         if (response.original.success) {
-          this.dataModule = response.original.data;
-          if (Array.isArray(this.dataModule)) {
-            this.dataModuleTrasnform = this.formatedData(this.dataModule);
+          this.dataUser = response.original.data;
+          if (Array.isArray(this.dataUser)) {
+            this.dataTransformada = this.formatedData(this.dataUser);
           } else {
-            this.dataModuleTrasnform = [];
+            this.dataTransformada = [];
           }
-  
+
           this.loading = false;
           this.showForm = false;
           this.alertMessage('¡Éxito!', response.original.message, 'success');
@@ -151,9 +175,44 @@ export class UserComponent implements OnInit {
       },
       error: (error) => {
         this.loading = false;
+        // Verifica si hay errores de validación
+        if (error.error && error.error.errors) {
+          const validationErrors = this.formatValidationErrors(error.error.errors);
+          this.alertMessage('Error de validación', validationErrors, 'error');
+        } else {
+          this.alertMessage('Error', 'Hubo un problema al procesar tu solicitud. Por favor, inténtalo de nuevo.', 'error');
+        }
+      }
+    });
+  }
+
+  public editUser(data: any, id: number) {
+    this.loading = true;
+    this.userService.editUser(data, id).subscribe({
+      next: (response) => {
+        if (response && response.original.data) {
+          this.dataUser = response.original.data;
+
+          if (Array.isArray(this.dataUser)) {
+            this.dataPermissionSelected = [];
+            this.dataTransformada = this.formatedData(this.dataUser);
+            this.resetForms();
+          } else {
+            this.dataTransformada = [];
+          }
+          this.showForm = false;
+          this.loading = false;
+          this.alertMessage('¡Éxito!', response.original.message, 'success');
+        } else {
+          this.loading = false;
+          this.alertMessage('Advertencia', response.original.message, 'warning');
+        }
+      },
+      error: (error) => {
+        this.loading = false;
         this.alertMessage('Error', 'Hubo un problema al procesar tu solicitud. Por favor, inténtalo de nuevo.', 'error');
       }
-    });*/
+    });
   }
 
   generateUsername() {
@@ -168,6 +227,8 @@ export class UserComponent implements OnInit {
           this.formUser.get('username')?.setValue(response);
         },
         error: (error) => {
+          this.generating = false;
+          this.usernameDisabled = false;
           console.error('Error generating username:', error);
         },
         complete: () => {
@@ -190,6 +251,11 @@ export class UserComponent implements OnInit {
       html = `
       <div id="custom-icon-container">
         <p>Solo se permiten imágenes en formatos PNG, JPEG y JPG.</p>
+      </div>`;
+    } else if (text === 3) {
+      html = `
+      <div id="custom-icon-container">
+        <p>Esta acción sugiere automáticamente los permisos adecuados según el rol seleccionado. Posteriormente, podrá agregar o eliminar permisos según sus necesidades de manera flexible.</p>
       </div>`;
     }
 
@@ -225,7 +291,6 @@ export class UserComponent implements OnInit {
     }
   }
 
-
   calculatePasswordStrength(password: string): number {
     let strength = 0;
 
@@ -252,7 +317,6 @@ export class UserComponent implements OnInit {
 
     return Math.min(strength, 5);  // Asegúrate de que el puntaje no supere 5
   }
-
 
   getPasswordStrengthMessage(strength: number): string {
     switch (strength) {
@@ -308,6 +372,8 @@ export class UserComponent implements OnInit {
     this.userService.listPermission().subscribe(
       response => {
         this.dataPermission = response;
+        this.getRol();
+        this.loading = false;
       },
       error => {
         console.log(error.message);
@@ -315,43 +381,365 @@ export class UserComponent implements OnInit {
     );
   }
 
+  async getRol(): Promise<void> {
+    try {
+      // Convierte el observable en una promesa
+      const response = await this.rolService.getDataRoles().toPromise();
+      this.dataRol = response.original;
+      this.filteredRoles = this.dataRol;
+    } catch (error: any) {
+      console.error('Error al obtener roles:', error.message);
+      // Maneja el error según sea necesario
+    }
+  }
+
   getModulesByGroup(groupId: number) {
     const res = this.dataPermission.modules.filter((module: any) => module.module_group_id === groupId);
     return res;
   }
 
-  getPermissionsByModule(moduleId: number) {
-    const res = this.dataPermission.permissions.filter((permission: any) => permission.module_id === moduleId);
-    return res;
+  public checkedPermiso(moduleId: number, permisoId: number): boolean {
+    // Encuentra el módulo específico en dataPermissionSelected
+    const module = this.dataPermissionSelected.find((item: any) => item.module === moduleId);
+
+    // Si el módulo existe, verifica si el permiso está en el array de permisos del módulo
+    if (module) {
+      return module.permissions.includes(permisoId);
+    }
+
+    // Si el módulo no está en dataPermissionSelected, retorna false
+    return false;
   }
 
-  public updatePermissionSelection(permission: any, moduleId: number) {
+  public togglePermission(moduleId: number, permisoId: number) {
+    // Encuentra el módulo seleccionado
     const moduleIndex = this.dataPermissionSelected.findIndex((item: any) => item.module === moduleId);
-    permission.selected = this.formPermission.get('checkPermission')?.value;
 
-    if (moduleIndex > -1) {
-      const permissionIndex = this.dataPermissionSelected[moduleIndex].permissions.indexOf(permission.id);
-
-      if (permission.selected) {
-        if (permissionIndex === -1) {
-          this.dataPermissionSelected[moduleIndex].permissions.push(permission.id);
-        }
-      } else {
-        if (permissionIndex > -1) {
-          this.dataPermissionSelected[moduleIndex].permissions.splice(permissionIndex, 1);
-
-          if (this.dataPermissionSelected[moduleIndex].permissions.length === 0) {
-            this.dataPermissionSelected.splice(moduleIndex, 1);
-          }
-        }
-      }
+    if (moduleIndex === -1) {
+      // Si el módulo no está en dataPermissionSelected, lo agregamos con el permiso seleccionado
+      this.dataPermissionSelected.push({
+        module: moduleId,
+        permissions: [permisoId]
+      });
     } else {
-      if (permission.selected) {
-        this.dataPermissionSelected.push({
-          module: moduleId,
-          permissions: [permission.id]
-        });
+      // Si el módulo ya está en dataPermissionSelected, actualizamos sus permisos
+      const permissionIndex = this.dataPermissionSelected[moduleIndex].permissions.indexOf(permisoId);
+
+      if (permissionIndex === -1) {
+        // Si el permiso no está en la lista, lo agregamos
+        this.dataPermissionSelected[moduleIndex].permissions.push(permisoId);
+      } else {
+        // Si el permiso ya está en la lista, lo eliminamos
+        this.dataPermissionSelected[moduleIndex].permissions.splice(permissionIndex, 1);
+
+        // Si no quedan permisos en el módulo, lo eliminamos
+        if (this.dataPermissionSelected[moduleIndex].permissions.length === 0) {
+          this.dataPermissionSelected.splice(moduleIndex, 1);
+        }
       }
     }
   }
+
+  selectAllPermissions() {
+    if (this.selectAllCheck) {
+      this.dataPermissionSelected = [];
+      this.rolService.setData(null);
+
+      // Recorremos los grupos
+      this.dataPermission.groups.map((c: any) => {
+        let modules = this.getModulesByGroup(c.id);
+
+        modules.map((module: any) => {
+          // Verificamos si el módulo ya está en dataPermissionSelected
+          let moduleIndex = this.dataPermissionSelected.findIndex(
+            (item: any) => item.module === module.id
+          );
+
+          if (moduleIndex > -1) {
+            // Si ya existe, agregamos los permisos que faltan
+            this.dataPermission.permissions.map((p: any) => {
+              const permissionIndex = this.dataPermissionSelected[moduleIndex].permissions.indexOf(p.id);
+              if (permissionIndex === -1) {
+                this.dataPermissionSelected[moduleIndex].permissions.push(p.id);
+              }
+            });
+          } else {
+            // Si no existe, creamos una nueva entrada
+            this.dataPermissionSelected.push({
+              module: module.id,
+              permissions: this.dataPermission.permissions.map((p: any) => p.id)
+            });
+          }
+        });
+      });
+
+      this.textSelectAll = 'Deseleccionar todo';
+    } else {
+      this.dataPermissionSelected = [];
+      this.textSelectAll = 'Seleccionar todo';
+    }
+
+    this.selectAllCheck = !this.selectAllCheck;
+  }
+
+  async checkedPermisosAsignados(permissions: any): Promise<void> {
+    try {
+      // Limpia el array de permisos seleccionados
+      this.dataPermissionSelected = [];
+
+      // Recorre los permisos recibidos del backend
+      permissions.forEach((p: any) => {
+        // Verifica si el módulo ya está en dataPermissionSelected
+        const moduleIndex = this.dataPermissionSelected.findIndex((m: any) => m.module === p.module);
+
+        if (moduleIndex > -1) {
+          // Si el módulo ya existe, agrega los permisos si no están presentes
+          p.permissions.forEach((perm: any) => {
+            const permissionIndex = this.dataPermissionSelected[moduleIndex].permissions.indexOf(perm);
+            if (permissionIndex === -1) {
+              this.dataPermissionSelected[moduleIndex].permissions.push(perm);
+            }
+          });
+        } else {
+          // Si el módulo no existe, crea una nueva entrada con permisos
+          this.dataPermissionSelected.push({
+            module: p.module,
+            permissions: [...p.permissions]
+          });
+        }
+      });
+
+      // Actualiza el estado de los checkboxes
+      this.dataPermissionSelected.forEach((moduleData: any) => {
+        moduleData.permissions.forEach((permiso: any) => {
+          this.checkedPermiso(moduleData.module, permiso);
+        });
+      });
+
+      this.loading = false;
+    } catch (error: any) {
+      console.error('Error al asignar permisos:', error.message);
+      this.loading = false;
+      throw error;
+    }
+  }
+
+  getValidationClass(controlName: string): { [key: string]: any } {
+    const control = this.formUser.get(controlName);
+    return {
+      'is-invalid': control?.invalid && (control?.touched || control?.dirty),
+      'is-valid': control?.valid && (control?.touched || control?.dirty),
+    };
+  }
+
+  getTextClass() {
+    return this.formUser.get('is_disabled')?.value ? 'text-success' : 'text-red';
+  }
+
+  async selectRol(id: number): Promise<void> {
+    try {
+      const response = await this.rolService.getPermissionByRol(id).toPromise();
+      this.permissionSuggested = response.original;
+    } catch (error: any) {
+      console.error('Error al seleccionar rol:', error.message);
+      throw error;
+    }
+  }
+
+  async getPermissionByUser(id: number): Promise<void> {
+    try {
+      const response = await this.permissionService.getPermissionByUser(id).toPromise();
+      await this.checkedPermisosAsignados(response.original);
+    } catch (error: any) {
+      console.error('Error al seleccionar rol:', error.message);
+      throw error;
+    }
+  }
+
+  suggestedPermission() {
+    this.checkedPermisosAsignados(this.permissionSuggested);
+  }
+
+  searchRol(rol: any) {
+    this.formUser.controls['searchControl'].value(rol.target.value)
+  }
+
+  clearSelection(): void {
+    this.formUser.get('rol_id')?.reset();
+  }
+
+  async onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFile = await this.generalService.convertToBase64Files(file);
+    }
+  }
+
+  public alertMessage(title: any, text: any, icon: any) {
+    Swal.fire({
+      title: title,
+      text: text,
+      icon: icon,
+      confirmButtonText: 'OK'
+    });
+  }
+
+  private formatValidationErrors(errors: any): string {
+    let errorMessage = '';
+    for (const key in errors) {
+      if (errors.hasOwnProperty(key)) {
+        errorMessage += `${errors[key].join(' ')}\n`;
+      }
+    }
+    return errorMessage.trim();
+  }
+
+  async handleAction(event: { id: number, action: string }) {
+    const { id, action } = event;
+    this.action = action;
+    this.dataTemp = this.dataUser.find((item: any) => item.id === id);
+
+    if (action === "edit") {
+      try {
+        this.loading = true;
+        this.resetForms();
+        await this.getRol();
+        await this.setDataForm();
+        await this.selectRol(this.dataTemp.rol_id);
+        await this.getPermissionByUser(id);
+        this.loading = false;
+        this.showForm = true;
+      } catch (error) {
+        console.error('Error en el flujo de edición:', error);
+        this.loading = false;
+      }
+    }
+
+    if (action === "delete") {
+      this.deleteRecord(id);
+    }
+
+    if (action === "view") {
+      this.dataTemp.image_profile = environment.apiStorage + this.dataTemp.image_profile;
+      this.openModalView(this.dataTemp);
+    }
+
+    if (action === "ban") {
+      this.disableOrEnableRecord(this.dataTemp);
+    }
+  }
+
+  async setDataForm(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      try {
+        this.formUser.controls["name"].setValue(this.dataTemp.name);
+        this.formUser.controls["username"].setValue(this.dataTemp.username);
+        this.formUser.controls["email"].setValue(this.dataTemp.email);
+        this.formUser.controls["rol_id"].setValue(this.dataTemp.rol_id);
+        this.formUser.controls["is_disabled"].setValue((this.dataTemp.is_disabled === 1) ? true : false);
+
+        // Marcar los controles como tocados y verificar su validez
+        this.formUser.markAllAsTouched();
+
+        resolve();
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  disableOrEnableRecord(data: any) {
+    const actionText = data.is_disabled === 0 ? 'habilitar' : 'inhabilitar';
+    const confirmButtonText = data.is_disabled === 0 ? 'Sí, habilitar' : 'Sí, inhabilitar';
+    const successMessage = data.is_disabled === 0 ? 'El registro ha sido habilitado correctamente.' : 'El registro ha sido inhabilitado correctamente.';
+
+    Swal.fire({
+      title: `¿Deseas ${actionText} este registro?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#f39c12',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: confirmButtonText,
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loading = true;
+        const action = data.is_disabled === 0 ? 'enable' : 'disable';
+        this.actionMap[action](data.id).subscribe({
+          next: (response: any) => {
+            this.dataUser = response.data;
+            this.dataTransformada = this.formatedData(this.dataUser);
+            this.loading = false;
+            this.alertMessage('¡Éxito!', successMessage, 'success');
+          },
+          error: (error: any) => {
+            this.loading = false;
+            this.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.', 'error');
+          }
+        });
+      }
+    });
+  }
+
+  private actionMap: { [key: string]: (id: number) => Observable<any> } = {
+    enable: (id: number) => this.userService.enableRecordById(id),
+    disable: (id: number) => this.userService.disableRecordById(id),
+  };
+
+  deleteRecord(id: number) {
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: "Esta acción eliminará el registro permanentemente. ¡No podrás revertirlo!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminarlo',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loading = true;
+        this.userService.deleteRecordById(id).subscribe({
+          next: (response) => {
+            this.dataUser = response.data;
+            this.dataTransformada = this.formatedData(this.dataUser);
+            this.loading = false;
+            this.alertMessage('¡Eliminado!', 'El registro ha sido eliminado correctamente.', 'success');
+          },
+          error: (error) => {
+            this.loading = false;
+            this.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.', 'error');
+          }
+        });
+      }
+    });
+  }
+
+  openModalView(data: any) {
+    let rol = this.dataRol.filter((t: any) => t.id === data.id_rol);
+    Swal.fire({
+      title: 'Usuarios',
+      html: `
+        <div id="custom-icon-container">
+          <p><strong>Foto: </strong><p id="foto-placeholder"></p></p>
+          <p><strong>Nombre : </strong> <span>${data.name}</span> </p>
+          <p><strong>Usuario : </strong> <span>${data.username}</span> </p>
+          <p><strong>Rol : </strong> <span>${rol}</span> </p>
+          <p><strong>Fecha de Creación: </strong> <span>${moment(data.created_at).format('DD/MM/YYYY hh:mm:ss A')}</span></p>
+          <p><strong>Última actualización: </strong> <span>${moment(data.updated_at).format('DD/MM/YYYY hh:mm:ss A')}</span></p>
+        </div>
+      `,
+      icon: 'info',
+      confirmButtonText: 'Cerrar',
+      didOpen: () => {
+        const fotoPlaceholder = document.getElementById('foto-placeholder');
+        const svgContainer = document.getElementById('svg-container');
+
+        if (fotoPlaceholder && svgContainer) {
+          fotoPlaceholder.innerHTML = svgContainer.innerHTML;
+        }
+      }
+    });
+  }
+
 }

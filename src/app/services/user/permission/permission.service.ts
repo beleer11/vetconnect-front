@@ -47,4 +47,8 @@ export class PermissionService {
   enableRecordById(id: number): Observable<any> {
     return this.http.patch(`${this.apiUrl}/permission/enable/${id}`, {}, this.httpOptions);
   }
+
+  getPermissionByUser(id: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/permission/getPermissionByUser/${id}`, this.httpOptions);
+  }
 }

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { PermissionService } from '../../../services/parameter/permission/permission.service';
+import { PermissionService } from '../../../services/user/permission/permission.service';
 import moment from 'moment';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
@@ -98,7 +98,7 @@ export class PermissionComponent implements OnInit {
     }
 
     if (action === "view") {
-      //this.openModalView(this.dataTemp);
+      this.openModalView(this.dataTemp);
     }
 
     if (action === "ban") {
@@ -248,6 +248,21 @@ export class PermissionComponent implements OnInit {
     enable: (id: number) => this.permissionService.enableRecordById(id),
     disable: (id: number) => this.permissionService.disableRecordById(id),
   };
+
+  openModalView(data: any) {
+    Swal.fire({
+      title: 'Permisos',
+      html: `
+        <div id="custom-icon-container">
+          <p><strong>Nombre : </strong> <span>${data.name}</span> </p>
+          <p><strong>Fecha de Creación: </strong> <span>${moment(data.created_at).format('DD/MM/YYYY hh:mm:ss A')}</span></p>
+          <p><strong>Última actualización: </strong> <span>${moment(data.updated_at).format('DD/MM/YYYY hh:mm:ss A')}</span></p>
+        </div>
+      `,
+      icon: 'info',
+      confirmButtonText: 'Cerrar'
+    });
+  }
 
 
 }

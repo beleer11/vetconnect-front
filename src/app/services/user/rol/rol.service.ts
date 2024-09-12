@@ -6,7 +6,7 @@ import { environment } from 'src/environments/environment';
 @Injectable({
   providedIn: 'root'
 })
-export class UserService {
+export class RolService {
 
   private apiUrl: string = environment.apiUrl;
   private opcion: string = '';
@@ -26,21 +26,6 @@ export class UserService {
 
   constructor(private http: HttpClient) { }
 
-  /** Usuarios */
-  getDataUser(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/user/index`, this.httpOptions);
-  }
-
-  generateUsername(nombre: string): Observable<string> {
-    return this.http.get<string>(`${this.apiUrl}/user/generate-username?name=${nombre}`, this.httpOptions);
-  }
-
-  listPermission() {
-    return this.http.get<string>(`${this.apiUrl}/user/listPermission`, this.httpOptions);
-  }
-
-  /** Roles */
-
   getDataRoles(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/rol/index`, this.httpOptions);
   }
@@ -55,6 +40,18 @@ export class UserService {
 
   editRol(data: any, id: number): Observable<any> {
     return this.http.put<any>(`${this.apiUrl}/rol/editData/${id}`, data, this.httpOptions);
+  }
+
+  deleteRecordById(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/rol/remove/${id}`, this.httpOptions);
+  }
+
+  disableRecordById(id: number): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/rol/disable/${id}`, {}, this.httpOptions);
+  }
+
+  enableRecordById(id: number): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/rol/enable/${id}`, {}, this.httpOptions);
   }
 
 
