@@ -19,7 +19,7 @@ export class LoginComponent {
     private authService: AuthService,
     private formBuilder: FormBuilder,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.createForm();
@@ -35,6 +35,7 @@ export class LoginComponent {
 
   login() {
     if (this.formLogin.valid) {
+      this.mesageError = '';
       this.btnLogin = true;
       const datos = this.formLogin.value;
       this.authService
@@ -49,10 +50,10 @@ export class LoginComponent {
           },
           (error) => {
             this.btnLogin = false;
-            this.mesageError = 'Correo electrónico o contraseña incorrectos.';
+            this.mesageError = error.error.error;
             setTimeout(() => {
               this.mesageError = '';
-            }, 2000);
+            }, 6000);
             this.router.navigate(['/login']);
           }
         );
@@ -60,7 +61,7 @@ export class LoginComponent {
       this.mesageError = 'Por favor ingresa los datos';
       setTimeout(() => {
         this.mesageError = '';
-      }, 2000);
+      }, 3000);
     }
   }
 }
