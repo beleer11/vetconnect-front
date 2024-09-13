@@ -1,7 +1,9 @@
 <app-loading-spinner *ngIf="loading"></app-loading-spinner>
 <div *ngIf="!showForm && dataUser.length > 0">
-    <div class="col-12 col-md-auto d-flex justify-content-end align-items-center mb-2 mt-md-0" *ngIf="!showForm">
-        <button class="btn btn-primary" (click)="addUser()">Agregar</button>
+    <div *ngIf="!showForm">
+        <app-group-button-general [showAddButton]="showAddButton" [showImportButton]="showImportButton"
+            [showExportButton]="showExportButton" (buttonClick)="handleButtonClick($event)">
+        </app-group-button-general>
     </div>
     <app-general-table [columns]="fieldsTable" [transformedData]="dataTransformada" [data]="dataUser" [acciones]="true"
         [columnAlignments]="columnAlignments" [title]="'Usuarios'" (actionEvent)="handleAction($event)">

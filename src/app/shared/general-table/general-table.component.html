@@ -66,28 +66,31 @@
                                     <!-- Mostrar celdas de acciones solo si hay permisos -->
                                     <td *ngIf="acciones" class="text-center">
                                         <div class="d-flex justify-content-center align-items-center">
+                                            <!-- Editar -->
                                             <button *ngIf="hasPermission('Editar')" class="btn btn-primary btn-sm me-2"
                                                 (click)="onAction(row.id, 'edit')" title="Editar">
-                                                <svg cIcon name="cil-pencil"></svg>
+                                                <i class="fa-solid fa-pen-to-square"></i>
                                             </button>
 
+                                            <!-- Eliminar -->
                                             <button *ngIf="hasPermission('Eliminar')" class="btn btn-danger btn-sm me-2"
                                                 (click)="onAction(row.id, 'delete')" title="Eliminar">
-                                                <svg cIcon name="cil-trash"></svg>
+                                                <i class="fa-solid fa-trash"></i>
                                             </button>
 
+                                            <!-- Ver -->
                                             <button *ngIf="hasPermission('Ver')" class="btn btn-info btn-sm me-2"
                                                 (click)="onAction(row.id, 'view')" title="Ver">
-                                                <svg cIcon name="cil-search"></svg>
+                                                <i class="fa-solid fa-eye"></i>
                                             </button>
 
-                                            <button *ngIf="hasPermission('Editar')" class="btn btn-secondary btn-sm"
+                                            <!-- Habilitar/Inhabilitar -->
+                                            <button *ngIf="hasPermission('Editar')" class="btn btn-sm"
+                                                [ngClass]="{ 'btn-success': !row.is_disabled, 'btn-warning': row.is_disabled}"
                                                 (click)="onAction(row.id, 'ban')"
                                                 [title]="!row.is_disabled ? 'Habilitar' : 'Inhabilitar'">
-                                                <svg *ngIf="!row.is_disabled" cIcon name="cil-check"
-                                                    title="Habilitar"></svg>
-                                                <svg *ngIf="row.is_disabled" cIcon name="cil-ban"
-                                                    title="Inhabilitar"></svg>
+                                                <i *ngIf="!row.is_disabled" class="fa-solid fa-thumbs-up"></i>
+                                                <i *ngIf="row.is_disabled" class="fa-solid fa-thumbs-down"></i>
                                             </button>
                                         </div>
                                     </td>

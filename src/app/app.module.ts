@@ -44,6 +44,7 @@ import { PermissionComponent } from './views/user/permission/permission.componen
 import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinner.component';
 import { CompanyComponent } from './views/parameter/company/company.component';
 import { RolComponent } from './views/user/rol/rol.component';
+import { GroupButtonGeneralComponent } from './shared/group-button-general/group-button-general.component';
 
 
 // Import containers
@@ -100,7 +101,8 @@ const APP_CONTAINERS = [
     DashboardComponent,
     PermissionComponent,
     CompanyComponent,
-    RolComponent
+    RolComponent,
+    GroupButtonGeneralComponent
   ],
   imports: [
     BrowserModule,
