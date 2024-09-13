@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { navItems } from './_nav';
+import { getNavItemsFromPermissions } from './_nav'; // Ajusta la ruta según tu estructura de archivos
 
 @Component({
   selector: 'app-dashboard',
@@ -9,7 +9,7 @@ import { navItems } from './_nav';
 })
 export class DefaultLayoutComponent {
 
-  public navItems = navItems;
+  public navItems = getNavItemsFromPermissions();
 
   constructor() { }
 }

@@ -1,51 +1,41 @@
 import { INavData } from '@coreui/angular';
 
-export const navItems: INavData[] = [
-  {
+export function getNavItemsFromPermissions(): INavData[] {
+  const navItems: INavData[] = [];
+
+  // Añadir el ítem de inicio por defecto
+  navItems.push({
     name: 'Inicio',
     url: '/dashboard',
-    iconComponent: { name: 'cil-speedometer' },
-  },
-  {
-    title: true,
-    name: 'Usuarios'
-  },
-  {
-    name: 'Usuarios',
-    url: '/user',
-    iconComponent: { name: 'cil-user' }
-  },
-  {
-    name: 'Roles',
-    url: '/rol',
-    iconComponent: { name: 'cil-weightlifitng' }
-  },
-  {
-    name: 'Permisos',
-    url: '/permission',
-    iconComponent: { name: 'cil-door' }
-  },
-  {
-    title: true,
-    name: 'Configuración'
-  },
-  {
-    name: 'Módulos',
-    url: '/module',
-    iconComponent: { name: 'cil-view-module' }
-  },
-  {
-    name: 'Grupo de Módulo',
-    url: '/group-module',
-    iconComponent: { name: 'cil-object-group' }
-  },
-  {
-    title: true,
-    name: 'Parametros'
-  },
-  {
-    name: 'Compañía',
-    url: '/company', //ruta del componente que se instacia en routing module
-    iconComponent: { name: 'cil-industry' }
-  }
-];
+    iconComponent: { name: 'cil-home' }, // Puedes ajustar el ícono según sea necesario
+  });
+
+  // Recuperar permisos desde localStorage
+  const permissions = JSON.parse(localStorage.getItem('permissions') || '[]');
+
+  // Procesar grupos y módulos
+  permissions.forEach((group: any) => {
+    // Añadir un título para el grupo de módulos
+    navItems.push({
+      title: true,
+      name: group.group_module_name
+    });
+
+    group.modules.forEach((module: any) => {
+      // Verificar permisos del módulo
+      const hasVerPermission = module.permissions.some((permission: any) => permission.name === 'Ver' && permission.id === 1);
+      console.log(hasVerPermission);
+
+      // Solo añadir el módulo si no tiene el permiso de 'Ver'
+      if (hasVerPermission) {
+        navItems.push({
+          name: module.module_name,
+          url: module.module_url, // Usa la URL proporcionada en la estructura
+          iconComponent: { name: module.module_icon } // Usa el ícono proporcionado en la estructura
+        });
+      }
+    });
+  });
+
+  return navItems;
+}

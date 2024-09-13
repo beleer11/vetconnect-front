@@ -9,6 +9,7 @@ import { environment } from 'src/environments/environment';
 export class PermissionService {
 
   private apiUrl: string = environment.apiUrl;
+  private permissions: any = JSON.parse(localStorage.getItem('permissions') || '{}');
 
   private accessToken = localStorage
     .getItem('vet_connect_token')
@@ -50,5 +51,19 @@ export class PermissionService {
 
   getPermissionByUser(id: number): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/permission/getPermissionByUser/${id}`, this.httpOptions);
+  }
+
+
+  hasPermission(moduleName: string, action: string): boolean {
+    for (const group of this.permissions) {
+      for (const module of group.modules) {
+        if (module.module_name === moduleName) {
+          return module.permissions.some((perm: any) => {
+            return perm.name === action;
+          });
+        }
+      }
+    }
+    return false;
   }
 }

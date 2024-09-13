@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, Input, OnInit, OnChanges, Output, EventEmitter } from '@angular/core';
+import { PermissionService } from 'src/app/services/user/permission/permission.service';
 
 @Component({
   selector: 'app-general-table',
@@ -14,23 +15,24 @@ export class GeneralTableComponent implements OnInit, OnChanges {
   @Input() columnAlignments: string[] = [];
   @Input() title: string = '';
   @Output() actionEvent: EventEmitter<{ id: number, action: string }> = new EventEmitter();
+  @Input() moduleId: number = 1;
 
   public searchValue: string = '';
   public filteredData: any[] = [];
   public currentSortColumn: string = '';
   public sortOrder: 'asc' | 'desc' = 'asc';
-
+  public viewAcciones: boolean = false;
   // Paginador
   public currentPage: number = 1;
   public pageSize: number = 10;
   public totalPages: number = 0;
   public pagedData: any[] = [];
-  public totalRecords: number = 0;
+  public totalRecords: any = 0;
 
-
-  constructor(private cdr: ChangeDetectorRef) { }
+  constructor(private cdr: ChangeDetectorRef, private permissionService: PermissionService) { }
 
   ngOnInit(): void {
+    this.acciones = this.hasAnyRequiredPermission();
     this.applySortingAndPagination();
   }
 
@@ -67,7 +69,6 @@ export class GeneralTableComponent implements OnInit, OnChanges {
     this.updatePagination();
     this.setPage(1);
   }
-
 
   sortColumn(column: string): void {
     if (column === 'Foto' || column === 'Icono') {
@@ -137,5 +138,19 @@ export class GeneralTableComponent implements OnInit, OnChanges {
 
   onAction(id: number, action: string): void {
     this.actionEvent.emit({ id, action });
+  }
+
+  hasPermission(action: string): boolean {
+    return this.permissionService.hasPermission(this.title, action);
+  }
+
+
+  hasAnyRequiredPermission(): boolean {
+    // Aquí se chequea si el usuario tiene al menos uno de los permisos necesarios
+    return (
+      this.hasPermission('Ver') ||
+      this.hasPermission('Editar') ||
+      this.hasPermission('Eliminar')
+    );
   }
 }
