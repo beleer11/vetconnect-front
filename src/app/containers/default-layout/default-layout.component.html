@@ -21,12 +21,18 @@
 <div class="wrapper d-flex flex-column min-vh-100 bg-light dark:bg-transparent">
   <!--app-header-->
   <app-default-header class="mb-4 d-print-none header header-sticky" position="sticky" sidebarId="sidebar" />
+
   <!--app-body-->
   <div class="body flex-grow-1 px-3">
+    <!-- Mostrar mensaje de falta de permisos si no hay módulos accesibles -->
+    <div *ngIf="noPermissionsMessage" class="alert alert-warning">
+      {{ noPermissionsMessage }}
+    </div>
     <c-container breakpoint="lg" class="h-auto">
-      <router-outlet />
+      <router-outlet *ngIf="!noPermissionsMessage" />
     </c-container>
   </div>
+
   <!--app footer-->
-  <app-default-footer class=" d-flex align-items-center justify-content-center" />
+  <app-default-footer class="d-flex align-items-center justify-content-center" />
 </div>
