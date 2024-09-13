@@ -14,7 +14,6 @@ export class DefaultLayoutComponent implements OnInit {
 
   ngOnInit() {
     const [items, noPermissions] = getNavItemsFromPermissions();
-    console.log(items)
     this.navItems = items;
     this.noPermissionsMessage = noPermissions ? 'No tiene permisos en ningún módulo' : null;
   }

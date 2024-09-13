@@ -113,7 +113,6 @@ export class DashboardComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    console.log(localStorage.getItem('permissions'))
     this.initCharts();
   }
 

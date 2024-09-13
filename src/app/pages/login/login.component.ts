@@ -49,6 +49,9 @@ export class LoginComponent {
             if (response.permission_module) {
               localStorage.setItem('permissions', response.permission_module);
             }
+            if (response.user_information) {
+              localStorage.setItem('user_information', response.user_information);
+            }
             this.router.navigate(['/dashboard']);
           },
           (error) => {
