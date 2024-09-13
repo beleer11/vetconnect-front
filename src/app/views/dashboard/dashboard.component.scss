@@ -1,7 +1,52 @@
+$primary: #007bff;
+
 :host {
   .legend {
     small {
       font-size: x-small;
+    }
+  }
+}
+
+.btn-float {
+  position: fixed;
+  bottom: 52px; /* Distancia desde la parte inferior */
+  right: 20px; /* Distancia desde la parte derecha */
+  z-index: 1000; /* Para asegurarte de que esté por encima de otros elementos */
+  border-radius: 50%; /* Para hacer el botón circular */
+  width: 65px; /* Tamaño del botón */
+  height: 65px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Sombras para darle un efecto flotante */
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  /* Efectos de hover */
+  &:hover {
+    background-color: darken($primary, 10%);
+  }
+}
+
+/* Estilos para pantallas medianas (tablets) */
+@media (min-width: 576px) and (max-width: 768px) {
+  .btn-float {
+    position: fixed;
+    bottom: 23px; /* Distancia desde la parte inferior */
+    right: 20px; /* Distancia desde la parte derecha */
+    z-index: 1000; /* Para asegurarte de que esté por encima de otros elementos */
+    border-radius: 50%; /* Para hacer el botón circular */
+    width: 65px; /* Tamaño del botón */
+    height: 65px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Sombras para darle un efecto flotante */
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    /* Efectos de hover */
+    &:hover {
+      background-color: darken($primary, 10%);
     }
   }
 }

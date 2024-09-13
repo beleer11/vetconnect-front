@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { FormBuilder, FormGroup, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 
 import { DashboardChartsData, IChartProps } from './dashboard-charts-data';
 import { GeneralService } from 'src/app/services/general/general.service';
-
+import * as bootstrap from 'bootstrap';
 interface IUser {
   name: string;
   state: string;
@@ -23,9 +23,6 @@ interface IUser {
   styleUrls: ['dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit {
-  constructor(private chartsData: DashboardChartsData, private generalService: GeneralService) {
-  }
-
   public users: IUser[] = [
     {
       name: 'Yiorgos Avraamu',
@@ -108,12 +105,34 @@ export class DashboardComponent implements OnInit {
   ];
   public mainChart: IChartProps = {};
   public chart: Array<IChartProps> = [];
+  noPermissionsMessage: string | null = null;
   public trafficRadioGroup = new UntypedFormGroup({
     trafficRadio: new UntypedFormControl('Month')
   });
+  public whats!: FormGroup;
+
+  constructor(
+    private chartsData: DashboardChartsData,
+    private generalService: GeneralService,
+    private fb: FormBuilder
+  ) {
+  }
 
   ngOnInit(): void {
+    this.noPermissionsMessage = localStorage.getItem('permissions') ? 'No tiene permisos en ningún módulo' : null;
     this.initCharts();
+    this.createForm();
+  }
+
+  public createForm() {
+    this.whats = this.fb.group({
+      telefono: ['', [Validators.required]],
+      mensaje: ['', [Validators.required]]
+    });
+  }
+
+  enviarMensaje() {
+    console.log("entra");
   }
 
   initCharts(): void {
@@ -124,5 +143,18 @@ export class DashboardComponent implements OnInit {
     this.trafficRadioGroup.setValue({ trafficRadio: value });
     this.chartsData.initMainChart(value);
     this.initCharts();
+  }
+
+  openModalWhatsapp() {
+    const modalElement = document.getElementById('myModal') as HTMLElement; // Asegura que no sea null
+
+    if (modalElement) {  // Verifica si el elemento es encontrado
+      const myModal = new bootstrap.Modal(modalElement, {
+        keyboard: false
+      });
+      myModal.show();
+    } else {
+      console.error('Modal element not found');
+    }
   }
 }

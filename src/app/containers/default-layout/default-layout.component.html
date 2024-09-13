@@ -25,11 +25,8 @@
   <!--app-body-->
   <div class="body flex-grow-1 px-3">
     <!-- Mostrar mensaje de falta de permisos si no hay módulos accesibles -->
-    <div *ngIf="noPermissionsMessage" class="alert alert-warning">
-      {{ noPermissionsMessage }}
-    </div>
     <c-container breakpoint="lg" class="h-auto">
-      <router-outlet *ngIf="!noPermissionsMessage" />
+      <router-outlet />
     </c-container>
   </div>
 

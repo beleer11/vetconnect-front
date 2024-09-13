@@ -33,10 +33,10 @@ export function getNavItemsFromPermissions(): [INavData[], boolean] {
           url: module.module_url,
           iconComponent: { name: module.module_icon }
         });
-        hasPermissions = true; // Hay al menos un módulo con permisos
+        hasPermissions = true;
       }
     });
   });
 
-  return [navItems, !hasPermissions]; // Devuelve los elementos de navegación y si no hay permisos
+  return [navItems, !hasPermissions];
 }

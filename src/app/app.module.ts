@@ -15,6 +15,7 @@ import { ChartjsModule } from '@coreui/angular-chartjs';
 import { WidgetsModule } from './views/widgets/widgets.module';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { ModalModule } from '@coreui/angular';
 
 //Pipe
 import { PipeModule } from './pipes/pipe.module';
@@ -146,6 +147,7 @@ const APP_CONTAINERS = [
     MatIconModule,
     MatAutocompleteModule,
     NgxMatSelectSearchModule,
+    ModalModule,
     RouterModule.forRoot([], { useHash: false }),
   ],
   providers: [
