@@ -1,7 +1,7 @@
-<div *ngIf="noPermissionsMessage" class="alert alert-warning">
-  {{ noPermissionsMessage }}
+<div *ngIf="this.permission.length <= 0" class="alert alert-warning">
+  NO tiene modulos asignados
 </div>
-<div *ngIf="!noPermissionsMessage">
+<div *ngIf="this.permission.length > 0">
   <c-card class="mb-4">
     <c-card-body>
       <c-row>

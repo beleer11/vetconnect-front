@@ -105,7 +105,7 @@ export class DashboardComponent implements OnInit {
   ];
   public mainChart: IChartProps = {};
   public chart: Array<IChartProps> = [];
-  noPermissionsMessage: string | null = null;
+  public permission: any = JSON.parse(localStorage.getItem('permissions') || '[]');
   public trafficRadioGroup = new UntypedFormGroup({
     trafficRadio: new UntypedFormControl('Month')
   });
@@ -119,7 +119,6 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.noPermissionsMessage = localStorage.getItem('permissions') ? null : 'No tiene permisos en ningún módulo';
     this.initCharts();
     this.createForm();
   }
