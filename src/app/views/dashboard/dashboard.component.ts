@@ -3,7 +3,6 @@ import { FormBuilder, FormGroup, UntypedFormControl, UntypedFormGroup, Validator
 
 import { DashboardChartsData, IChartProps } from './dashboard-charts-data';
 import { GeneralService } from 'src/app/services/general/general.service';
-import * as bootstrap from 'bootstrap';
 interface IUser {
   name: string;
   state: string;
@@ -142,18 +141,5 @@ export class DashboardComponent implements OnInit {
     this.trafficRadioGroup.setValue({ trafficRadio: value });
     this.chartsData.initMainChart(value);
     this.initCharts();
-  }
-
-  openModalWhatsapp() {
-    const modalElement = document.getElementById('myModal') as HTMLElement; // Asegura que no sea null
-
-    if (modalElement) {  // Verifica si el elemento es encontrado
-      const myModal = new bootstrap.Modal(modalElement, {
-        keyboard: false
-      });
-      myModal.show();
-    } else {
-      console.error('Modal element not found');
-    }
   }
 }

@@ -17,11 +17,12 @@ export class DefaultHeaderComponent extends HeaderComponent {
   public newTasks = new Array(5)
   public newNotifications = new Array(5)
   public user_information: any | null = localStorage.getItem('user_information');
+  public image_profile: string = '';
   public environment = environment;
 
   constructor(private classToggler: ClassToggleService, private authService: AuthService, private router: Router) {
     super();
-    this.user_information = JSON.parse(this.user_information).image_profile;
+    this.image_profile = JSON.parse(this.user_information).image_profile;
   }
 
   logout() {
@@ -29,6 +30,7 @@ export class DefaultHeaderComponent extends HeaderComponent {
       (response) => {
         localStorage.removeItem('vet_connect_token');
         localStorage.removeItem('permissions');
+        localStorage.removeItem('user_information');
         this.router.navigate(['/login']);
       },
       (error) => {
