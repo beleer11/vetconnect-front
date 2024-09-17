@@ -119,7 +119,7 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.noPermissionsMessage = localStorage.getItem('permissions') ? 'No tiene permisos en ningún módulo' : null;
+    this.noPermissionsMessage = localStorage.getItem('permissions') ? null : 'No tiene permisos en ningún módulo';
     this.initCharts();
     this.createForm();
   }
