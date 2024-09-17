@@ -28,7 +28,7 @@
                         <div class="form-group mb-0">
                             <label for="nombre" class="bolder">Nombre</label>
                             <input id="nombre" formControlName="nombre" type="text" class="form-control"
-                                [ngClass]="{ 'is-invalid': formPermission.get('nombre')?.invalid && (formPermission.get('nombre')?.touched || formPermission.get('nombre')?.dirty) }" />
+                                [ngClass]="getValidationClass('nombre')" />
                             <div *ngIf="formPermission.get('nombre')?.invalid && (formPermission.get('nombre')?.touched || formPermission.get('nombre')?.dirty)"
                                 class="invalid-feedback">
                                 <div *ngIf="formPermission.get('nombre')?.errors?.['required']">Nombre es requerido.

@@ -144,7 +144,6 @@ export class GeneralTableComponent implements OnInit, OnChanges {
     return this.permissionService.hasPermission(this.title, action);
   }
 
-
   hasAnyRequiredPermission(): boolean {
     // Aquí se chequea si el usuario tiene al menos uno de los permisos necesarios
     return (

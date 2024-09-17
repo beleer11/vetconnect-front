@@ -53,10 +53,10 @@ export class PermissionService {
     return this.http.get<any>(`${this.apiUrl}/permission/getPermissionByUser/${id}`, this.httpOptions);
   }
 
-
   hasPermission(moduleName: string, action: string): boolean {
     for (const group of this.permissions) {
       for (const module of group.modules) {
+
         if (module.module_name === moduleName) {
           return module.permissions.some((perm: any) => {
             return perm.name === action;

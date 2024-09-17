@@ -95,8 +95,11 @@ export class PermissionComponent implements OnInit {
     this.dataTemp = this.dataModule.find((item: any) => item.id === id);
 
     if (action === "edit") {
+      this.loading = true;
       this.formPermission.controls["nombre"].setValue(this.dataTemp.name);
+      this.formPermission.markAllAsTouched();
       this.showForm = true;
+      this.loading = false;
     }
 
     if (action === "delete") {
@@ -296,7 +299,7 @@ export class PermissionComponent implements OnInit {
     const permissions = JSON.parse(localStorage.getItem('permissions') || '[]');
     for (const group of permissions) {
       for (const module of group.modules) {
-        if (module.module_name === 'Usuarios') {
+        if (module.module_name === 'Permisos') {
           module.permissions.forEach((perm: any) => {
             if (perm.name === 'Crear') {
               this.showAddButton = true;
@@ -311,6 +314,14 @@ export class PermissionComponent implements OnInit {
         }
       }
     }
+  }
+
+  getValidationClass(controlName: string): { [key: string]: any } {
+    const control = this.formPermission.get(controlName);
+    return {
+      'is-invalid': control?.invalid && (control?.touched || control?.dirty),
+      'is-valid': control?.valid && (control?.touched || control?.dirty),
+    };
   }
 
 

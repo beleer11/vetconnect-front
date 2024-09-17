@@ -8,6 +8,7 @@ import * as bootstrap from 'bootstrap';
 import Swal from 'sweetalert2';
 import moment from 'moment';
 import { Observable } from 'rxjs';
+import { GeneralService } from 'src/app/services/general/general.service';
 interface Icon {
   name: string;
   svg: string;
@@ -33,12 +34,16 @@ export class ModuleComponent implements AfterViewInit {
   public action: string = 'save';
   public dataTemp: any = [];
   public loading: boolean = true;
+  public showAddButton: boolean = false;
+  public showImportButton: boolean = false;
+  public showExportButton: boolean = false;
 
   constructor(
     private moduleService: ModuleService,
     private fb: FormBuilder,
     private router: Router,
-    public iconSet: IconSetService
+    public iconSet: IconSetService,
+    private generalService: GeneralService,
   ) {
     this.iconSet.icons = { ...freeSet };
   }
@@ -66,6 +71,7 @@ export class ModuleComponent implements AfterViewInit {
           this.fieldsTable = this.getFieldsTable();
           this.columnAlignments = this.getColumnAlignments();
           resolve(this.formatedData(response));
+          this.checkPermissionsButton();
         },
         error => reject(error)
       );
@@ -144,7 +150,7 @@ export class ModuleComponent implements AfterViewInit {
     });
   }
 
-  public addGroupModule() {
+  public addModule() {
     this.showForm = true;
     this.formModule.reset();
     this.action = 'save';
@@ -248,11 +254,14 @@ export class ModuleComponent implements AfterViewInit {
     this.dataTemp = this.dataModule.find((item: any) => item.id === id);
 
     if (action === "edit") {
+      this.loading = true;
       this.formModule.controls["name"].setValue(this.dataTemp.name);
       this.formModule.controls["url"].setValue(this.dataTemp.url);
       this.formModule.controls["group"].setValue(this.dataTemp.module_group_id);
       this.formModule.controls["icon"].setValue(this.dataTemp.icon);
+      this.formModule.markAllAsTouched();
       this.selectedIcon = this.dataTemp.icon;
+      this.loading = false;
       this.showForm = true;
     }
 
@@ -383,6 +392,57 @@ export class ModuleComponent implements AfterViewInit {
         }
       }
     });
+  }
+
+  getValidationClass(controlName: string): { [key: string]: any } {
+    const control = this.formModule.get(controlName);
+    return {
+      'is-invalid': control?.invalid && (control?.touched || control?.dirty),
+      'is-valid': control?.valid && (control?.touched || control?.dirty),
+    };
+  }
+
+  handleButtonClick(action: string) {
+    switch (action) {
+      case 'add':
+        this.addModule();
+        break;
+      case 'import':
+        this.importData();
+        break;
+      case 'export':
+        this.exportData();
+        break;
+    }
+  }
+
+  public importData() {
+    this.generalService.alertMessageInCreation();
+  }
+
+  public exportData() {
+    this.generalService.alertMessageInCreation();
+  }
+
+  checkPermissionsButton() {
+    const permissions = JSON.parse(localStorage.getItem('permissions') || '[]');
+    for (const group of permissions) {
+      for (const module of group.modules) {
+        if (module.module_name === 'Módulos') {
+          module.permissions.forEach((perm: any) => {
+            if (perm.name === 'Crear') {
+              this.showAddButton = true;
+            }
+            if (perm.name === 'Importar') {
+              this.showImportButton = true;
+            }
+            if (perm.name === 'Exportar') {
+              this.showExportButton = true;
+            }
+          });
+        }
+      }
+    }
   }
 
 }

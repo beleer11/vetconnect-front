@@ -47,7 +47,6 @@ export class RolComponent implements OnInit {
   }
 
   public addRole() {
-    this.showForm = true;
     this.action = 'save';
     this.resetForms();
   }
@@ -73,6 +72,7 @@ export class RolComponent implements OnInit {
       this.loading = true;
       this.formRol.controls["nombre"].setValue(this.dataTemp.name);
       this.formRol.controls["description"].setValue(this.dataTemp.description);
+      this.formRol.markAllAsTouched();
       this.rolService.getPermissionByRol(this.dataTemp.id).subscribe(
         response => {
           this.checkedPermisosAsignados(response.original);
@@ -81,7 +81,6 @@ export class RolComponent implements OnInit {
           console.log(error.message);
         }
       );
-      this.showForm = true;
     }
 
     if (action === "delete") {
@@ -365,7 +364,7 @@ export class RolComponent implements OnInit {
         this.checkedPermiso(moduleData.module, permiso);
       });
     });
-
+    this.showForm = true;
     this.loading = false;
   }
 
@@ -486,7 +485,7 @@ export class RolComponent implements OnInit {
     const permissions = JSON.parse(localStorage.getItem('permissions') || '[]');
     for (const group of permissions) {
       for (const module of group.modules) {
-        if (module.module_name === 'Usuarios') {
+        if (module.module_name === 'Roles') {
           module.permissions.forEach((perm: any) => {
             if (perm.name === 'Crear') {
               this.showAddButton = true;
