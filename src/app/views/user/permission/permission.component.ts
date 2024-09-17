@@ -4,6 +4,7 @@ import moment from 'moment';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { Observable } from 'rxjs';
+import { GeneralService } from 'src/app/services/general/general.service';
 
 @Component({
   selector: 'app-permission',
@@ -20,10 +21,14 @@ export class PermissionComponent implements OnInit {
   public formPermission!: FormGroup;
   public action: string = 'save';
   public dataTemp: any = [];
+  public showAddButton: boolean = false;
+  public showImportButton: boolean = false;
+  public showExportButton: boolean = false;
 
   constructor(
     private permissionService: PermissionService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private generalService: GeneralService
   ) { }
 
   async ngOnInit(): Promise<void> {
@@ -39,6 +44,7 @@ export class PermissionComponent implements OnInit {
         response => {
           this.dataModule = response;
           resolve(this.formatedData(response));
+          this.checkPermissionsButton();
         },
         error => reject(error)
       );
@@ -262,6 +268,49 @@ export class PermissionComponent implements OnInit {
       icon: 'info',
       confirmButtonText: 'Cerrar'
     });
+  }
+
+  handleButtonClick(action: string) {
+    switch (action) {
+      case 'add':
+        this.addNewPermission();
+        break;
+      case 'import':
+        this.importData();
+        break;
+      case 'export':
+        this.exportData();
+        break;
+    }
+  }
+
+  public importData() {
+    this.generalService.alertMessageInCreation();
+  }
+
+  public exportData() {
+    this.generalService.alertMessageInCreation();
+  }
+
+  checkPermissionsButton() {
+    const permissions = JSON.parse(localStorage.getItem('permissions') || '[]');
+    for (const group of permissions) {
+      for (const module of group.modules) {
+        if (module.module_name === 'Usuarios') {
+          module.permissions.forEach((perm: any) => {
+            if (perm.name === 'Crear') {
+              this.showAddButton = true;
+            }
+            if (perm.name === 'Importar') {
+              this.showImportButton = true;
+            }
+            if (perm.name === 'Exportar') {
+              this.showExportButton = true;
+            }
+          });
+        }
+      }
+    }
   }
 
 

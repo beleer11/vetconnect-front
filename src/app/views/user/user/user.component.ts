@@ -417,11 +417,8 @@ export class UserComponent implements OnInit {
     }
   }
 
-
   checkPermissionsButton() {
     const permissions = JSON.parse(localStorage.getItem('permissions') || '[]');
-    console.log(permissions);  // Verifica que los permisos estén correctamente estructurados
-
     for (const group of permissions) {
       for (const module of group.modules) {
         if (module.module_name === 'Usuarios') {
@@ -599,6 +596,8 @@ export class UserComponent implements OnInit {
     try {
       const response = await this.permissionService.getPermissionByUser(id).toPromise();
       await this.checkedPermisosAsignados(response.original);
+      this.loading = false;
+      this.showForm = true;
     } catch (error: any) {
       console.error('Error al seleccionar rol:', error.message);
       throw error;
@@ -639,12 +638,9 @@ export class UserComponent implements OnInit {
       try {
         this.loading = true;
         this.resetForms();
-        await this.getRol();
         await this.setDataForm();
         await this.selectRol(this.dataTemp.rol_id);
         await this.getPermissionByUser(id);
-        this.loading = false;
-        this.showForm = true;
       } catch (error) {
         console.error('Error en el flujo de edición:', error);
         this.loading = false;

@@ -133,8 +133,8 @@
 
 .clear-icon {
     position: absolute;
-    top: 51%;
-    right: 82px;
+    top: 79%;
+    right: 52px;
     transform: translateY(-50%);
     background: none;
     border: none;
@@ -148,16 +148,86 @@
     color: rgba(0, 0, 0, 0.87);
 }
 
+.form-group {
+    position: relative;
+}
+
 .clear-icon mat-icon {
     font-size: 18px;
 }
+
+/* Estilos para el acordeón principal de grupos */
+.mat-accordion {
+    margin-top: 1rem;
+}
+
+.mat-expansion-panel {
+    margin-bottom: 0.5rem;
+    border-radius: 4px;
+}
+
+.mat-expansion-panel-header {
+    background-color: #f8f9fa;
+    /* Fondo muy claro */
+    border-bottom: 1px solid #ddd;
+    /* Línea de separación sutil */
+}
+
+.mat-expansion-panel-header.mat-expanded {
+    background-color: #e9ecef;
+    /* Fondo ligeramente diferente cuando está expandido */
+}
+
+.panel-title {
+    color: #343a40;
+    /* Color oscuro para el título */
+    font-weight: 600;
+}
+
+/* Estilos para los grupos */
+.mat-expansion-panel:nth-of-type(odd) .mat-expansion-panel-header {
+    background-color: #f0f2f5;
+    /* Color claro para el fondo de los grupos impares */
+}
+
+.mat-expansion-panel:nth-of-type(even) .mat-expansion-panel-header {
+    background-color: #e9ecef;
+    /* Color ligeramente diferente para el fondo de los grupos pares */
+}
+
+/* Estilos para el acordeón de módulos */
+.mat-accordion.mat-expansion-panel {
+    background-color: #ffffff;
+    /* Fondo blanco para los módulos */
+}
+
+.mat-expansion-panel-header {
+    border: 1px solid #ced4da;
+    /* Línea de borde más visible */
+}
+
+/* Estilos para el contenido de los módulos */
+.mat-checkbox {
+    margin: 0.25rem 0;
+    /* Espaciado entre checkboxes */
+}
+
+.d-flex.justify-content-center {
+    color: #495057;
+    /* Color para texto de grupos sin módulos */
+    padding: 1rem;
+    background-color: #f8f9fa;
+    /* Fondo gris claro */
+    border-radius: 4px;
+}
+
 
 @media (max-width: 576px) {
 
     .clear-icon {
         position: absolute;
-        top: 53%;
-        right: 82px;
+        top: 77%;
+        right: 50px;
         transform: translateY(-50%);
         background: none;
         border: none;

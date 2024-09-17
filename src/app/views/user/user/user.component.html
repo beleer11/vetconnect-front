@@ -173,8 +173,8 @@
                                 <!-- Activo y Botón Siguiente -->
                                 <div class="row mb-4">
                                     <div class="col-12 col-md-6 mb-4 mb-md-0">
-                                        <div
-                                            class="form-group form-switch d-flex justify-content-center align-items-center">
+                                        <div class="form-group form-switch d-flex justify-content-center align-items-center"
+                                            style="height: 40px; background-color: white;">
                                             <input class="form-check-input switch-custom" type="checkbox"
                                                 id="is_disabled" formControlName="is_disabled" />
                                             <label class="form-check-label ms-4 bolder mb-1" for="is_disabled"
@@ -183,7 +183,7 @@
                                             </label>
                                         </div>
                                     </div>
-                                    <div class="col-12 col-md-6 d-flex justify-content-end">
+                                    <div class="col-12 col-md-6 d-flex justify-content-end" style="height: 40px;">
                                         <button type="button" class="btn btn-primary" [disabled]="formUser.invalid"
                                             (click)="goToNextTab()">
                                             Siguiente
@@ -208,9 +208,9 @@
                             </div>
                             <mat-accordion class="pt-3 pe-2 ps-2">
                                 <mat-expansion-panel *ngFor="let group of dataPermission.groups; let i = index"
-                                    [expanded]="i === 0">
+                                    [expanded]="i === 0" class="group-panel">
                                     <mat-expansion-panel-header>
-                                        <mat-panel-title class="panel-title font-size-16 bolder">
+                                        <mat-panel-title class="panel-title font-size-16">
                                             <span>{{ group.name }}</span>
                                         </mat-panel-title>
                                     </mat-expansion-panel-header>
@@ -220,7 +220,7 @@
                                                 *ngFor="let module of getModulesByGroup(group.id); let j = index"
                                                 [expanded]="j === 0">
                                                 <mat-expansion-panel-header>
-                                                    <mat-panel-title class="panel-title font-size-16 bolder">
+                                                    <mat-panel-title class="panel-title font-size-16">
                                                         {{ module.name }}
                                                     </mat-panel-title>
                                                 </mat-expansion-panel-header>
@@ -244,6 +244,7 @@
                                     </div>
                                 </mat-expansion-panel>
                             </mat-accordion>
+
                         </div>
                         <div class="d-flex justify-content-between pb-2 pt-2">
                             <button class="btn btn-previous text-white ms-2"
