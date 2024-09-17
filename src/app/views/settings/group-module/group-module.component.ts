@@ -86,6 +86,7 @@ export class GroupModuleComponent implements OnInit {
 
     if (action === "edit") {
       this.formGroupModule.controls["nombre"].setValue(this.dataTemp.name);
+      this.formGroupModule.markAllAsTouched();
       this.showForm = true;
     }
 
@@ -312,6 +313,14 @@ export class GroupModuleComponent implements OnInit {
         }
       }
     }
+  }
+
+  getValidationClass(controlName: string): { [key: string]: any } {
+    const control = this.formGroupModule.get(controlName);
+    return {
+      'is-invalid': control?.invalid && (control?.touched || control?.dirty),
+      'is-valid': control?.valid && (control?.touched || control?.dirty),
+    };
   }
 
 }
