@@ -94,7 +94,7 @@ export class UserComponent implements OnInit {
         "Nombres": item.name,
         "Usuario": item.username,
         "Correo": item.email,
-        "Foto": environment.apiStorage + item.image_profile,
+        "Foto": (item.image_profile !== '') ? environment.apiStorage + item.image_profile : '',
         "Fecha creación": moment(item.created_at).format('DD/MM/YYYY hh:mm:ss A'),
         "Ultima actualización": moment(item.updated_at).format('DD/MM/YYYY hh:mm:ss A')
       };

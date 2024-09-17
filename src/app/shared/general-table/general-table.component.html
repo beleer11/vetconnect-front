@@ -48,8 +48,12 @@
 
                                         <!-- Mostrar la imagen si la columna es 'Foto' -->
                                         <ng-container *ngIf="column === 'Foto'; else iconOrDefault">
-                                            <img [src]="row['Foto']" alt="User Image" width="50" height="50"
-                                                style="border-radius: 50%;">
+                                            <img *ngIf="row['Foto'] !== ''" [src]="row['Foto']" alt="User Image"
+                                                width="50" height="50" style="border-radius: 50%;">
+
+                                            <img *ngIf="row['Foto'] === ''"
+                                                src="../../../assets/images/veterinario-black-img.png" alt="User Image"
+                                                width="60" height="45" style="border-radius: 50%;">
                                         </ng-container>
 
                                         <!-- Mostrar el icono si la columna es 'Icono' -->
@@ -120,7 +124,7 @@
                 <ng-template #noData>
                     <c-card class="text-center p-4 no-data-card">
                         <c-card-body>
-                            <img src="../../../assets/images/logo-no hay datos.gif" alt="No hay datos">
+                            <img src="../../../assets/images/no-data-img.gif" alt="No hay datos">
                             <p>No hay datos disponibles</p>
                             <p class="mb-3">¡Parece que no tienes ningún registro! Puedes agregar uno nuevo.</p>
                         </c-card-body>

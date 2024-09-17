@@ -16,8 +16,8 @@
 <ng-template #userDropdown>
   <c-dropdown alignment="end" variant="nav-item">
     <button cButton color="" [caret]="false" cDropdownToggle class="py-0">
-      <c-avatar *ngIf="image_profile === ''" cTextColor="primary" shape="rounded-1" size="md"
-        src="../../../../assets/images/veterinarian-img.png" status="success">
+      <c-avatar *ngIf="image_profile === ''" cTextColor="primary" shape="rounded-1" style="width: 60px; height: 45px;"
+        src="../../../../assets/images/veterinario-black-img.png" status="success">
       </c-avatar>
       <c-avatar *ngIf="image_profile !== ''" cTextColor="primary" shape="rounded-1" size="md"
         [src]="environment.apiStorage + image_profile" status="success">
