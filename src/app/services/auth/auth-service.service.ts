@@ -9,16 +9,17 @@ import { HttpHeaders } from '@angular/common/http';
 })
 export class AuthService {
   private apiUrl: string = environment.apiUrl;
-  private accessToken = localStorage
-    .getItem('vet_connect_token')
-    ?.replace(/['"]+/g, '');
 
-  private httpOptions = {
-    headers: new HttpHeaders({
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${this.accessToken}`,
-    }),
-  };
+  private getHttpOptions() {
+    const accessToken = localStorage.getItem('vet_connect_token')?.replace(/['"]+/g, '');
+
+    return {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      }),
+    };
+  }
 
   constructor(private http: HttpClient) { }
 
@@ -27,26 +28,12 @@ export class AuthService {
   }
 
   getUserData(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/user`, this.httpOptions);
+    return this.http.get(`${this.apiUrl}/user`, this.getHttpOptions());
   }
 
   logout(): Observable<any> {
-    const accessToken = localStorage.getItem('vet_connect_token')?.replace(/['"]+/g, '');
-    if (accessToken) {
-      const httpOptions = {
-        headers: new HttpHeaders({
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`
-        })
-      };
-
-      return this.http.post<any>(`${this.apiUrl}/logout`, {}, httpOptions);
-    } else {
-      console.warn('No access token found');
-      return of(null);
-    }
+    return this.http.post<any>(`${this.apiUrl}/logout`, {}, this.getHttpOptions());
   }
-
 
   register(formData: FormData): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/register`, formData);

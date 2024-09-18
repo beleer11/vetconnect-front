@@ -11,22 +11,18 @@ import Swal from 'sweetalert2';
 export class GeneralService {
   private apiUrl: string = environment.apiUrl;
 
-  private accessToken = localStorage
-    .getItem('vet_connect_token')
-    ?.replace(/['"]+/g, ''); // Eliminar comillas
+  private getHttpOptions() {
+    const accessToken = localStorage.getItem('vet_connect_token')?.replace(/['"]+/g, '');
 
-  private httpOptions = {
-    headers: new HttpHeaders({
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${this.accessToken}`,
-    }),
-  };
+    return {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      }),
+    };
+  }
 
   constructor(private http: HttpClient) { }
-
-  getAllData(id: number): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/allData/${id}`, this.httpOptions);
-  }
 
   convertToBase64Files(file: File): Promise<string | ArrayBuffer | null> {
     return new Promise((resolve, reject) => {
