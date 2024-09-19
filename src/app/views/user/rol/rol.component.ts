@@ -110,8 +110,8 @@ export class RolComponent implements OnInit {
     return new Promise((resolve, reject) => {
       this.rolService.getDataRoles(this.parameterDefect).subscribe(
         response => {
-          this.dataRol = response.original;
-          resolve(this.formatedData(response.original));
+          this.dataRol = response.data;
+          resolve(this.formatedData(response.data));
           this.checkPermissionsButton();
         },
         error => reject(error)
