@@ -24,8 +24,8 @@ export class UserService {
   }
 
 
-  getDataUser(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/user/index`, this.getHttpOptions());
+  getDataUser(params: any): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/user/index`, { params: params, ...this.getHttpOptions() });
   }
 
   generateUsername(nombre: string): Observable<string> {

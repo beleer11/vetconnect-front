@@ -8,9 +8,12 @@
                             <h2 class="mb-0">{{ title }}</h2>
                         </div>
                         <div class="col-12 col-md-auto d-flex align-items-center justify-content-between mt-3 mt-md-0"
-                            *ngIf="pagedData.length > 0">
+                            *ngIf="transformedData.length > 0">
                             <input type="text" class="form-control btn-search" placeholder="Buscar..."
-                                (keyup)="onSearch($event)" [(ngModel)]="searchValue" />
+                                [(ngModel)]="searchValue" />
+                            <button type="button" class="btn btn-outline-secondary ms-2" (click)="onSearch()">
+                                <svg cIcon name="cil-magnifying-glass"></svg>
+                            </button>
                             <button *ngIf="searchValue" type="button" class="btn btn-outline-secondary ms-2"
                                 style="width: 3rem;" (click)="clearSearch()">
                                 <svg cIcon name="cil-x"></svg>
@@ -20,107 +23,97 @@
                 </div>
             </c-card-header>
             <c-card-body>
-                <ng-container *ngIf="pagedData.length > 0; else noData">
-                    <div class="table-responsive">
-                        <table [hover]="true" [responsive]="true" [striped]="true" align="middle" cTable
-                            class="mb-0 border table">
-                            <thead cTableColor="light">
-                                <tr>
-                                    <th *ngIf="pagedData.length > 0;" style="text-align: center;">#</th>
-                                    <th *ngFor="let column of columns; let i = index"
-                                        [ngStyle]="{'text-align': columnAlignments[i] || 'left'}"
-                                        (click)="sortColumn(column)">
-                                        {{ column }}
-                                        <svg *ngIf="currentSortColumn === column && sortOrder === 'asc'" cIcon
-                                            name="cil-arrow-top"></svg>
-                                        <svg *ngIf="currentSortColumn === column && sortOrder === 'desc'" cIcon
-                                            name="cil-arrow-bottom"></svg>
-                                    </th>
-                                    <!-- Mostrar columna de acciones solo si hay datos y permisos -->
-                                    <th *ngIf="acciones" [ngStyle]="{'text-align': 'center'}">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr *ngFor="let row of pagedData; let i = index">
-                                    <td style="text-align: center;">{{ i + 1 + (currentPage - 1) * pageSize }}</td>
-                                    <td *ngFor="let column of columns; let i = index"
-                                        [ngStyle]="{'text-align': columnAlignments[i] || 'left'}">
-
-                                        <!-- Mostrar la imagen si la columna es 'Foto' -->
-                                        <ng-container *ngIf="column === 'Foto'; else iconOrDefault">
-                                            <img *ngIf="row['Foto'] !== ''" [src]="row['Foto']" alt="User Image"
-                                                width="50" height="50" style="border-radius: 50%;">
-
-                                            <img *ngIf="row['Foto'] === ''"
-                                                src="../../../assets/images/veterinario-black-img.png" alt="User Image"
-                                                width="60" height="45" style="border-radius: 50%;">
-                                        </ng-container>
-
-                                        <!-- Mostrar el icono si la columna es 'Icono' -->
-                                        <ng-template #iconOrDefault>
-                                            <ng-container *ngIf="column === 'Icono'; else defaultCell">
-                                                <svg cIcon [name]="row['Icono']" size="lg" class="icon-svg"></svg>
-                                            </ng-container>
-                                        </ng-template>
-
-                                        <!-- Mostrar contenido por defecto si no es 'Foto' o 'Icono' -->
-                                        <ng-template #defaultCell>{{ row[column] || 'N/A' }}</ng-template>
-                                    </td>
-
-                                    <!-- Mostrar celdas de acciones solo si hay permisos -->
-                                    <td *ngIf="acciones" class="text-center">
-                                        <div class="d-flex justify-content-center align-items-center">
-                                            <!-- Editar -->
-                                            <button *ngIf="hasPermission('Editar')" class="btn btn-primary btn-sm me-2"
-                                                (click)="onAction(row.id, 'edit')" title="Editar">
-                                                <i class="fa-solid fa-pen-to-square"></i>
-                                            </button>
-
-                                            <!-- Eliminar -->
-                                            <button *ngIf="hasPermission('Eliminar')" class="btn btn-danger btn-sm me-2"
-                                                (click)="onAction(row.id, 'delete')" title="Eliminar">
-                                                <i class="fa-solid fa-trash"></i>
-                                            </button>
-
-                                            <!-- Ver -->
-                                            <button *ngIf="hasPermission('Ver')" class="btn btn-info btn-sm me-2"
-                                                (click)="onAction(row.id, 'view')" title="Ver">
-                                                <i class="fa-solid fa-eye"></i>
-                                            </button>
-
-                                            <!-- Habilitar/Inhabilitar -->
-                                            <button *ngIf="hasPermission('Editar')" class="btn btn-sm"
-                                                [ngClass]="{ 'btn-success': !row.is_disabled, 'btn-warning': row.is_disabled}"
-                                                (click)="onAction(row.id, 'ban')"
-                                                [title]="!row.is_disabled ? 'Habilitar' : 'Inhabilitar'">
-                                                <i *ngIf="!row.is_disabled" class="fa-solid fa-thumbs-up"></i>
-                                                <i *ngIf="row.is_disabled" class="fa-solid fa-thumbs-down"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-
-                    </div>
-                    <!-- Paginación -->
-                    <div class="pagination mt-3 d-flex flex-column flex-md-row align-items-center">
-                        <div class="d-flex align-items-center mb-2 mb-md-0">
-                            <button class="btn btn-outline-secondary btn-sm me-2" (click)="prevPage()">
-                                <svg cIcon name="cil-chevron-left"></svg>
-                            </button>
-                            <span class="mx-2">Página {{ currentPage }} de {{ totalPages }}</span>
-                            <button class="btn btn-outline-secondary btn-sm me-2" (click)="nextPage()">
-                                <svg cIcon name="cil-chevron-right"></svg>
-                            </button>
+                <ng-container *ngIf="transformedData.length > 0; else noData">
+                    <div class="position-relative">
+                        <!-- Contenedor del spinner -->
+                        <div *ngIf="isLoading" class="spinner-overlay">
+                            <div class="spinner-border" role="status">
+                                <span class="visually-hidden">Cargando...</span>
+                            </div>
                         </div>
-                        <select (change)="onPageSizeChange($event)" class="form-select d-inline w-auto ms-2">
-                            <option *ngFor="let size of [10, 25, 50]" [value]="size">{{ size }} por página</option>
-                        </select>
-                        <span class="mx-2 mt-1 mt-md-0">Total de registros: {{ totalRecords }}</span>
+
+                        <!-- Contenido de la tabla -->
+                        <div class="table-responsive">
+                            <table [hover]="true" [responsive]="true" [striped]="true" align="middle" cTable
+                                class="mb-0 border table">
+                                <thead cTableColor="light">
+                                    <tr>
+                                        <th *ngFor="let column of columns; let i = index"
+                                            [ngStyle]="{'text-align': columnAlignments[i] || 'left'}"
+                                            (click)="sortColumn(column)">
+                                            {{ column }}
+                                            <svg *ngIf="currentSortColumn === column && sortOrder === 'asc'" cIcon
+                                                name="cil-arrow-top"></svg>
+                                            <svg *ngIf="currentSortColumn === column && sortOrder === 'desc'" cIcon
+                                                name="cil-arrow-bottom"></svg>
+                                        </th>
+                                        <th *ngIf="acciones" [ngStyle]="{'text-align': 'center'}">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let row of transformedData; let i = index">
+                                        <td *ngFor="let column of columns; let i = index"
+                                            [ngStyle]="{'text-align': columnAlignments[i] || 'left'}">
+                                            <ng-container *ngIf="column === 'Foto'; else iconOrDefault">
+                                                <img *ngIf="row['Foto'] !== null" [src]="row['Foto']" alt="User Image"
+                                                    width="50" height="50" style="border-radius: 50%;">
+                                                <img *ngIf="row['Foto'] === null"
+                                                    src="../../../assets/images/veterinario-black-img.png"
+                                                    alt="User Image" width="60" height="45" style="border-radius: 50%;">
+                                            </ng-container>
+                                            <ng-template #iconOrDefault>
+                                                <ng-container *ngIf="column === 'Icono'; else defaultCell">
+                                                    <svg cIcon [name]="row['Icono']" size="lg" class="icon-svg"></svg>
+                                                </ng-container>
+                                            </ng-template>
+                                            <ng-template #defaultCell>{{ row[column] || 'N/A' }}</ng-template>
+                                        </td>
+                                        <td *ngIf="acciones" class="text-center">
+                                            <div class="d-flex justify-content-center align-items-center">
+                                                <button *ngIf="hasPermission('Editar')"
+                                                    class="btn btn-primary btn-sm me-2"
+                                                    (click)="onAction(row.id, 'edit')" title="Editar">
+                                                    <i class="fa-solid fa-pen-to-square"></i>
+                                                </button>
+                                                <button *ngIf="hasPermission('Eliminar')"
+                                                    class="btn btn-danger btn-sm me-2"
+                                                    (click)="onAction(row.id, 'delete')" title="Eliminar">
+                                                    <i class="fa-solid fa-trash"></i>
+                                                </button>
+                                                <button *ngIf="hasPermission('Ver')" class="btn btn-info btn-sm me-2"
+                                                    (click)="onAction(row.id, 'view')" title="Ver">
+                                                    <i class="fa-solid fa-eye"></i>
+                                                </button>
+                                                <button *ngIf="hasPermission('Editar')" class="btn btn-sm"
+                                                    [ngClass]="{ 'btn-success': !row.is_disabled, 'btn-warning': row.is_disabled}"
+                                                    (click)="onAction(row.id, 'ban')"
+                                                    [title]="!row.is_disabled ? 'Habilitar' : 'Inhabilitar'">
+                                                    <i *ngIf="!row.is_disabled" class="fa-solid fa-thumbs-up"></i>
+                                                    <i *ngIf="row.is_disabled" class="fa-solid fa-thumbs-down"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="pagination mt-3 d-flex flex-column flex-md-row align-items-center">
+                            <div class="d-flex align-items-center mb-2 mb-md-0">
+                                <button class="btn btn-outline-secondary btn-sm me-2" (click)="prevPage()">
+                                    <svg cIcon name="cil-chevron-left"></svg>
+                                </button>
+                                <span class="mx-2">Página {{ currentPage }} de {{ totalPages }}</span>
+                                <button class="btn btn-outline-secondary btn-sm me-2" (click)="nextPage()">
+                                    <svg cIcon name="cil-chevron-right"></svg>
+                                </button>
+                            </div>
+                            <select (change)="onPageSizeChange($event)" class="form-select d-inline w-auto ms-2">
+                                <option *ngFor="let size of [10, 25, 50]" [value]="size">{{ size }} por página</option>
+                            </select>
+                            <span class="mx-2 mt-1 mt-md-0">Total de registros: {{ totalRecords }}</span>
+                        </div>
                     </div>
                 </ng-container>
-                <!-- Template para cuando no hay datos -->
                 <ng-template #noData>
                     <c-card class="text-center p-4 no-data-card">
                         <c-card-body>

@@ -5,8 +5,10 @@
             [showExportButton]="showExportButton" (buttonClick)="handleButtonClick($event)">
         </app-group-button-general>
     </div>
-    <app-general-table [columns]="fieldsTable" [transformedData]="dataTransformada" [data]="dataUser" [acciones]="true"
-        [columnAlignments]="columnAlignments" [title]="'Usuarios'" (actionEvent)="handleAction($event)">
+    <app-general-table [columns]="fieldsTable" [transformedData]="dataTransformada" [acciones]="true"
+        [columnAlignments]="columnAlignments" [title]="'Usuarios'" (fetchDataEvent)="onFetchData($event)"
+        [totalRecords]="totalRecord" [loadingTable]="loadingTable" [data]="dataUser"
+        (actionEvent)="handleAction($event)">
     </app-general-table>
 </div>
 <c-row *ngIf="showForm">

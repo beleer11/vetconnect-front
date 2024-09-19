@@ -45,6 +45,8 @@ export class UserComponent implements OnInit {
   public showImportButton: boolean = false;
   public showExportButton: boolean = false;
   public searchControl = new FormControl('');
+  public totalRecord: number = 0;
+  public loadingTable: boolean = false;
 
   constructor(
     private userService: UserService,
@@ -73,15 +75,22 @@ export class UserComponent implements OnInit {
     this.listPermission();
   }
 
-  private async getDataUser(): Promise<any> {
+  private async getDataUser(params: any): Promise<any> {
+    this.loadingTable = true;
     return new Promise((resolve, reject) => {
-      this.userService.getDataUser().subscribe(
+      this.userService.getDataUser(params).subscribe(
         response => {
-          this.dataUser = response;
-          resolve(this.formatedData(response));
+          this.totalRecord = response.total;
+          this.dataUser = response.data;
+          this.dataTransformada = this.formatedData(response.data);
+          resolve(this.dataTransformada)
           this.checkPermissionsButton();
+          this.loadingTable = false;
         },
-        error => reject(error)
+        error => {
+          reject(error);
+          this.loadingTable = false; // Asegúrate de ocultar el spinner en caso de error
+        }
       );
     });
   }
@@ -94,7 +103,7 @@ export class UserComponent implements OnInit {
         "Nombres": item.name,
         "Usuario": item.username,
         "Correo": item.email,
-        "Foto": (item.image_profile !== '') ? environment.apiStorage + item.image_profile : '',
+        "Foto": (item.image_profile !== null) ? environment.apiStorage + item.image_profile : null,
         "Fecha creación": moment(item.created_at).format('DD/MM/YYYY hh:mm:ss A'),
         "Ultima actualización": moment(item.updated_at).format('DD/MM/YYYY hh:mm:ss A')
       };
@@ -410,7 +419,13 @@ export class UserComponent implements OnInit {
       this.filteredRoles = this.dataRol;
       this.fieldsTable = this.getFieldsTable();
       this.columnAlignments = this.getColumnAlignments();
-      this.dataTransformada = await this.getDataUser();
+      this.dataTransformada = await this.getDataUser({
+        search: '',
+        sortColumn: 'name',
+        sortOrder: 'desc',
+        page: 1,
+        pageSize: 10
+      });
     } catch (error: any) {
       console.error('Error al obtener roles:', error.message);
       // Maneja el error según sea necesario
@@ -772,6 +787,16 @@ export class UserComponent implements OnInit {
           fotoPlaceholder.innerHTML = svgContainer.innerHTML;
         }
       }
+    });
+  }
+
+  onFetchData(params: any): void {
+    this.getDataUser({
+      search: params.search,
+      sortColumn: params.sortColumn,
+      sortOrder: params.sortOrder,
+      page: params.page,
+      pageSize: params.pageSize
     });
   }
 
