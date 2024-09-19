@@ -25,11 +25,16 @@ export class ModuleService {
   constructor(private http: HttpClient) {}
 
   /** Modulo **/
+<<<<<<< HEAD
   getDataModule(): Observable<any> {
     return this.http.get<any>(
       `${this.apiUrl}/module/index`,
       this.getHttpOptions()
     );
+=======
+  getDataModule(params: any): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/module/index`,  { params: params, ...this.getHttpOptions() });
+>>>>>>> 98db99845582b8a3b1a36f729a6fac55072767d4
   }
 
   sendModule(data: any): Observable<any> {
