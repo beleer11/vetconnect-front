@@ -11,7 +11,7 @@ import { ModuleComponent } from './views/settings/module/module.component';
 import { GroupModuleComponent } from './views/settings/group-module/group-module.component';
 import { DashboardComponent } from './views/dashboard/dashboard.component';
 import { PermissionComponent } from './views/user/permission/permission.component';
-import { CompanyComponent } from './views/parameter/company/company.component';
+import { CompanyComponent } from './views/companies/company/company.component';
 import { RolComponent } from './views/user/rol/rol.component';
 
 // Define las rutas directamente aquí
