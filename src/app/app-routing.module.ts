@@ -13,6 +13,7 @@ import { DashboardComponent } from './views/dashboard/dashboard.component';
 import { PermissionComponent } from './views/user/permission/permission.component';
 import { CompanyComponent } from './views/companies/company/company.component';
 import { RolComponent } from './views/user/rol/rol.component';
+import { BranchComponent } from './views/companies/branch/branch.component';
 
 // Define las rutas directamente aquí
 const routes: Routes = [
@@ -33,32 +34,33 @@ const routes: Routes = [
     children: [
       {
         path: 'dashboard',
-        component: DashboardComponent
+        component: DashboardComponent,
       },
       {
         path: 'user',
-        component: UserComponent
+        component: UserComponent,
       },
       {
         path: 'rol',
-        component: RolComponent
+        component: RolComponent,
       },
       {
         path: 'module',
-        component: ModuleComponent
+        component: ModuleComponent,
       },
       {
         path: 'group-module',
-        component: GroupModuleComponent
+        component: GroupModuleComponent,
       },
       {
         path: 'permission',
-        component: PermissionComponent
+        component: PermissionComponent,
       },
       {
         path: 'company',
-        component: CompanyComponent
-      }
+        component: CompanyComponent,
+      },
+      { path: 'branch', component: BranchComponent },
     ],
   },
   { path: 'login', component: LoginComponent },
@@ -71,4 +73,4 @@ const routes: Routes = [
   imports: [RouterModule.forRoot(routes, { useHash: false })],
   exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}
