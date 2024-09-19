@@ -11,7 +11,6 @@ import { GeneralService } from 'src/app/services/general/general.service';
   templateUrl: './group-module.component.html',
   styleUrls: ['./group-module.component.css'],
 })
-
 export class GroupModuleComponent implements OnInit {
   public dataModule: any = [];
   public dataModuleTrasnform: any = [];
@@ -25,12 +24,22 @@ export class GroupModuleComponent implements OnInit {
   public showAddButton: boolean = false;
   public showImportButton: boolean = false;
   public showExportButton: boolean = false;
+  public totalRecord: number = 0;
+  public loadingTable: boolean = false;
+  public acciones: boolean = true;
+  public parameterDefect = {
+    search: '',
+    sortColumn: 'name',
+    sortOrder: 'desc',
+    page: 1,
+    pageSize: 10,
+  };
 
   constructor(
     private moduleService: ModuleService,
     private fb: FormBuilder,
-    private generalService: GeneralService,
-  ) { }
+    private generalService: GeneralService
+  ) {}
 
   async ngOnInit(): Promise<void> {
     this.dataModuleTrasnform = await this.getData();
@@ -41,13 +50,14 @@ export class GroupModuleComponent implements OnInit {
 
   private async getData(): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.moduleService.getDataGroupModule().subscribe(
-        response => {
-          this.dataModule = response;
-          resolve(this.formatedData(response));
+      this.moduleService.getDataGroupModule(this.parameterDefect).subscribe(
+        (response) => {
+          this.dataModule = response.data;
+          this.totalRecord = response.total;
+          resolve(this.formatedData(response.data));
           this.checkPermissionsButton();
         },
-        error => reject(error)
+        (error) => reject(error)
       );
     });
   }
@@ -74,31 +84,34 @@ export class GroupModuleComponent implements OnInit {
       }
 
       if (this.action === 'edit') {
-        this.editGroupModule(this.formGroupModule.get('nombre')?.value, this.dataTemp.id);
+        this.editGroupModule(
+          this.formGroupModule.get('nombre')?.value,
+          this.dataTemp.id
+        );
       }
     }
   }
 
-  handleAction(event: { id: number, action: string }) {
+  handleAction(event: { id: number; action: string }) {
     const { id, action } = event;
     this.action = action;
     this.dataTemp = this.dataModule.find((item: any) => item.id === id);
 
-    if (action === "edit") {
-      this.formGroupModule.controls["nombre"].setValue(this.dataTemp.name);
+    if (action === 'edit') {
+      this.formGroupModule.controls['nombre'].setValue(this.dataTemp.name);
       this.formGroupModule.markAllAsTouched();
       this.showForm = true;
     }
 
-    if (action === "delete") {
+    if (action === 'delete') {
       this.deleteRecord(id);
     }
 
-    if (action === "view") {
+    if (action === 'view') {
       this.openModalView(this.dataTemp);
     }
 
-    if (action === "ban") {
+    if (action === 'ban') {
       this.disableOrEnableRecord(this.dataTemp);
     }
   }
@@ -116,7 +129,7 @@ export class GroupModuleComponent implements OnInit {
 
   public saveNewGroupModule(nombre: string) {
     this.loading = true;
-    this.moduleService.sendGroup({ "name": nombre }).subscribe({
+    this.moduleService.sendGroup({ name: nombre }).subscribe({
       next: (response) => {
         if (response.original.success) {
           this.dataModule = response.original.data;
@@ -131,13 +144,21 @@ export class GroupModuleComponent implements OnInit {
           this.alertMessage('¡Éxito!', response.original.message, 'success');
         } else {
           this.loading = false;
-          this.alertMessage('Advertencia', response.original.message, 'warning');
+          this.alertMessage(
+            'Advertencia',
+            response.original.message,
+            'warning'
+          );
         }
       },
       error: (error) => {
         this.loading = false;
-        this.alertMessage('Error', 'Hubo un problema al procesar tu solicitud. Por favor, inténtalo de nuevo.', 'error');
-      }
+        this.alertMessage(
+          'Error',
+          'Hubo un problema al procesar tu solicitud. Por favor, inténtalo de nuevo.',
+          'error'
+        );
+      },
     });
   }
 
@@ -159,24 +180,45 @@ export class GroupModuleComponent implements OnInit {
           this.alertMessage('¡Éxito!', response.original.message, 'success');
         } else {
           this.loading = false;
-          this.alertMessage('Advertencia', response.original.message, 'warning');
+          this.alertMessage(
+            'Advertencia',
+            response.original.message,
+            'warning'
+          );
         }
       },
       error: (error) => {
         this.loading = false;
-        this.alertMessage('Error', 'Hubo un problema al procesar tu solicitud. Por favor, inténtalo de nuevo.', 'error');
-      }
+        this.alertMessage(
+          'Error',
+          'Hubo un problema al procesar tu solicitud. Por favor, inténtalo de nuevo.',
+          'error'
+        );
+      },
     });
   }
 
-  public formatedData(response: any) {
+  public formatedData(response: any, fecth = false) {
+    if (response.length === 0 && fecth) {
+      // Devuelve un mensaje personalizado cuando no hay datos
+      return [
+        {
+          'No se encontraron resultados':
+            'No se encontraron registros que coincidan con los criterios de búsqueda. Intente con otros términos.',
+        },
+      ];
+    }
     return response.map((item: any) => {
       return {
         id: item.id,
         is_disabled: item.is_disabled,
-        "Nombre": item.name,
-        "Fecha creación": moment(item.created_at).format('DD/MM/YYYY hh:mm:ss A'),
-        "Ultima actualización": moment(item.updated_at).format('DD/MM/YYYY hh:mm:ss A')
+        Nombre: item.name,
+        'Fecha creación': moment(item.created_at).format(
+          'DD/MM/YYYY hh:mm:ss A'
+        ),
+        'Ultima actualización': moment(item.updated_at).format(
+          'DD/MM/YYYY hh:mm:ss A'
+        ),
       };
     });
   }
@@ -184,13 +226,13 @@ export class GroupModuleComponent implements OnInit {
   deleteRecord(id: number) {
     Swal.fire({
       title: '¿Estás seguro?',
-      text: "Esta acción eliminará el registro permanentemente. ¡No podrás revertirlo!",
+      text: 'Esta acción eliminará el registro permanentemente. ¡No podrás revertirlo!',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',
       cancelButtonColor: '#3085d6',
       confirmButtonText: 'Sí, eliminarlo',
-      cancelButtonText: 'Cancelar'
+      cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
         this.loading = true;
@@ -199,12 +241,20 @@ export class GroupModuleComponent implements OnInit {
             this.dataModule = response.data;
             this.dataModuleTrasnform = this.formatedData(this.dataModule);
             this.loading = false;
-            this.alertMessage('¡Eliminado!', 'El registro ha sido eliminado correctamente.', 'success');
+            this.alertMessage(
+              '¡Eliminado!',
+              'El registro ha sido eliminado correctamente.',
+              'success'
+            );
           },
           error: (error) => {
             this.loading = false;
-            this.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.', 'error');
-          }
+            this.alertMessage(
+              'Error',
+              'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.',
+              'error'
+            );
+          },
         });
       }
     });
@@ -212,8 +262,12 @@ export class GroupModuleComponent implements OnInit {
 
   disableOrEnableRecord(data: any) {
     const actionText = data.is_disabled === 0 ? 'habilitar' : 'inhabilitar';
-    const confirmButtonText = data.is_disabled === 0 ? 'Sí, habilitar' : 'Sí, inhabilitar';
-    const successMessage = data.is_disabled === 0 ? 'El registro ha sido habilitado correctamente.' : 'El registro ha sido inhabilitado correctamente.';
+    const confirmButtonText =
+      data.is_disabled === 0 ? 'Sí, habilitar' : 'Sí, inhabilitar';
+    const successMessage =
+      data.is_disabled === 0
+        ? 'El registro ha sido habilitado correctamente.'
+        : 'El registro ha sido inhabilitado correctamente.';
 
     Swal.fire({
       title: `¿Deseas ${actionText} este registro?`,
@@ -222,7 +276,7 @@ export class GroupModuleComponent implements OnInit {
       confirmButtonColor: '#f39c12',
       cancelButtonColor: '#3085d6',
       confirmButtonText: confirmButtonText,
-      cancelButtonText: 'Cancelar'
+      cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
         this.loading = true;
@@ -236,8 +290,12 @@ export class GroupModuleComponent implements OnInit {
           },
           error: (error) => {
             this.loading = false;
-            this.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.', 'error');
-          }
+            this.alertMessage(
+              'Error',
+              'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.',
+              'error'
+            );
+          },
         });
       }
     });
@@ -245,7 +303,8 @@ export class GroupModuleComponent implements OnInit {
 
   private actionMap: { [key: string]: (id: number) => Observable<any> } = {
     enable: (id: number) => this.moduleService.enableRecordGroupModuleById(id),
-    disable: (id: number) => this.moduleService.disableRecordGroupModuleById(id),
+    disable: (id: number) =>
+      this.moduleService.disableRecordGroupModuleById(id),
   };
 
   openModalView(data: any) {
@@ -254,12 +313,16 @@ export class GroupModuleComponent implements OnInit {
       html: `
         <div>
         <p><strong>Nombre : </strong> <span>${data.name}</span> </p>
-        <p> <strong>Fecha de Creación: </strong> <span>${moment(data.created_at).format('DD/MM / YYYY hh: mm:ss A')}</span></p>
-          <p> <strong>Ultima actualización: </strong> <span>${moment(data.updated_at).format('DD/MM / YYYY hh: mm:ss A')}</span></p>
+        <p> <strong>Fecha de Creación: </strong> <span>${moment(
+          data.created_at
+        ).format('DD/MM / YYYY hh: mm:ss A')}</span></p>
+          <p> <strong>Ultima actualización: </strong> <span>${moment(
+            data.updated_at
+          ).format('DD/MM / YYYY hh: mm:ss A')}</span></p>
             </div>
               `,
       icon: 'info',
-      confirmButtonText: 'Cerrar'
+      confirmButtonText: 'Cerrar',
     });
   }
 
@@ -268,7 +331,7 @@ export class GroupModuleComponent implements OnInit {
       title: title,
       text: text,
       icon: icon,
-      confirmButtonText: 'OK'
+      confirmButtonText: 'OK',
     });
   }
 
@@ -323,4 +386,28 @@ export class GroupModuleComponent implements OnInit {
     };
   }
 
+  onFetchData(params: any): void {
+    this.loadingTable = true;
+    this.moduleService.getDataGroupModule(params).subscribe(
+      (response) => {
+        this.dataModuleTrasnform = this.formatedData(response.data, true);
+        this.dataModule = response.data;
+        this.totalRecord = response.total;
+        if (response.data.length === 0) {
+          this.fieldsTable = ['No se encontraron resultados'];
+          this.columnAlignments = ['center'];
+          this.acciones = false;
+        } else {
+          this.fieldsTable = this.getFieldsTable();
+          this.columnAlignments = this.getColumnAlignments();
+          this.acciones = true;
+        }
+        this.loadingTable = false;
+      },
+      (error) => {
+        this.loadingTable = false;
+        console.error('Error fetching data', error);
+      }
+    );
+  }
 }

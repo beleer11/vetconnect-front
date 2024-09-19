@@ -8,9 +8,8 @@ import { Observable } from 'rxjs';
 @Component({
   selector: 'app-company',
   templateUrl: './company.component.html',
-  styleUrl: './company.component.css'
+  styleUrl: './company.component.css',
 })
-
 export class CompanyComponent implements OnInit {
   public dataModule: any = [];
   public dataModuleTrasnform: any = [];
@@ -22,10 +21,7 @@ export class CompanyComponent implements OnInit {
   public dataTemp: any = [];
   public loading: boolean = true;
 
-  constructor(
-    private moduleService: ModuleService,
-    private fb: FormBuilder
-  ) { }
+  constructor(private moduleService: ModuleService, private fb: FormBuilder) {}
 
   async ngOnInit(): Promise<void> {
     this.dataModuleTrasnform = await this.getData();
@@ -36,13 +32,13 @@ export class CompanyComponent implements OnInit {
 
   private async getData(): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.moduleService.getDataGroupModule().subscribe(
+      /*this.moduleService.getDataGroupModule().subscribe(
         response => {
           this.dataModule = response;
           resolve(this.formatedData(response));
         },
         error => reject(error)
-      );
+      );*/
     });
   }
 
@@ -60,9 +56,12 @@ export class CompanyComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       logo: [null, Validators.required],
       razonSocial: ['', Validators.required],
-      telefono: ['', [Validators.required, Validators.pattern(/^[0-9]{7,10}$/)]],
+      telefono: [
+        '',
+        [Validators.required, Validators.pattern(/^[0-9]{7,10}$/)],
+      ],
       nit: ['', [Validators.minLength(5)]],
-      representante: ['', Validators.required]
+      representante: ['', Validators.required],
     });
     this.loading = false;
   }
@@ -70,34 +69,37 @@ export class CompanyComponent implements OnInit {
   onSubmit() {
     if (this.formGroupModule.valid) {
       if (this.action === 'save') {
-        this.saveNewGroupModule(this.formGroupModule.get('nombre',)?.value);
+        this.saveNewGroupModule(this.formGroupModule.get('nombre')?.value);
       }
 
       if (this.action === 'edit') {
-        this.editGroupModule(this.formGroupModule.get('nombre')?.value, this.dataTemp.id);
+        this.editGroupModule(
+          this.formGroupModule.get('nombre')?.value,
+          this.dataTemp.id
+        );
       }
     }
   }
 
-  handleAction(event: { id: number, action: string }) {
+  handleAction(event: { id: number; action: string }) {
     const { id, action } = event;
     this.action = action;
     this.dataTemp = this.dataModule.find((item: any) => item.id === id);
 
-    if (action === "edit") {
-      this.formGroupModule.controls["nombre"].setValue(this.dataTemp.name);
+    if (action === 'edit') {
+      this.formGroupModule.controls['nombre'].setValue(this.dataTemp.name);
       this.showForm = true;
     }
 
-    if (action === "delete") {
+    if (action === 'delete') {
       this.deleteRecord(id);
     }
 
-    if (action === "view") {
+    if (action === 'view') {
       this.openModalView(this.dataTemp);
     }
 
-    if (action === "ban") {
+    if (action === 'ban') {
       this.disableOrEnableRecord(this.dataTemp);
     }
   }
@@ -115,7 +117,7 @@ export class CompanyComponent implements OnInit {
 
   public saveNewGroupModule(nombre: string) {
     this.loading = true;
-    this.moduleService.sendGroup({ "name": nombre }).subscribe({
+    this.moduleService.sendGroup({ name: nombre }).subscribe({
       next: (response) => {
         if (response.original.success) {
           this.dataModule = response.original.data;
@@ -130,13 +132,21 @@ export class CompanyComponent implements OnInit {
           this.alertMessage('¡Éxito!', response.original.message, 'success');
         } else {
           this.loading = false;
-          this.alertMessage('Advertencia', response.original.message, 'warning');
+          this.alertMessage(
+            'Advertencia',
+            response.original.message,
+            'warning'
+          );
         }
       },
       error: (error) => {
         this.loading = false;
-        this.alertMessage('Error', 'Hubo un problema al procesar tu solicitud. Por favor, inténtalo de nuevo.', 'error');
-      }
+        this.alertMessage(
+          'Error',
+          'Hubo un problema al procesar tu solicitud. Por favor, inténtalo de nuevo.',
+          'error'
+        );
+      },
     });
   }
 
@@ -158,13 +168,21 @@ export class CompanyComponent implements OnInit {
           this.alertMessage('¡Éxito!', response.original.message, 'success');
         } else {
           this.loading = false;
-          this.alertMessage('Advertencia', response.original.message, 'warning');
+          this.alertMessage(
+            'Advertencia',
+            response.original.message,
+            'warning'
+          );
         }
       },
       error: (error) => {
         this.loading = false;
-        this.alertMessage('Error', 'Hubo un problema al procesar tu solicitud. Por favor, inténtalo de nuevo.', 'error');
-      }
+        this.alertMessage(
+          'Error',
+          'Hubo un problema al procesar tu solicitud. Por favor, inténtalo de nuevo.',
+          'error'
+        );
+      },
     });
   }
 
@@ -173,9 +191,9 @@ export class CompanyComponent implements OnInit {
       return {
         id: item.id,
         is_disabled: item.is_disabled,
-        "Nombre": item.name,
-        "Fecha creación": moment(item.created_at).format('DD/MM/YYYY'),
-        "Ultima actualización": moment(item.updated_at).format('DD/MM/YYYY')
+        Nombre: item.name,
+        'Fecha creación': moment(item.created_at).format('DD/MM/YYYY'),
+        'Ultima actualización': moment(item.updated_at).format('DD/MM/YYYY'),
       };
     });
   }
@@ -183,13 +201,13 @@ export class CompanyComponent implements OnInit {
   deleteRecord(id: number) {
     Swal.fire({
       title: '¿Estás seguro?',
-      text: "Esta acción eliminará el registro permanentemente. ¡No podrás revertirlo!",
+      text: 'Esta acción eliminará el registro permanentemente. ¡No podrás revertirlo!',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',
       cancelButtonColor: '#3085d6',
       confirmButtonText: 'Sí, eliminarlo',
-      cancelButtonText: 'Cancelar'
+      cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
         this.loading = true;
@@ -198,12 +216,20 @@ export class CompanyComponent implements OnInit {
             this.dataModule = response.data;
             this.dataModuleTrasnform = this.formatedData(this.dataModule);
             this.loading = false;
-            this.alertMessage('¡Eliminado!', 'El registro ha sido eliminado correctamente.', 'success');
+            this.alertMessage(
+              '¡Eliminado!',
+              'El registro ha sido eliminado correctamente.',
+              'success'
+            );
           },
           error: (error) => {
             this.loading = false;
-            this.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.', 'error');
-          }
+            this.alertMessage(
+              'Error',
+              'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.',
+              'error'
+            );
+          },
         });
       }
     });
@@ -211,8 +237,12 @@ export class CompanyComponent implements OnInit {
 
   disableOrEnableRecord(data: any) {
     const actionText = data.is_disabled === 0 ? 'habilitar' : 'inhabilitar';
-    const confirmButtonText = data.is_disabled === 0 ? 'Sí, habilitar' : 'Sí, inhabilitar';
-    const successMessage = data.is_disabled === 0 ? 'El registro ha sido habilitado correctamente.' : 'El registro ha sido inhabilitado correctamente.';
+    const confirmButtonText =
+      data.is_disabled === 0 ? 'Sí, habilitar' : 'Sí, inhabilitar';
+    const successMessage =
+      data.is_disabled === 0
+        ? 'El registro ha sido habilitado correctamente.'
+        : 'El registro ha sido inhabilitado correctamente.';
 
     Swal.fire({
       title: `¿Deseas ${actionText} este registro?`,
@@ -221,7 +251,7 @@ export class CompanyComponent implements OnInit {
       confirmButtonColor: '#f39c12',
       cancelButtonColor: '#3085d6',
       confirmButtonText: confirmButtonText,
-      cancelButtonText: 'Cancelar'
+      cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
         this.loading = true;
@@ -235,8 +265,12 @@ export class CompanyComponent implements OnInit {
           },
           error: (error) => {
             this.loading = false;
-            this.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.', 'error');
-          }
+            this.alertMessage(
+              'Error',
+              'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.',
+              'error'
+            );
+          },
         });
       }
     });
@@ -244,7 +278,8 @@ export class CompanyComponent implements OnInit {
 
   private actionMap: { [key: string]: (id: number) => Observable<any> } = {
     enable: (id: number) => this.moduleService.enableRecordGroupModuleById(id),
-    disable: (id: number) => this.moduleService.disableRecordGroupModuleById(id),
+    disable: (id: number) =>
+      this.moduleService.disableRecordGroupModuleById(id),
   };
 
   openModalView(data: any) {
@@ -253,12 +288,16 @@ export class CompanyComponent implements OnInit {
       html: `
         <div>
         <p><strong>Nombre : </strong> <span>${data.name}</span> </p>
-        <p> <strong>Fecha de Creación: </strong> <span>${moment(data.created_at).format('DD/MM / YYYY hh: mm:ss A')}</span></p>
-          <p> <strong>Ultima actualización: </strong> <span>${moment(data.updated_at).format('DD/MM / YYYY hh: mm:ss A')}</span></p>
+        <p> <strong>Fecha de Creación: </strong> <span>${moment(
+          data.created_at
+        ).format('DD/MM / YYYY hh: mm:ss A')}</span></p>
+          <p> <strong>Ultima actualización: </strong> <span>${moment(
+            data.updated_at
+          ).format('DD/MM / YYYY hh: mm:ss A')}</span></p>
             </div>
               `,
       icon: 'info',
-      confirmButtonText: 'Cerrar'
+      confirmButtonText: 'Cerrar',
     });
   }
 
@@ -267,8 +306,7 @@ export class CompanyComponent implements OnInit {
       title: title,
       text: text,
       icon: icon,
-      confirmButtonText: 'OK'
+      confirmButtonText: 'OK',
     });
   }
-
 }
