@@ -25,8 +25,8 @@ export class PermissionService {
   constructor(private http: HttpClient) { }
 
   /** Modulo **/
-  getDataPermission(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/permission/index`, this.getHttpOptions());
+  getDataPermission(params: any): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/permission/index`, { params: params, ...this.getHttpOptions() });
   }
 
   sendPermission(data: any): Observable<any> {

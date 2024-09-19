@@ -132,7 +132,7 @@ export class RolComponent implements OnInit {
         id: item.id,
         is_disabled: item.is_disabled,
         "Nombre": item.name,
-        "Descripcion": item.description,
+        "Descripción": item.description,
         "Fecha creación": moment(item.created_at).format('DD/MM/YYYY hh:mm:ss A'),
         "Ultima actualización": moment(item.updated_at).format('DD/MM/YYYY hh:mm:ss A')
       };
