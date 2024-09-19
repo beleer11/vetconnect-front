@@ -37,6 +37,16 @@ export class ModuleComponent implements AfterViewInit {
   public showAddButton: boolean = false;
   public showImportButton: boolean = false;
   public showExportButton: boolean = false;
+  public totalRecord: number = 0;
+  public loadingTable: boolean = false;
+  public acciones: boolean = true;
+  public parameterDefect = {
+    search: '',
+    sortColumn: 'name',
+    sortOrder: 'desc',
+    page: 1,
+    pageSize: 10
+  };
 
   constructor(
     private moduleService: ModuleService,
@@ -50,8 +60,8 @@ export class ModuleComponent implements AfterViewInit {
 
   async ngOnInit(): Promise<void> {
     this.icons = this.getIconsView('cil');
-    this.dataModuleTrasnform = await this.getData();
     this.createForm();
+    this.dataModuleTrasnform = await this.getData();
   }
 
   ngAfterViewInit(): void {
@@ -64,13 +74,13 @@ export class ModuleComponent implements AfterViewInit {
 
   private async getData(): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.moduleService.getDataModule().subscribe(
+      this.moduleService.getDataModule(this.parameterDefect).subscribe(
         response => {
-          this.dataModule = response;
+          this.dataModule = response.data;
           this.listGroupModule();
           this.fieldsTable = this.getFieldsTable();
           this.columnAlignments = this.getColumnAlignments();
-          resolve(this.formatedData(response));
+          resolve(this.formatedData(response.data));
           this.checkPermissionsButton();
         },
         error => reject(error)
@@ -93,7 +103,6 @@ export class ModuleComponent implements AfterViewInit {
       url: ['', Validators.required],
       group: ['', Validators.required],
     });
-    this.loading = false;
   }
 
   onSubmit() {
@@ -162,7 +171,13 @@ export class ModuleComponent implements AfterViewInit {
     this.selectedIcon = null;
   }
 
-  public formatedData(response: any) {
+  public formatedData(response: any, fecth = false) {
+    if (response.length === 0 && fecth) {
+      // Devuelve un mensaje personalizado cuando no hay datos
+      return [{
+        "No se encontraron resultados": "No se encontraron registros que coincidan con los criterios de búsqueda. Intente con otros términos.",
+      }];
+    }
     return response.map((item: any) => {
       return {
         id: item.id,
@@ -443,6 +458,29 @@ export class ModuleComponent implements AfterViewInit {
         }
       }
     }
+    this.loading = false;
+  }
+
+  onFetchData(params: any): void {
+    this.loadingTable = true;
+      this.moduleService.getDataModule(params).subscribe((response) => {
+      this.dataModuleTrasnform = this.formatedData(response.data, true);
+      this.dataModule = response.data;
+      this.totalRecord = response.total;
+      if (response.data.length === 0) {
+        this.fieldsTable = ["No se encontraron resultados"];
+        this.columnAlignments = ["center"];
+        this.acciones = false;
+      } else {
+        this.fieldsTable = this.getFieldsTable();
+        this.columnAlignments = this.getColumnAlignments();
+        this.acciones = true;
+      }
+      this.loadingTable = false;
+    }, (error) => {
+      this.loadingTable = false;
+      console.error('Error fetching data', error);
+    });
   }
 
 }
