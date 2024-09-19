@@ -1,17 +1,17 @@
 <app-loading-spinner *ngIf="loading"></app-loading-spinner>
-<div *ngIf="!showForm && dataModule.length > 0">
-    <div *ngIf="!showForm">
+<div [hidden]= "showForm && dataModule">
+    <div [hidden]="showForm">
         <app-group-button-general [showAddButton]="showAddButton" [showImportButton]="showImportButton"
             [showExportButton]="showExportButton" (buttonClick)="handleButtonClick($event)">
         </app-group-button-general>
     </div>
     <app-general-table [columns]="fieldsTable" [transformedData]="dataModuleTrasnform" [data]="dataModule"
-        [acciones]="true" [columnAlignments]="columnAlignments" [title]="'Módulos'"
-        (actionEvent)="handleAction($event)">
+        [acciones]="acciones" [columnAlignments]="columnAlignments" [title]="'Módulos'"(fetchDataEvent)="onFetchData($event)"
+        [totalRecords]="totalRecord" [loadingTable]="loadingTable" (actionEvent)="handleAction($event)">
     </app-general-table>
 </div>
-<c-row *ngIf="showForm">
-    <c-col xs>
+<c-row [hidden]="!showForm">
+  <c-col xs>
         <c-card class="mb-4">
             <c-card-header>
                 <div class="container">
