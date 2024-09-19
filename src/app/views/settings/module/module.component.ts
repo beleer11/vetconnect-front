@@ -77,6 +77,7 @@ export class ModuleComponent implements AfterViewInit {
       this.moduleService.getDataModule(this.parameterDefect).subscribe(
         response => {
           this.dataModule = response.data;
+          this.totalRecord = response.total;
           this.listGroupModule();
           this.fieldsTable = this.getFieldsTable();
           this.columnAlignments = this.getColumnAlignments();

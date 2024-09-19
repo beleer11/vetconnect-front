@@ -111,6 +111,7 @@ export class RolComponent implements OnInit {
       this.rolService.getDataRoles(this.parameterDefect).subscribe(
         response => {
           this.dataRol = response.data;
+          this.totalRecord = response.total;
           resolve(this.formatedData(response.data));
           this.checkPermissionsButton();
         },
