@@ -5,6 +5,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { Observable } from 'rxjs';
 import { GeneralService } from 'src/app/services/general/general.service';
+import { UserService } from '../../../services/user/user/user.service';
 
 @Component({
   selector: 'app-permission',
@@ -13,8 +14,8 @@ import { GeneralService } from 'src/app/services/general/general.service';
 })
 export class PermissionComponent implements OnInit {
   public loading: boolean = true;
-  public dataModuleTrasnform: any = [];
-  public dataModule: any = [];
+  public dataPermissionTrasnform: any = [];
+  public dataPermission: any = [];
   public fieldsTable: any = [];
   public columnAlignments: any = [];
   public showForm: boolean = false;
@@ -24,15 +25,26 @@ export class PermissionComponent implements OnInit {
   public showAddButton: boolean = false;
   public showImportButton: boolean = false;
   public showExportButton: boolean = false;
+  public totalRecord: number = 0;
+  public loadingTable: boolean = false;
+  public acciones: boolean = true;
+  public parameterDefect = {
+    search: '',
+    sortColumn: 'name',
+    sortOrder: 'desc',
+    page: 1,
+    pageSize: 10
+  };
 
   constructor(
+    private userService: UserService,
     private permissionService: PermissionService,
     private fb: FormBuilder,
     private generalService: GeneralService
   ) { }
 
   async ngOnInit(): Promise<void> {
-    this.dataModuleTrasnform = await this.getData();
+    this.dataPermissionTrasnform = await this.getData();
     this.fieldsTable = this.getFieldsTable();
     this.columnAlignments = this.getColumnAlignments();
     this.createForm();
@@ -40,10 +52,11 @@ export class PermissionComponent implements OnInit {
 
   private async getData(): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.permissionService.getDataPermission().subscribe(
+      this.permissionService.getDataPermission(this.parameterDefect).subscribe(
         response => {
-          this.dataModule = response;
-          resolve(this.formatedData(response));
+          this.dataPermission = response.data;
+          this.totalRecord = response.total;
+          resolve(this.formatedData(response.data));
           this.checkPermissionsButton();
         },
         error => reject(error)
@@ -51,7 +64,13 @@ export class PermissionComponent implements OnInit {
     });
   }
 
-  public formatedData(response: any) {
+  public formatedData(response: any, fetch = false) {
+    if (response.length === 0 && fetch) {
+      // Devuelve un mensaje personalizado cuando no hay datos
+      return [{
+        "No se encontraron resultados": "No se encontraron registros que coincidan con los criterios de búsqueda. Intente con otros términos.",
+      }];
+    }
     return response.map((item: any) => {
       return {
         id: item.id,
@@ -62,6 +81,7 @@ export class PermissionComponent implements OnInit {
       };
     });
   }
+
 
   private getFieldsTable() {
     return ['Nombre', 'Fecha creación', 'Ultima actualización'];
@@ -92,7 +112,7 @@ export class PermissionComponent implements OnInit {
   handleAction(event: { id: number, action: string }) {
     const { id, action } = event;
     this.action = action;
-    this.dataTemp = this.dataModule.find((item: any) => item.id === id);
+    this.dataTemp = this.dataPermission.find((item: any) => item.id === id);
 
     if (action === "edit") {
       this.loading = true;
@@ -132,11 +152,11 @@ export class PermissionComponent implements OnInit {
     this.permissionService.sendPermission({ "name": nombre }).subscribe({
       next: (response) => {
         if (response.original.success) {
-          this.dataModule = response.original.data;
-          if (Array.isArray(this.dataModule)) {
-            this.dataModuleTrasnform = this.formatedData(this.dataModule);
+          this.dataPermission = response.original.data;
+          if (Array.isArray(this.dataPermission)) {
+            this.dataPermissionTrasnform = this.formatedData(this.dataPermission);
           } else {
-            this.dataModuleTrasnform = [];
+            this.dataPermissionTrasnform = [];
           }
 
           this.showForm = false;
@@ -159,12 +179,12 @@ export class PermissionComponent implements OnInit {
     this.permissionService.editPermission({ "name": nombre }, id).subscribe({
       next: (response) => {
         if (response && response.original.data) {
-          this.dataModule = response.original.data;
+          this.dataPermission = response.original.data;
 
-          if (Array.isArray(this.dataModule)) {
-            this.dataModuleTrasnform = this.formatedData(this.dataModule);
+          if (Array.isArray(this.dataPermission)) {
+            this.dataPermissionTrasnform = this.formatedData(this.dataPermission);
           } else {
-            this.dataModuleTrasnform = [];
+            this.dataPermissionTrasnform = [];
           }
 
           this.showForm = false;
@@ -206,8 +226,8 @@ export class PermissionComponent implements OnInit {
         this.loading = true;
         this.permissionService.deleteRecordById(id).subscribe({
           next: (response) => {
-            this.dataModule = response.data;
-            this.dataModuleTrasnform = this.formatedData(this.dataModule);
+            this.dataPermission = response.data;
+            this.dataPermissionTrasnform = this.formatedData(this.dataPermission);
             this.loading = false;
             this.alertMessage('¡Eliminado!', 'El registro ha sido eliminado correctamente.', 'success');
           },
@@ -239,8 +259,8 @@ export class PermissionComponent implements OnInit {
         const action = data.is_disabled === 0 ? 'enable' : 'disable';
         this.actionMap[action](data.id).subscribe({
           next: (response) => {
-            this.dataModule = response.data;
-            this.dataModuleTrasnform = this.formatedData(this.dataModule);
+            this.dataPermission = response.data;
+            this.dataPermissionTrasnform = this.formatedData(this.dataPermission);
             this.loading = false;
             this.alertMessage('¡Éxito!', successMessage, 'success');
           },
@@ -324,5 +344,25 @@ export class PermissionComponent implements OnInit {
     };
   }
 
-
+  onFetchData(params: any): void {
+    this.loadingTable = true;
+      this.permissionService.getDataPermission(params).subscribe((response) => {
+      this.dataPermissionTrasnform = this.formatedData(response.data, true);
+      this.dataPermission = response.data;
+      this.totalRecord = response.total;
+      if (response.data.length === 0) {
+        this.fieldsTable = ["No se encontraron resultados"];
+        this.columnAlignments = ["center"];
+        this.acciones = false;
+      } else {
+        this.fieldsTable = this.getFieldsTable();
+        this.columnAlignments = this.getColumnAlignments();
+        this.acciones = true;
+      }
+      this.loadingTable = false;
+    }, (error) => {
+      this.loadingTable = false;
+      console.error('Error fetching data', error);
+    });
+  }
 }
