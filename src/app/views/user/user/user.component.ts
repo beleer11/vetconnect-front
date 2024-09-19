@@ -48,6 +48,13 @@ export class UserComponent implements OnInit {
   public totalRecord: number = 0;
   public loadingTable: boolean = false;
   public acciones: boolean = true;
+  public parameterDefect = {
+    search: '',
+    sortColumn: 'name',
+    sortOrder: 'desc',
+    page: 1,
+    pageSize: 10
+  };
 
   constructor(
     private userService: UserService,
@@ -117,7 +124,6 @@ export class UserComponent implements OnInit {
       };
     });
   }
-
 
   private getFieldsTable() {
     return ['Nombres', 'Usuario', 'Correo', 'Foto'];
@@ -428,13 +434,7 @@ export class UserComponent implements OnInit {
       this.filteredRoles = this.dataRol;
       this.fieldsTable = this.getFieldsTable();
       this.columnAlignments = this.getColumnAlignments();
-      this.dataTransformada = await this.getDataUser({
-        search: '',
-        sortColumn: 'name',
-        sortOrder: 'desc',
-        page: 1,
-        pageSize: 10
-      });
+      this.dataTransformada = await this.getDataUser(this.parameterDefect);
     } catch (error: any) {
       console.error('Error al obtener roles:', error.message);
       // Maneja el error según sea necesario
@@ -655,6 +655,7 @@ export class UserComponent implements OnInit {
 
   async handleAction(event: { id: number, action: string }) {
     const { id, action } = event;
+    this.dataTemp.image_profile = '';
     this.action = action;
     this.dataTemp = this.dataUser.find((item: any) => item.id === id);
 
@@ -676,7 +677,7 @@ export class UserComponent implements OnInit {
     }
 
     if (action === "view") {
-      this.dataTemp.image_profile = environment.apiStorage + this.dataTemp.image_profile;
+      this.dataTemp.image_profile = (this.dataTemp.image_profile === null) ? '../../../../assets/images/veterinario-black-img.png' : environment.apiStorage + this.dataTemp.image_profile;
       this.openModalView(this.dataTemp);
     }
 
@@ -757,8 +758,7 @@ export class UserComponent implements OnInit {
         this.loading = true;
         this.userService.deleteRecordById(id).subscribe({
           next: (response) => {
-            this.dataUser = response.data;
-            this.dataTransformada = this.formatedData(this.dataUser);
+            this.onFetchData(this.parameterDefect);
             this.loading = false;
             this.generalService.alertMessage('¡Eliminado!', 'El registro ha sido eliminado correctamente.', 'success');
           },
@@ -773,7 +773,6 @@ export class UserComponent implements OnInit {
 
   openModalView(data: any) {
     let rol = this.dataRol.filter((t: any) => t.id === data.rol_id);
-    console.log(rol)
     Swal.fire({
       title: 'Usuarios',
       html: `
@@ -803,6 +802,7 @@ export class UserComponent implements OnInit {
     this.loadingTable = true;
     this.userService.getDataUser(params).subscribe((response) => {
       this.dataTransformada = this.formatedData(response.data, true);
+      this.dataUser = response.data;
       this.totalRecord = response.total;
       if (response.data.length === 0) {
         this.fieldsTable = ["No se encontraron resultados"];
@@ -819,6 +819,5 @@ export class UserComponent implements OnInit {
       console.error('Error fetching data', error);
     });
   }
-
 
 }

@@ -41,10 +41,12 @@
                                             [ngStyle]="{'text-align': columnAlignments[i] || 'left'}"
                                             (click)="sortColumn(column)">
                                             {{ column }}
-                                            <svg *ngIf="currentSortColumn === column && sortOrder === 'asc'" cIcon
-                                                name="cil-arrow-top"></svg>
-                                            <svg *ngIf="currentSortColumn === column && sortOrder === 'desc'" cIcon
-                                                name="cil-arrow-bottom"></svg>
+                                            <i class="fa-solid fa-arrows-up-down ms-1"
+                                                *ngIf="(currentSortColumn !== column || !sortOrder) && column !== 'Foto'"></i>
+                                            <i class="fa-solid fa-arrow-up ms-1"
+                                                *ngIf="currentSortColumn === column && sortOrder === 'desc'"></i>
+                                            <i class="fa-solid fa-arrow-down ms-1"
+                                                *ngIf="currentSortColumn === column && sortOrder === 'asc'"></i>
                                         </th>
                                         <th *ngIf="acciones" [ngStyle]="{'text-align': 'center'}">Acciones</th>
                                     </tr>
