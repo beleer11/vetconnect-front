@@ -6,6 +6,7 @@ import { RolService } from 'src/app/services/user/rol/rol.service';
 import Swal from 'sweetalert2';
 import * as bootstrap from 'bootstrap';
 import { Observable } from 'rxjs';
+import { GeneralService } from 'src/app/services/general/general.service';
 
 @Component({
   selector: 'app-rol',
@@ -26,11 +27,15 @@ export class RolComponent implements OnInit {
   public dataPermissionSelected: any = [];
   public textSelectAll: string = 'Seleccionar todo';
   public selectAllCheck: boolean = true;
+  public showAddButton: boolean = false;
+  public showImportButton: boolean = false;
+  public showExportButton: boolean = false;
 
   constructor(
     private userService: UserService,
     private rolService: RolService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private generalService: GeneralService,
   ) { }
 
   async ngOnInit() {
@@ -42,7 +47,6 @@ export class RolComponent implements OnInit {
   }
 
   public addRole() {
-    this.showForm = true;
     this.action = 'save';
     this.resetForms();
   }
@@ -68,6 +72,7 @@ export class RolComponent implements OnInit {
       this.loading = true;
       this.formRol.controls["nombre"].setValue(this.dataTemp.name);
       this.formRol.controls["description"].setValue(this.dataTemp.description);
+      this.formRol.markAllAsTouched();
       this.rolService.getPermissionByRol(this.dataTemp.id).subscribe(
         response => {
           this.checkedPermisosAsignados(response.original);
@@ -76,7 +81,6 @@ export class RolComponent implements OnInit {
           console.log(error.message);
         }
       );
-      this.showForm = true;
     }
 
     if (action === "delete") {
@@ -98,6 +102,7 @@ export class RolComponent implements OnInit {
         response => {
           this.dataModule = response.original;
           resolve(this.formatedData(response.original));
+          this.checkPermissionsButton();
         },
         error => reject(error)
       );
@@ -359,7 +364,7 @@ export class RolComponent implements OnInit {
         this.checkedPermiso(moduleData.module, permiso);
       });
     });
-
+    this.showForm = true;
     this.loading = false;
   }
 
@@ -452,6 +457,49 @@ export class RolComponent implements OnInit {
       icon: 'info',
       confirmButtonText: 'Cerrar'
     });
+  }
+
+  handleButtonClick(action: string) {
+    switch (action) {
+      case 'add':
+        this.addRole();
+        break;
+      case 'import':
+        this.importData();
+        break;
+      case 'export':
+        this.exportData();
+        break;
+    }
+  }
+
+  public importData() {
+    this.generalService.alertMessageInCreation();
+  }
+
+  public exportData() {
+    this.generalService.alertMessageInCreation();
+  }
+
+  checkPermissionsButton() {
+    const permissions = JSON.parse(localStorage.getItem('permissions') || '[]');
+    for (const group of permissions) {
+      for (const module of group.modules) {
+        if (module.module_name === 'Roles') {
+          module.permissions.forEach((perm: any) => {
+            if (perm.name === 'Crear') {
+              this.showAddButton = true;
+            }
+            if (perm.name === 'Importar') {
+              this.showImportButton = true;
+            }
+            if (perm.name === 'Exportar') {
+              this.showExportButton = true;
+            }
+          });
+        }
+      }
+    }
   }
 
 }

@@ -1,7 +1,9 @@
 <app-loading-spinner *ngIf="loading"></app-loading-spinner>
 <div *ngIf="!showForm && dataModule.length > 0">
-    <div class="col-12 col-md-auto d-flex justify-content-end align-items-center mb-2 mt-md-0">
-        <button class="btn btn-primary" (click)="addGroupModule()">Agregar</button>
+    <div *ngIf="!showForm">
+        <app-group-button-general [showAddButton]="showAddButton" [showImportButton]="showImportButton"
+            [showExportButton]="showExportButton" (buttonClick)="handleButtonClick($event)">
+        </app-group-button-general>
     </div>
     <app-general-table [columns]="fieldsTable" [transformedData]="dataModuleTrasnform" [data]="dataModule"
         [acciones]="true" [columnAlignments]="columnAlignments" [title]="'Módulos'"
@@ -26,7 +28,8 @@
                         <!-- Campos en la misma fila -->
                         <div class="mb-3 col-12 col-md-4">
                             <label for="name" class="form-label bolder">Nombre</label>
-                            <input id="name" formControlName="name" class="form-control" />
+                            <input id="name" formControlName="name" class="form-control"
+                                [ngClass]="getValidationClass('name')" />
                             <div *ngIf="formModule.controls['name'].invalid && formModule.controls['name'].touched"
                                 class="invalid-feedback">
                                 El nombre es requerido.
@@ -35,7 +38,8 @@
                         <div class="mb-3 col-12 col-md-4">
                             <label for="url" class="form-label bolder">URL</label>
                             <div class="input-group">
-                                <input id="url" formControlName="url" type="url" class="form-control" />
+                                <input id="url" formControlName="url" type="url" class="form-control"
+                                    [ngClass]="getValidationClass('url')" />
                                 <span class="input-group-text" data-bs-toggle="tooltip" data-bs-placement="top"
                                     (click)="openInformation()" style="cursor: pointer;">?</span>
                             </div>
@@ -46,7 +50,8 @@
                         </div>
                         <div class="mb-3 col-12 col-md-4">
                             <label for="group" class="form-label bolder">Grupo</label>
-                            <select id="group" formControlName="group" class="form-select">
+                            <select id="group" formControlName="group" class="form-select"
+                                [ngClass]="getValidationClass('group')">
                                 <option disabled selected>Seleccionar un grupo</option>
                                 <option *ngFor="let group of groupsModule" [value]="group.id">{{ group.name }}</option>
                             </select>

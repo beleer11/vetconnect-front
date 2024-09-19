@@ -9,54 +9,51 @@ import { environment } from 'src/environments/environment';
 export class UserService {
 
   private apiUrl: string = environment.apiUrl;
-  private opcion: string = '';
-  private id: number = 0;
-  private data: any = null;
-
-  private accessToken = localStorage
-    .getItem('access_token')
-    ?.replace(/['"]+/g, '');
-
-  private httpOptions = {
-    headers: new HttpHeaders({
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${this.accessToken}`,
-    }),
-  };
 
   constructor(private http: HttpClient) { }
 
+  private getHttpOptions() {
+    const accessToken = localStorage.getItem('vet_connect_token')?.replace(/['"]+/g, '');
 
-  getDataUser(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/user/index`, this.httpOptions);
+    return {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      }),
+    };
+  }
+
+
+  getDataUser(params: any): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/user/index`, { params: params, ...this.getHttpOptions() });
   }
 
   generateUsername(nombre: string): Observable<string> {
-    return this.http.get<string>(`${this.apiUrl}/user/generate-username?name=${nombre}`, this.httpOptions);
+    return this.http.get<string>(`${this.apiUrl}/user/generate-username?name=${nombre}`, this.getHttpOptions());
   }
 
   listPermission() {
-    return this.http.get<string>(`${this.apiUrl}/user/listPermission`, this.httpOptions);
+    return this.http.get<string>(`${this.apiUrl}/user/listPermission`, this.getHttpOptions());
   }
 
   sendUser(data: any): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/user/setData`, data, this.httpOptions);
+    return this.http.post<any>(`${this.apiUrl}/user/setData`, data, this.getHttpOptions());
   }
 
   editUser(data: any, id: number): Observable<any> {
-    return this.http.put<any>(`${this.apiUrl}/user/editData/${id}`, data, this.httpOptions);
+    return this.http.put<any>(`${this.apiUrl}/user/editData/${id}`, data, this.getHttpOptions());
   }
 
   deleteRecordById(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/user/remove/${id}`, this.httpOptions);
+    return this.http.delete(`${this.apiUrl}/user/remove/${id}`, this.getHttpOptions());
   }
 
   disableRecordById(id: number): Observable<any> {
-    return this.http.patch(`${this.apiUrl}/user/disable/${id}`, {}, this.httpOptions);
+    return this.http.patch(`${this.apiUrl}/user/disable/${id}`, {}, this.getHttpOptions());
   }
 
   enableRecordById(id: number): Observable<any> {
-    return this.http.patch(`${this.apiUrl}/user/enable/${id}`, {}, this.httpOptions);
+    return this.http.patch(`${this.apiUrl}/user/enable/${id}`, {}, this.getHttpOptions());
   }
 
 }

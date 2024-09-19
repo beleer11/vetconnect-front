@@ -43,9 +43,15 @@ export class LoginComponent {
         .subscribe(
           (response) => {
             localStorage.setItem(
-              'access_token',
-              JSON.stringify(response.token)
+              'vet_connect_token',
+              JSON.stringify(response.vet_connect_token)
             );
+            if (response.permission_module) {
+              localStorage.setItem('permissions', response.permission_module);
+            }
+            if (response.user_information) {
+              localStorage.setItem('user_information', response.user_information);
+            }
             this.router.navigate(['/dashboard']);
           },
           (error) => {

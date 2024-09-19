@@ -1,4 +1,5 @@
-import { ChangeDetectorRef, Component, Input, OnInit, OnChanges, Output, EventEmitter } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, Output, EventEmitter, SimpleChanges } from '@angular/core';
+import { PermissionService } from 'src/app/services/user/permission/permission.service';
 
 @Component({
   selector: 'app-general-table',
@@ -13,34 +14,50 @@ export class GeneralTableComponent implements OnInit, OnChanges {
   @Input() acciones: boolean = false;
   @Input() columnAlignments: string[] = [];
   @Input() title: string = '';
+  @Input() totalRecords: number = 0;
+  @Input() loadingTable: boolean = true;  // Cambiado a loadingTable
   @Output() actionEvent: EventEmitter<{ id: number, action: string }> = new EventEmitter();
+  @Output() fetchDataEvent: EventEmitter<any> = new EventEmitter();
 
   public searchValue: string = '';
-  public filteredData: any[] = [];
   public currentSortColumn: string = '';
   public sortOrder: 'asc' | 'desc' = 'asc';
+  public viewAcciones: boolean = false;
+  public isLoading: boolean = false;  // Esta es la propiedad que controla el spinner
 
   // Paginador
   public currentPage: number = 1;
   public pageSize: number = 10;
   public totalPages: number = 0;
-  public pagedData: any[] = [];
-  public totalRecords: number = 0;
 
-
-  constructor(private cdr: ChangeDetectorRef) { }
+  constructor(private permissionService: PermissionService) { }
 
   ngOnInit(): void {
-    this.applySortingAndPagination();
+    this.acciones = this.hasAnyRequiredPermission();
+    if (this.columns.length > 0) {
+      this.currentSortColumn = this.columns[0];
+    }
+    this.sortOrder = 'desc';
+    this.totalPages = Math.ceil(this.totalRecords / this.pageSize);
   }
 
-  ngOnChanges(): void {
-    this.applySortingAndPagination();
-    this.cdr.detectChanges();
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['loadingTable']) {
+      this.isLoading = changes['loadingTable'].currentValue;
+    }
+
+    if (changes['data']) {
+      this.data = changes['data'].currentValue;
+    }
+
+    if (changes['transformedData']) {
+      this.transformedData = changes['transformedData'].currentValue;
+    }
+
+    this.totalPages = Math.ceil(this.totalRecords / this.pageSize);
   }
 
-  onSearch(value: any): void {
-    this.searchValue = value.target.value.toString();
+  onSearch(): void {
     this.applySortingAndPagination();
   }
 
@@ -50,24 +67,9 @@ export class GeneralTableComponent implements OnInit, OnChanges {
   }
 
   applySortingAndPagination(): void {
-    this.filterData(this.searchValue);
-    this.sortData(this.currentSortColumn, this.sortOrder);
-    this.updatePagination();
-    this.setPage(this.currentPage);
+    this.isLoading = true;
+    this.emitFetchDataEvent();
   }
-
-  filterData(searchValue: string): void {
-    const searchTerm = (searchValue || '').toLowerCase();
-    this.filteredData = this.transformedData.filter(row => {
-      return Object.values(row).some(value =>
-        value?.toString().toLowerCase().includes(searchTerm)
-      );
-    });
-    this.totalRecords = this.filteredData.length;
-    this.updatePagination();
-    this.setPage(1);
-  }
-
 
   sortColumn(column: string): void {
     if (column === 'Foto' || column === 'Icono') {
@@ -82,50 +84,17 @@ export class GeneralTableComponent implements OnInit, OnChanges {
     this.applySortingAndPagination();
   }
 
-  sortData(column: string, order: 'asc' | 'desc'): void {
-    this.filteredData = [...this.filteredData].sort((a, b) => {
-      const valueA = a[column];
-      const valueB = b[column];
-      let comparison = 0;
-      if (valueA > valueB) {
-        comparison = 1;
-      } else if (valueA < valueB) {
-        comparison = -1;
-      }
-      return order === 'asc' ? comparison : -comparison;
-    });
-    this.updatePagination();
-    this.setPage(this.currentPage);
-  }
-
-  updatePagination(): void {
-    this.totalPages = Math.ceil(this.filteredData.length / this.pageSize);
-    if (this.currentPage > this.totalPages) {
-      this.currentPage = this.totalPages;
-    }
-    if (this.currentPage < 1) {
-      this.currentPage = 1;
-    }
-  }
-
-  setPage(page: number): void {
-    if (page < 1) page = 1;
-    if (page > this.totalPages) page = this.totalPages;
-    this.currentPage = page;
-    const start = (this.currentPage - 1) * this.pageSize;
-    const end = start + this.pageSize;
-    this.pagedData = this.filteredData.slice(start, end);
-  }
-
   prevPage(): void {
     if (this.currentPage > 1) {
-      this.setPage(this.currentPage - 1);
+      this.currentPage--;
+      this.applySortingAndPagination();
     }
   }
 
   nextPage(): void {
     if (this.currentPage < this.totalPages) {
-      this.setPage(this.currentPage + 1);
+      this.currentPage++;
+      this.applySortingAndPagination();
     }
   }
 
@@ -137,5 +106,28 @@ export class GeneralTableComponent implements OnInit, OnChanges {
 
   onAction(id: number, action: string): void {
     this.actionEvent.emit({ id, action });
+  }
+
+  hasPermission(action: string): boolean {
+    return this.permissionService.hasPermission(this.title, action);
+  }
+
+  hasAnyRequiredPermission(): boolean {
+    return (
+      this.hasPermission('Ver') ||
+      this.hasPermission('Editar') ||
+      this.hasPermission('Eliminar')
+    );
+  }
+
+  emitFetchDataEvent(): void {
+    const params = {
+      search: this.searchValue,
+      sortColumn: this.currentSortColumn,
+      sortOrder: this.sortOrder,
+      page: this.currentPage,
+      pageSize: this.pageSize
+    };
+    this.fetchDataEvent.emit(params);
   }
 }

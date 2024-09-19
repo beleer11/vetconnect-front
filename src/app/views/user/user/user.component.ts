@@ -36,28 +36,36 @@ export class UserComponent implements OnInit {
   public dataPermissionSelected: any = [];
   public selectAllCheck: boolean = true;
   public textSelectAll: string = 'Seleccionar todo';
-  public searchTerm = '';
   public dataRol: any = [];
-  filteredRoles: any[] = this.dataRol;
-  searchControl = new FormControl('');
+  public filteredRoles: any[] = this.dataRol;
   public permissionSuggested: any = [];
   public selectedFile: any;
   public dataTemp: any = [];
+  public showAddButton: boolean = false;
+  public showImportButton: boolean = false;
+  public showExportButton: boolean = false;
+  public searchControl = new FormControl('');
+  public totalRecord: number = 0;
+  public loadingTable: boolean = false;
+  public acciones: boolean = true;
+  public parameterDefect = {
+    search: '',
+    sortColumn: 'name',
+    sortOrder: 'desc',
+    page: 1,
+    pageSize: 10
+  };
 
   constructor(
     private userService: UserService,
     private rolService: RolService,
     private permissionService: PermissionService,
     private generalService: GeneralService,
-    private formBuilder: FormBuilder,
     private fb: FormBuilder
   ) { }
 
 
   async ngOnInit(): Promise<void> {
-    this.dataTransformada = await this.getDataUser();
-    this.fieldsTable = this.getFieldsTable();
-    this.columnAlignments = this.getColumnAlignments();
     this.createForm();
   }
 
@@ -74,19 +82,35 @@ export class UserComponent implements OnInit {
     this.listPermission();
   }
 
-  private async getDataUser(): Promise<any> {
+  private async getDataUser(params: any): Promise<any> {
+    this.loadingTable = true;
     return new Promise((resolve, reject) => {
-      this.userService.getDataUser().subscribe(
+      this.userService.getDataUser(params).subscribe(
         response => {
-          this.dataUser = response;
-          resolve(this.formatedData(response));
+          this.totalRecord = response.total;
+          this.dataUser = response.data;
+          this.dataTransformada = this.formatedData(response.data);
+          resolve(this.dataTransformada)
+          this.checkPermissionsButton();
+          this.loadingTable = false;
         },
-        error => reject(error)
+        error => {
+          reject(error);
+          this.loadingTable = false; // Asegúrate de ocultar el spinner en caso de error
+        }
       );
     });
   }
 
-  public formatedData(response: any) {
+  public formatedData(response: any, fecth = false) {
+    if (response.length === 0 && fecth) {
+      // Devuelve un mensaje personalizado cuando no hay datos
+      return [{
+        "No se encontraron resultados": "No se encontraron registros que coincidan con los criterios de búsqueda. Intente con otros términos.",
+      }];
+    }
+
+    // Si hay datos, los formatea
     return response.map((item: any) => {
       return {
         "id": item.id,
@@ -94,7 +118,7 @@ export class UserComponent implements OnInit {
         "Nombres": item.name,
         "Usuario": item.username,
         "Correo": item.email,
-        "Foto": environment.apiStorage + item.image_profile,
+        "Foto": (item.image_profile !== null) ? environment.apiStorage + item.image_profile : null,
         "Fecha creación": moment(item.created_at).format('DD/MM/YYYY hh:mm:ss A'),
         "Ultima actualización": moment(item.updated_at).format('DD/MM/YYYY hh:mm:ss A')
       };
@@ -109,10 +133,32 @@ export class UserComponent implements OnInit {
     return ['left', 'left', 'left', 'center'];
   }
 
+  handleButtonClick(action: string) {
+    switch (action) {
+      case 'add':
+        this.addUser();
+        break;
+      case 'import':
+        this.importData();
+        break;
+      case 'export':
+        this.exportData();
+        break;
+    }
+  }
+
   public addUser() {
     this.showForm = true;
     this.resetForms();
     this.action = 'save';
+  }
+
+  public importData() {
+    this.generalService.alertMessageInCreation();
+  }
+
+  public exportData() {
+    this.generalService.alertMessageInCreation();
   }
 
   resetForms() {
@@ -167,10 +213,10 @@ export class UserComponent implements OnInit {
 
           this.loading = false;
           this.showForm = false;
-          this.alertMessage('¡Éxito!', response.original.message, 'success');
+          this.generalService.alertMessage('¡Éxito!', response.original.message, 'success');
         } else {
           this.loading = false;
-          this.alertMessage('Advertencia', response.original.message, 'warning');
+          this.generalService.alertMessage('Advertencia', response.original.message, 'warning');
         }
       },
       error: (error) => {
@@ -178,9 +224,9 @@ export class UserComponent implements OnInit {
         // Verifica si hay errores de validación
         if (error.error && error.error.errors) {
           const validationErrors = this.formatValidationErrors(error.error.errors);
-          this.alertMessage('Error de validación', validationErrors, 'error');
+          this.generalService.alertMessage('Error de validación', validationErrors, 'error');
         } else {
-          this.alertMessage('Error', 'Hubo un problema al procesar tu solicitud. Por favor, inténtalo de nuevo.', 'error');
+          this.generalService.alertMessage('Error', 'Hubo un problema al procesar tu solicitud. Por favor, inténtalo de nuevo.', 'error');
         }
       }
     });
@@ -202,15 +248,15 @@ export class UserComponent implements OnInit {
           }
           this.showForm = false;
           this.loading = false;
-          this.alertMessage('¡Éxito!', response.original.message, 'success');
+          this.generalService.alertMessage('¡Éxito!', response.original.message, 'success');
         } else {
           this.loading = false;
-          this.alertMessage('Advertencia', response.original.message, 'warning');
+          this.generalService.alertMessage('Advertencia', response.original.message, 'warning');
         }
       },
       error: (error) => {
         this.loading = false;
-        this.alertMessage('Error', 'Hubo un problema al procesar tu solicitud. Por favor, inténtalo de nuevo.', 'error');
+        this.generalService.alertMessage('Error', 'Hubo un problema al procesar tu solicitud. Por favor, inténtalo de nuevo.', 'error');
       }
     });
   }
@@ -373,7 +419,6 @@ export class UserComponent implements OnInit {
       response => {
         this.dataPermission = response;
         this.getRol();
-        this.loading = false;
       },
       error => {
         console.log(error.message);
@@ -387,10 +432,35 @@ export class UserComponent implements OnInit {
       const response = await this.rolService.getDataRoles().toPromise();
       this.dataRol = response.original;
       this.filteredRoles = this.dataRol;
+      this.fieldsTable = this.getFieldsTable();
+      this.columnAlignments = this.getColumnAlignments();
+      this.dataTransformada = await this.getDataUser(this.parameterDefect);
     } catch (error: any) {
       console.error('Error al obtener roles:', error.message);
       // Maneja el error según sea necesario
     }
+  }
+
+  checkPermissionsButton() {
+    const permissions = JSON.parse(localStorage.getItem('permissions') || '[]');
+    for (const group of permissions) {
+      for (const module of group.modules) {
+        if (module.module_name === 'Usuarios') {
+          module.permissions.forEach((perm: any) => {
+            if (perm.name === 'Crear') {
+              this.showAddButton = true;
+            }
+            if (perm.name === 'Importar') {
+              this.showImportButton = true;
+            }
+            if (perm.name === 'Exportar') {
+              this.showExportButton = true;
+            }
+          });
+        }
+      }
+    }
+    this.loading = false;
   }
 
   getModulesByGroup(groupId: number) {
@@ -550,6 +620,8 @@ export class UserComponent implements OnInit {
     try {
       const response = await this.permissionService.getPermissionByUser(id).toPromise();
       await this.checkedPermisosAsignados(response.original);
+      this.loading = false;
+      this.showForm = true;
     } catch (error: any) {
       console.error('Error al seleccionar rol:', error.message);
       throw error;
@@ -558,10 +630,6 @@ export class UserComponent implements OnInit {
 
   suggestedPermission() {
     this.checkedPermisosAsignados(this.permissionSuggested);
-  }
-
-  searchRol(rol: any) {
-    this.formUser.controls['searchControl'].value(rol.target.value)
   }
 
   clearSelection(): void {
@@ -573,15 +641,6 @@ export class UserComponent implements OnInit {
     if (file) {
       this.selectedFile = await this.generalService.convertToBase64Files(file);
     }
-  }
-
-  public alertMessage(title: any, text: any, icon: any) {
-    Swal.fire({
-      title: title,
-      text: text,
-      icon: icon,
-      confirmButtonText: 'OK'
-    });
   }
 
   private formatValidationErrors(errors: any): string {
@@ -596,6 +655,7 @@ export class UserComponent implements OnInit {
 
   async handleAction(event: { id: number, action: string }) {
     const { id, action } = event;
+    this.dataTemp.image_profile = '';
     this.action = action;
     this.dataTemp = this.dataUser.find((item: any) => item.id === id);
 
@@ -603,12 +663,9 @@ export class UserComponent implements OnInit {
       try {
         this.loading = true;
         this.resetForms();
-        await this.getRol();
         await this.setDataForm();
         await this.selectRol(this.dataTemp.rol_id);
         await this.getPermissionByUser(id);
-        this.loading = false;
-        this.showForm = true;
       } catch (error) {
         console.error('Error en el flujo de edición:', error);
         this.loading = false;
@@ -620,7 +677,7 @@ export class UserComponent implements OnInit {
     }
 
     if (action === "view") {
-      this.dataTemp.image_profile = environment.apiStorage + this.dataTemp.image_profile;
+      this.dataTemp.image_profile = (this.dataTemp.image_profile === null) ? '../../../../assets/images/veterinario-black-img.png' : environment.apiStorage + this.dataTemp.image_profile;
       this.openModalView(this.dataTemp);
     }
 
@@ -670,11 +727,11 @@ export class UserComponent implements OnInit {
             this.dataUser = response.data;
             this.dataTransformada = this.formatedData(this.dataUser);
             this.loading = false;
-            this.alertMessage('¡Éxito!', successMessage, 'success');
+            this.generalService.alertMessage('¡Éxito!', successMessage, 'success');
           },
           error: (error: any) => {
             this.loading = false;
-            this.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.', 'error');
+            this.generalService.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.', 'error');
           }
         });
       }
@@ -701,14 +758,13 @@ export class UserComponent implements OnInit {
         this.loading = true;
         this.userService.deleteRecordById(id).subscribe({
           next: (response) => {
-            this.dataUser = response.data;
-            this.dataTransformada = this.formatedData(this.dataUser);
+            this.onFetchData(this.parameterDefect);
             this.loading = false;
-            this.alertMessage('¡Eliminado!', 'El registro ha sido eliminado correctamente.', 'success');
+            this.generalService.alertMessage('¡Eliminado!', 'El registro ha sido eliminado correctamente.', 'success');
           },
           error: (error) => {
             this.loading = false;
-            this.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.', 'error');
+            this.generalService.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.', 'error');
           }
         });
       }
@@ -716,7 +772,7 @@ export class UserComponent implements OnInit {
   }
 
   openModalView(data: any) {
-    let rol = this.dataRol.filter((t: any) => t.id === data.id_rol);
+    let rol = this.dataRol.filter((t: any) => t.id === data.rol_id);
     Swal.fire({
       title: 'Usuarios',
       html: `
@@ -724,7 +780,7 @@ export class UserComponent implements OnInit {
           <p><strong>Foto: </strong><p id="foto-placeholder"></p></p>
           <p><strong>Nombre : </strong> <span>${data.name}</span> </p>
           <p><strong>Usuario : </strong> <span>${data.username}</span> </p>
-          <p><strong>Rol : </strong> <span>${rol}</span> </p>
+          <p><strong>Rol : </strong> <span>${rol[0].name}</span> </p>
           <p><strong>Fecha de Creación: </strong> <span>${moment(data.created_at).format('DD/MM/YYYY hh:mm:ss A')}</span></p>
           <p><strong>Última actualización: </strong> <span>${moment(data.updated_at).format('DD/MM/YYYY hh:mm:ss A')}</span></p>
         </div>
@@ -739,6 +795,28 @@ export class UserComponent implements OnInit {
           fotoPlaceholder.innerHTML = svgContainer.innerHTML;
         }
       }
+    });
+  }
+
+  onFetchData(params: any): void {
+    this.loadingTable = true;
+    this.userService.getDataUser(params).subscribe((response) => {
+      this.dataTransformada = this.formatedData(response.data, true);
+      this.dataUser = response.data;
+      this.totalRecord = response.total;
+      if (response.data.length === 0) {
+        this.fieldsTable = ["No se encontraron resultados"];
+        this.columnAlignments = ["center"];
+        this.acciones = false;
+      } else {
+        this.fieldsTable = this.getFieldsTable();
+        this.columnAlignments = this.getColumnAlignments();
+        this.acciones = true;
+      }
+      this.loadingTable = false;
+    }, (error) => {
+      this.loadingTable = false;
+      console.error('Error fetching data', error);
     });
   }
 

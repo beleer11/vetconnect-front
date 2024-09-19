@@ -1,7 +1,9 @@
 <app-loading-spinner *ngIf="loading"></app-loading-spinner>
 <div *ngIf="!showForm && dataModule.length > 0">
-    <div class="col-12 col-md-auto d-flex justify-content-end align-items-center mb-2 mt-md-0">
-        <button class="btn btn-primary" (click)="addNewPermission()">Agregar</button>
+    <div *ngIf="!showForm">
+        <app-group-button-general [showAddButton]="showAddButton" [showImportButton]="showImportButton"
+            [showExportButton]="showExportButton" (buttonClick)="handleButtonClick($event)">
+        </app-group-button-general>
     </div>
     <app-general-table [columns]="fieldsTable" [transformedData]="dataModuleTrasnform" [data]="dataModule"
         [acciones]="true" [columnAlignments]="columnAlignments" [title]="'Permisos'"
@@ -26,7 +28,7 @@
                         <div class="form-group mb-0">
                             <label for="nombre" class="bolder">Nombre</label>
                             <input id="nombre" formControlName="nombre" type="text" class="form-control"
-                                [ngClass]="{ 'is-invalid': formPermission.get('nombre')?.invalid && (formPermission.get('nombre')?.touched || formPermission.get('nombre')?.dirty) }" />
+                                [ngClass]="getValidationClass('nombre')" />
                             <div *ngIf="formPermission.get('nombre')?.invalid && (formPermission.get('nombre')?.touched || formPermission.get('nombre')?.dirty)"
                                 class="invalid-feedback">
                                 <div *ngIf="formPermission.get('nombre')?.errors?.['required']">Nombre es requerido.

@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { FormBuilder, FormGroup, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 
 import { DashboardChartsData, IChartProps } from './dashboard-charts-data';
-
+import { GeneralService } from 'src/app/services/general/general.service';
 interface IUser {
   name: string;
   state: string;
@@ -22,9 +22,6 @@ interface IUser {
   styleUrls: ['dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit {
-  constructor(private chartsData: DashboardChartsData) {
-  }
-
   public users: IUser[] = [
     {
       name: 'Yiorgos Avraamu',
@@ -107,12 +104,33 @@ export class DashboardComponent implements OnInit {
   ];
   public mainChart: IChartProps = {};
   public chart: Array<IChartProps> = [];
+  public permission: any = JSON.parse(localStorage.getItem('permissions') || '[]');
   public trafficRadioGroup = new UntypedFormGroup({
     trafficRadio: new UntypedFormControl('Month')
   });
+  public whats!: FormGroup;
+
+  constructor(
+    private chartsData: DashboardChartsData,
+    private generalService: GeneralService,
+    private fb: FormBuilder
+  ) {
+  }
 
   ngOnInit(): void {
     this.initCharts();
+    this.createForm();
+  }
+
+  public createForm() {
+    this.whats = this.fb.group({
+      telefono: ['', [Validators.required]],
+      mensaje: ['', [Validators.required]]
+    });
+  }
+
+  enviarMensaje() {
+    console.log("entra");
   }
 
   initCharts(): void {

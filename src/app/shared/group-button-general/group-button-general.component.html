@@ -1,0 +1,11 @@
+<div class="col-12 col-md-auto d-flex justify-content-end align-items-center mb-2 mt-md-0">
+    <button *ngIf="showAddButton" class="btn btn-success me-2 text-white" (click)="onClick('add')">
+        Agregar<i class="fa-solid fa-plus ps-2"></i>
+    </button>
+    <button *ngIf="showImportButton" class="btn btn-primary me-2" (click)="onClick('import')">
+        Importar<i class="fa-solid fa-upload ps-2"></i>
+    </button>
+    <button *ngIf="showExportButton" class="btn btn-warning" (click)="onClick('export')">
+        Exportar<i class="fa-solid fa-file-excel ps-2"></i>
+    </button>
+</div>

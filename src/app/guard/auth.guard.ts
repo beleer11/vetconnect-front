@@ -10,13 +10,13 @@ import {
   providedIn: 'root',
 })
 export class AuthGuard implements CanActivate {
-  constructor(private router: Router) {}
+  constructor(private router: Router) { }
 
   canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): boolean {
-    if (localStorage.getItem('access_token')) {
+    if (localStorage.getItem('vet_connect_token')) {
       return true;
     }
     this.router.navigate(['login']);

@@ -74,6 +74,29 @@ th .sort-icon ng-container {
     filter: grayscale(100%) brightness(0%);
 }
 
+.spinner-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    /* Fondo semi-transparente */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    /* Asegúrate de que esté por encima de la tabla */
+}
+
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+    border-width: 0.4em;
+    border-radius: 50%;
+}
+
+
 
 /* Estilos para pantallas pequeñas */
 @media (max-width: 576px) {

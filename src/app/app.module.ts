@@ -15,6 +15,7 @@ import { ChartjsModule } from '@coreui/angular-chartjs';
 import { WidgetsModule } from './views/widgets/widgets.module';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { ModalModule } from '@coreui/angular';
 
 //Pipe
 import { PipeModule } from './pipes/pipe.module';
@@ -42,8 +43,9 @@ import { UserComponent } from './views/user/user/user.component';
 import { DashboardComponent } from './views/dashboard/dashboard.component';
 import { PermissionComponent } from './views/user/permission/permission.component';
 import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinner.component';
-import { CompanyComponent } from './views/parameter/company/company.component';
+import { CompanyComponent } from './views/companies/company/company.component';
 import { RolComponent } from './views/user/rol/rol.component';
+import { GroupButtonGeneralComponent } from './shared/group-button-general/group-button-general.component';
 
 
 // Import containers
@@ -100,7 +102,8 @@ const APP_CONTAINERS = [
     DashboardComponent,
     PermissionComponent,
     CompanyComponent,
-    RolComponent
+    RolComponent,
+    GroupButtonGeneralComponent
   ],
   imports: [
     BrowserModule,
@@ -144,6 +147,7 @@ const APP_CONTAINERS = [
     MatIconModule,
     MatAutocompleteModule,
     NgxMatSelectSearchModule,
+    ModalModule,
     RouterModule.forRoot([], { useHash: false }),
   ],
   providers: [
