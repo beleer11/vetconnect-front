@@ -42,19 +42,18 @@ export class GeneralTableComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    //Aca inicializo los datos para poder listar la nueva data
     if (changes['loadingTable']) {
       this.isLoading = changes['loadingTable'].currentValue;
     }
+
     if (changes['data']) {
       this.data = changes['data'].currentValue;
     }
+
     if (changes['transformedData']) {
       this.transformedData = changes['transformedData'].currentValue;
     }
-    //Mañana debo sacar el componente de busqueda para el componente de user, haya le puedo dar mas manejo.
 
-    ///Recordarrrrr debo sacar el componente de busqueda para el componente de user, haya se le puede dar mas manejo. ->> ok SAcar el componente de buscar para use
     this.totalPages = Math.ceil(this.totalRecords / this.pageSize);
   }
 

@@ -7,8 +7,7 @@
                         <div class="col-12 col-md-auto text-center text-md-start pt-2">
                             <h2 class="mb-0">{{ title }}</h2>
                         </div>
-                        <div class="col-12 col-md-auto d-flex align-items-center justify-content-between mt-3 mt-md-0"
-                            *ngIf="transformedData.length > 0">
+                        <div class="col-12 col-md-auto d-flex align-items-center justify-content-between mt-3 mt-md-0">
                             <input type="text" class="form-control btn-search" placeholder="Buscar..."
                                 [(ngModel)]="searchValue" />
                             <button type="button" class="btn btn-outline-secondary ms-2" (click)="onSearch()">

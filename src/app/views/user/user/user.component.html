@@ -5,7 +5,7 @@
             [showExportButton]="showExportButton" (buttonClick)="handleButtonClick($event)">
         </app-group-button-general>
     </div>
-    <app-general-table [columns]="fieldsTable" [transformedData]="dataTransformada" [acciones]="true"
+    <app-general-table [columns]="fieldsTable" [transformedData]="dataTransformada" [acciones]="acciones"
         [columnAlignments]="columnAlignments" [title]="'Usuarios'" (fetchDataEvent)="onFetchData($event)"
         [totalRecords]="totalRecord" [loadingTable]="loadingTable" [data]="dataUser"
         (actionEvent)="handleAction($event)">

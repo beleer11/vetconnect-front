@@ -47,13 +47,13 @@ export class UserComponent implements OnInit {
   public searchControl = new FormControl('');
   public totalRecord: number = 0;
   public loadingTable: boolean = false;
+  public acciones: boolean = true;
 
   constructor(
     private userService: UserService,
     private rolService: RolService,
     private permissionService: PermissionService,
     private generalService: GeneralService,
-    private formBuilder: FormBuilder,
     private fb: FormBuilder
   ) { }
 
@@ -95,7 +95,15 @@ export class UserComponent implements OnInit {
     });
   }
 
-  public formatedData(response: any) {
+  public formatedData(response: any, fecth = false) {
+    if (response.length === 0 && fecth) {
+      // Devuelve un mensaje personalizado cuando no hay datos
+      return [{
+        "No se encontraron resultados": "No se encontraron registros que coincidan con los criterios de búsqueda. Intente con otros términos.",
+      }];
+    }
+
+    // Si hay datos, los formatea
     return response.map((item: any) => {
       return {
         "id": item.id,
@@ -109,6 +117,7 @@ export class UserComponent implements OnInit {
       };
     });
   }
+
 
   private getFieldsTable() {
     return ['Nombres', 'Usuario', 'Correo', 'Foto'];
@@ -791,13 +800,25 @@ export class UserComponent implements OnInit {
   }
 
   onFetchData(params: any): void {
-    this.getDataUser({
-      search: params.search,
-      sortColumn: params.sortColumn,
-      sortOrder: params.sortOrder,
-      page: params.page,
-      pageSize: params.pageSize
+    this.loadingTable = true;
+    this.userService.getDataUser(params).subscribe((response) => {
+      this.dataTransformada = this.formatedData(response.data, true);
+      this.totalRecord = response.total;
+      if (response.data.length === 0) {
+        this.fieldsTable = ["No se encontraron resultados"];
+        this.columnAlignments = ["center"];
+        this.acciones = false;
+      } else {
+        this.fieldsTable = this.getFieldsTable();
+        this.columnAlignments = this.getColumnAlignments();
+        this.acciones = true;
+      }
+      this.loadingTable = false;
+    }, (error) => {
+      this.loadingTable = false;
+      console.error('Error fetching data', error);
     });
   }
+
 
 }
