@@ -429,9 +429,11 @@ export class UserComponent implements OnInit {
   async getRol(): Promise<void> {
     try {
       // Convierte el observable en una promesa
-      const response = await this.rolService.getDataRoles().toPromise();
-      this.dataRol = response.original;
+      let response: any;
+      response = await this.rolService.listRol().toPromise();
+      this.dataRol = response?.data;
       this.filteredRoles = this.dataRol;
+
       this.fieldsTable = this.getFieldsTable();
       this.columnAlignments = this.getColumnAlignments();
       this.dataTransformada = await this.getDataUser(this.parameterDefect);

@@ -26,8 +26,12 @@ export class RolService {
 
   constructor(private http: HttpClient) { }
 
-  getDataRoles(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/rol/index`, this.getHttpOptions());
+  getDataRoles(params: any): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/rol/index`, { params: params, ...this.getHttpOptions() });
+  }
+
+  listRol() {
+    return this.http.get<string>(`${this.apiUrl}/rol/listRol`, this.getHttpOptions());
   }
 
   getPermissionByRol(id: number): Observable<any> {
