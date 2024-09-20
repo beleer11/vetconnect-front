@@ -1,128 +1,23 @@
 <app-loading-spinner *ngIf="loading"></app-loading-spinner>
-<div class="col-12 col-md-auto d-flex justify-content-end align-items-center mb-2 mt-md-0" *ngIf="!showForm">
-  <button class="btn btn-primary" (click)="addGroupModule()">Agregar</button>
+<div [hidden]="showForm && dataCompany">
+  <div [hidden]="showForm">
+    <app-group-button-general [showAddButton]="showAddButton" [showImportButton]="showImportButton"
+      [showExportButton]="showExportButton" (buttonClick)="handleButtonClick($event)">
+    </app-group-button-general>
+  </div>
 </div>
-<app-general-table *ngIf="!showForm" [columns]="fieldsTable" [transformedData]="dataModuleTrasnform" [data]="dataModule"
-  [acciones]="true" [columnAlignments]="columnAlignments" [title]="'Compañias'" (actionEvent)="handleAction($event)">
+<app-general-table [columns]="fieldsTable"
+[transformedData]="dataCompanyTrasnform"
+[data]="dataCompany"
+[acciones]="acciones"
+[columnAlignments]="columnAlignments"
+[title]="'Compañias'"
+(fetchDataEvent)="onFetchData($event)"
+[totalRecords]="totalRecord"
+[loadingTable]="loadingTable"
+(actionEvent)="handleAction($event)">
 </app-general-table>
-<c-row *ngIf="showForm">
-  <c-col xs>
-    <c-card class="mb-4">
-      <c-card-header>
-        <div class="container">
-          <div class="row justify-content-between align-items-center mb-2">
-            <div class="col-12 col-md-auto text-center text-md-start pt-2">
-              <h1 class="mb-0">Datos de la compañía</h1>
-            </div>
-          </div>
-        </div>
-      </c-card-header>
-      <c-card-body>
-        <form [formGroup]="formGroupModule" (ngSubmit)="onSubmit()">
-          <div class="container">
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <div class="form-group">
-                  <label for="nombre" class="bolder">Nombre</label>
-                  <input id="nombre" formControlName="nombre" type="text" class="form-control"
-                    [ngClass]="{ 'is-invalid': formGroupModule.get('nombre')?.invalid && (formGroupModule.get('nombre')?.touched || formGroupModule.get('nombre')?.dirty), 'is-valid': formGroupModule.get('nombre')?.valid && (formGroupModule.get('nombre')?.touched || formGroupModule.get('nombre')?.dirty) }" />
-                  <div
-                    *ngIf="formGroupModule.get('nombre')?.invalid && (formGroupModule.get('nombre')?.touched || formGroupModule.get('nombre')?.dirty)"
-                    class="invalid-feedback">
-                    <div *ngIf="formGroupModule.get('nombre')?.errors?.['required']">El nombre es requerido.</div>
-                    <div *ngIf="formGroupModule.get('nombre')?.errors?.['minlength']">El nombre debe tener al menos 3
-                      caractéres.</div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-6 mb-3">
-                <div class="form-group">
-                  <label for="email" class="bolder">Correo electrónico</label>
-                  <input id="email" formControlName="email" type="email" class="form-control"
-                    [ngClass]="{ 'is-invalid': formGroupModule.get('email')?.invalid && (formGroupModule.get('email')?.touched || formGroupModule.get('email')?.dirty), 'is-valid': formGroupModule.get('email')?.valid && (formGroupModule.get('email')?.touched || formGroupModule.get('email')?.dirty) }" />
-                  <div
-                    *ngIf="formGroupModule.get('email')?.invalid && (formGroupModule.get('email')?.touched || formGroupModule.get('email')?.dirty)"
-                    class="invalid-feedback">
-                    <div *ngIf="formGroupModule.get('email')?.errors?.['required']">El correo es requerido.</div>
-                    <div *ngIf="formGroupModule.get('email')?.errors?.['email']">El correo debe ser válido.</div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-6 mb-3">
-                <div class="form-group">
-                  <label for="logo" class="bolder">Logo</label>
-                  <input id="logo" formControlName="logo" type="file" class="form-control"
-                    [ngClass]="{ 'is-invalid': formGroupModule.get('logo')?.invalid && (formGroupModule.get('logo')?.touched || formGroupModule.get('logo')?.dirty), 'is-valid': formGroupModule.get('logo')?.valid && (formGroupModule.get('logo')?.touched || formGroupModule.get('logo')?.dirty) }" />
-                  <div
-                    *ngIf="formGroupModule.get('logo')?.invalid && (formGroupModule.get('logo')?.touched || formGroupModule.get('logo')?.dirty)"
-                    class="invalid-feedback">
-                    <div *ngIf="formGroupModule.get('logo')?.errors?.['required']">El logo es requerido.</div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-6 mb-3">
-                <div class="form-group">
-                  <label for="razonSocial" class="bolder">Razón Social</label>
-                  <input id="razonSocial" formControlName="razonSocial" type="text" class="form-control"
-                    [ngClass]="{ 'is-invalid': formGroupModule.get('razonSocial')?.invalid && (formGroupModule.get('razonSocial')?.touched || formGroupModule.get('razonSocial')?.dirty), 'is-valid': formGroupModule.get('razonSocial')?.valid && (formGroupModule.get('razonSocial')?.touched || formGroupModule.get('razonSocial')?.dirty) }" />
-                  <div
-                    *ngIf="formGroupModule.get('razonSocial')?.invalid && (formGroupModule.get('razonSocial')?.touched || formGroupModule.get('razonSocial')?.dirty)"
-                    class="invalid-feedback">
-                    <div *ngIf="formGroupModule.get('razonSocial')?.errors?.['required']">La razón social es requerida.
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-6 mb-3">
-                <div class="form-group">
-                  <label for="telefono" class="bolder">Teléfono</label>
-                  <input id="telefono" formControlName="telefono" type="text" class="form-control"
-                    [ngClass]="{ 'is-invalid': formGroupModule.get('telefono')?.invalid && (formGroupModule.get('telefono')?.touched || formGroupModule.get('telefono')?.dirty), 'is-valid': formGroupModule.get('telefono')?.valid && (formGroupModule.get('telefono')?.touched || formGroupModule.get('telefono')?.dirty) }" />
-                  <div
-                    *ngIf="formGroupModule.get('telefono')?.invalid && (formGroupModule.get('telefono')?.touched || formGroupModule.get('telefono')?.dirty)"
-                    class="invalid-feedback">
-                    <div *ngIf="formGroupModule.get('telefono')?.errors?.['required']">El teléfono es requerido.</div>
-                    <div *ngIf="formGroupModule.get('telefono')?.errors?.['pattern']">Debe ingresar un número de teléfono
-                      válido.</div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-6 mb-3">
-                <div class="form-group">
-                  <label for="nit" class="bolder">NIT</label>
-                  <input id="nit" formControlName="nit" type="text" class="form-control"
-                    [ngClass]="{ 'is-invalid': formGroupModule.get('nit')?.invalid && (formGroupModule.get('nit')?.touched || formGroupModule.get('nit')?.dirty), 'is-valid': formGroupModule.get('nit')?.valid && (formGroupModule.get('nit')?.touched || formGroupModule.get('nit')?.dirty) }" />
-                  <div
-                    *ngIf="formGroupModule.get('nit')?.invalid && (formGroupModule.get('nit')?.touched || formGroupModule.get('nit')?.dirty)"
-                    class="invalid-feedback">
-                    <div *ngIf="formGroupModule.get('nit')?.errors?.['minlength']">El NIT debe tener al menos 5 caracteres.
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-6 mb-3">
-                <div class="form-group">
-                  <label for="representante" class="bolder">Representante Legal</label>
-                  <input id="representante" formControlName="representante" type="text" class="form-control"
-                    [ngClass]="{ 'is-invalid': formGroupModule.get('representante')?.invalid && (formGroupModule.get('representante')?.touched || formGroupModule.get('representante')?.dirty), 'is-valid': formGroupModule.get('representante')?.valid && (formGroupModule.get('representante')?.touched || formGroupModule.get('representante')?.dirty) }" />
-                  <div
-                    *ngIf="formGroupModule.get('representante')?.invalid && (formGroupModule.get('representante')?.touched || formGroupModule.get('representante')?.dirty)"
-                    class="invalid-feedback">
-                    <div *ngIf="formGroupModule.get('representante')?.errors?.['required']">El representante legal es
-                      requerido.</div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-12 d-flex justify-content-end mt-2">
-                <button type="submit" class="btn btn-primary" [disabled]="formGroupModule.invalid">Enviar</button>
-              </div>
-            </div>
-          </div>
-        </form>
-        <div class="d-flex justify-content-center mt-3">
-          <button class="btn btn-danger text-white" (click)="backToTable()">Atrás</button>
-        </div>
-      </c-card-body>
-    </c-card>
-  </c-col>
+
+<c-row *[hidden]="showForm">
+hola mundo
 </c-row>
