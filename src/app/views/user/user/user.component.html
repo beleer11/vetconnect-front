@@ -1,9 +1,7 @@
 <app-loading-spinner *ngIf="loading"></app-loading-spinner>
-<div [hidden]="showForm && dataUser">
-    <div [hidden]="showForm">
-        <app-group-button-general [component]="'Usuarios'" (buttonClick)="handleButtonClick($event)">
-        </app-group-button-general>
-    </div>
+<div [hidden]="showForm">
+    <app-group-button-general [component]="'Usuarios'" (buttonClick)="handleButtonClick($event)">
+    </app-group-button-general>
     <app-general-table [columns]="fieldsTable" [transformedData]="dataTransformada" [acciones]="acciones"
         [columnAlignments]="columnAlignments" [title]="'Usuarios'" (fetchDataEvent)="onFetchData($event)"
         [totalRecords]="totalRecord" [loadingTable]="loadingTable" [data]="dataUser"
@@ -263,5 +261,6 @@
 </c-row>
 
 <div id="svg-container" style="display:none;">
-    <img [src]="dataTemp.image_profile" alt="User Image" width="250" height="250" style="border-radius: 50%;">
+    <img [src]="(dataTemp.image_profile === null || dataTemp.image_profile === '') ? null : dataTemp.image_profile"
+        alt="User Image" width="250" height="250" style="border-radius: 50%;">
 </div>

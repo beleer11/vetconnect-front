@@ -1,14 +1,14 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { UserService } from 'src/app/services/user/user/user.service';
-import { RolService } from 'src/app/services/user/rol/rol.service';
-import { GeneralService } from 'src/app/services/general/general.service';
-import { environment } from 'src/environments/environment';
+import { UserService } from '../../../services/user/user/user.service';
+import { RolService } from '../../../services/user/rol/rol.service';
+import { GeneralService } from '../../../services/general/general.service';
+import { environment } from '../../../../environments/environment';
 import Swal from 'sweetalert2';
 import moment from 'moment';
 import * as bootstrap from 'bootstrap';
-import { PermissionService } from 'src/app/services/user/permission/permission.service';
+import { PermissionService } from '../../../services/user/permission/permission.service';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -83,7 +83,6 @@ export class UserComponent implements OnInit {
   }
 
   private async getDataUser(params: any): Promise<any> {
-    this.loadingTable = true;
     return new Promise((resolve, reject) => {
       this.userService.getDataUser(params).subscribe(
         response => {
@@ -91,12 +90,9 @@ export class UserComponent implements OnInit {
           this.dataUser = response.data;
           this.dataTransformada = this.formatedData(response.data);
           resolve(this.dataTransformada)
-          this.checkPermissionsButton();
-          this.loadingTable = false;
         },
         error => {
           reject(error);
-          this.loadingTable = false; // Asegúrate de ocultar el spinner en caso de error
         }
       );
     });
@@ -170,6 +166,8 @@ export class UserComponent implements OnInit {
     this.dataPermissionSelected = [];
     this.permissionSuggested = [];
     this.selectAllCheck = true;
+    this.selectedFile = '';
+    this.goToPreviewTab();
   }
 
   public backToTable() {
@@ -186,7 +184,7 @@ export class UserComponent implements OnInit {
         password: this.formUser.get('password')?.value,
         rol_id: this.formUser.get('rol_id')?.value,
         image_profile: this.selectedFile || null,
-        is_disabled: this.formUser.get('is_disabled')?.value,
+        is_disabled: (this.formUser.get('is_disabled')?.value === null) ? false : this.formUser.get('is_disabled')?.value,
         permissions: this.dataPermissionSelected
       };
       if (this.action === 'save') {
@@ -204,30 +202,23 @@ export class UserComponent implements OnInit {
     this.userService.sendUser(data).subscribe({
       next: (response) => {
         if (response.original.success) {
-          this.dataUser = response.original.data;
-          if (Array.isArray(this.dataUser)) {
-            this.dataTransformada = this.formatedData(this.dataUser);
-          } else {
-            this.dataTransformada = [];
-          }
-
-          this.loading = false;
+          this.onFetchData(this.parameterDefect);
+          this.resetForms();
           this.showForm = false;
-          this.generalService.alertMessage('¡Éxito!', response.original.message, 'success');
+          this.loading = false;
+          this.generalService.alertMessage('¡Éxito!', response.original?.message || 'Operación exitosa', 'success');
         } else {
           this.loading = false;
-          this.generalService.alertMessage('Advertencia', response.original.message, 'warning');
+          this.generalService.alertMessage(
+            '¡Ups! Algo salió mal',
+            'Tuvimos un problema al procesar tu solicitud. Por favor, inténtalo de nuevo o contacta a nuestro equipo de soporte si el problema persiste. ¡Estamos aquí para ayudarte!',
+            'warning'
+          );
         }
       },
       error: (error) => {
         this.loading = false;
-        // Verifica si hay errores de validación
-        if (error.error && error.error.errors) {
-          const validationErrors = this.formatValidationErrors(error.error.errors);
-          this.generalService.alertMessage('Error de validación', validationErrors, 'error');
-        } else {
-          this.generalService.alertMessage('Error', 'Hubo un problema al procesar tu solicitud. Por favor, inténtalo de nuevo.', 'error');
-        }
+        this.generalService.alertMessage('Error', 'Hubo un problema al procesar tu solicitud. Por favor, inténtalo de nuevo.', 'error');
       }
     });
   }
@@ -236,22 +227,19 @@ export class UserComponent implements OnInit {
     this.loading = true;
     this.userService.editUser(data, id).subscribe({
       next: (response) => {
-        if (response && response.original.data) {
-          this.dataUser = response.original.data;
-
-          if (Array.isArray(this.dataUser)) {
-            this.dataPermissionSelected = [];
-            this.dataTransformada = this.formatedData(this.dataUser);
-            this.resetForms();
-          } else {
-            this.dataTransformada = [];
-          }
+        if (response.original.success) {
+          this.onFetchData(this.parameterDefect);
+          this.resetForms();
           this.showForm = false;
           this.loading = false;
-          this.generalService.alertMessage('¡Éxito!', response.original.message, 'success');
+          this.generalService.alertMessage('¡Éxito!', response.original?.message || 'Operación exitosa', 'success');
         } else {
           this.loading = false;
-          this.generalService.alertMessage('Advertencia', response.original.message, 'warning');
+          this.generalService.alertMessage(
+            '¡Ups! Algo salió mal',
+            'Tuvimos un problema al procesar tu solicitud. Por favor, inténtalo de nuevo o contacta a nuestro equipo de soporte si el problema persiste. ¡Estamos aquí para ayudarte!',
+            'warning'
+          );
         }
       },
       error: (error) => {
@@ -437,32 +425,11 @@ export class UserComponent implements OnInit {
       this.fieldsTable = this.getFieldsTable();
       this.columnAlignments = this.getColumnAlignments();
       this.dataTransformada = await this.getDataUser(this.parameterDefect);
+      this.loading = false;
     } catch (error: any) {
       console.error('Error al obtener roles:', error.message);
       // Maneja el error según sea necesario
     }
-  }
-
-  checkPermissionsButton() {
-    const permissions = JSON.parse(localStorage.getItem('permissions') || '[]');
-    for (const group of permissions) {
-      for (const module of group.modules) {
-        if (module.module_name === 'Usuarios') {
-          module.permissions.forEach((perm: any) => {
-            if (perm.name === 'Crear') {
-              this.showAddButton = true;
-            }
-            if (perm.name === 'Importar') {
-              this.showImportButton = true;
-            }
-            if (perm.name === 'Exportar') {
-              this.showExportButton = true;
-            }
-          });
-        }
-      }
-    }
-    this.loading = false;
   }
 
   getModulesByGroup(groupId: number) {
@@ -645,16 +612,6 @@ export class UserComponent implements OnInit {
     }
   }
 
-  private formatValidationErrors(errors: any): string {
-    let errorMessage = '';
-    for (const key in errors) {
-      if (errors.hasOwnProperty(key)) {
-        errorMessage += `${errors[key].join(' ')}\n`;
-      }
-    }
-    return errorMessage.trim();
-  }
-
   async handleAction(event: { id: number, action: string }) {
     const { id, action } = event;
     this.dataTemp.image_profile = '';
@@ -726,8 +683,7 @@ export class UserComponent implements OnInit {
         const action = data.is_disabled === 0 ? 'enable' : 'disable';
         this.actionMap[action](data.id).subscribe({
           next: (response: any) => {
-            this.dataUser = response.data;
-            this.dataTransformada = this.formatedData(this.dataUser);
+            this.onFetchData(this.parameterDefect);
             this.loading = false;
             this.generalService.alertMessage('¡Éxito!', successMessage, 'success');
           },

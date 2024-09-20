@@ -4,7 +4,7 @@ import { ModuleService } from '../../../services/settings/module/module.service'
 import Swal from 'sweetalert2';
 import moment from 'moment';
 import { Observable } from 'rxjs';
-import { GeneralService } from 'src/app/services/general/general.service';
+import { GeneralService } from '../../../services/general/general.service';
 
 @Component({
   selector: 'app-group-module',
@@ -39,13 +39,14 @@ export class GroupModuleComponent implements OnInit {
     private moduleService: ModuleService,
     private fb: FormBuilder,
     private generalService: GeneralService
-  ) {}
+  ) { }
 
   async ngOnInit(): Promise<void> {
+    this.createForm();
     this.dataModuleTrasnform = await this.getData();
     this.fieldsTable = this.getFieldsTable();
     this.columnAlignments = this.getColumnAlignments();
-    this.createForm();
+    this.loading = false;
   }
 
   private async getData(): Promise<any> {
@@ -55,7 +56,7 @@ export class GroupModuleComponent implements OnInit {
           this.dataModule = response.data;
           this.totalRecord = response.total;
           resolve(this.formatedData(response.data));
-          this.checkPermissionsButton();
+          this.loadingTable = false;
         },
         (error) => reject(error)
       );
@@ -74,7 +75,6 @@ export class GroupModuleComponent implements OnInit {
     this.formGroupModule = this.fb.group({
       nombre: ['', [Validators.required, Validators.minLength(3)]],
     });
-    this.loading = false;
   }
 
   onSubmit() {
@@ -132,28 +132,18 @@ export class GroupModuleComponent implements OnInit {
     this.moduleService.sendGroup({ name: nombre }).subscribe({
       next: (response) => {
         if (response.original.success) {
-          this.dataModule = response.original.data;
-          if (Array.isArray(this.dataModule)) {
-            this.dataModuleTrasnform = this.formatedData(this.dataModule);
-          } else {
-            this.dataModuleTrasnform = [];
-          }
-
+          this.onFetchData(this.parameterDefect);
           this.loading = false;
           this.showForm = false;
-          this.alertMessage('¡Éxito!', response.original.message, 'success');
+          this.generalService.alertMessage('¡Éxito!', response.original.message, 'success');
         } else {
           this.loading = false;
-          this.alertMessage(
-            'Advertencia',
-            response.original.message,
-            'warning'
-          );
+          this.generalService.alertMessage('Advertencia', response.original.message, 'warning');
         }
       },
       error: (error) => {
         this.loading = false;
-        this.alertMessage(
+        this.generalService.alertMessage(
           'Error',
           'Hubo un problema al procesar tu solicitud. Por favor, inténtalo de nuevo.',
           'error'
@@ -166,30 +156,19 @@ export class GroupModuleComponent implements OnInit {
     this.loading = true;
     this.moduleService.editGroup(nombre, id).subscribe({
       next: (response) => {
-        if (response && response.original.data) {
-          this.dataModule = response.original.data;
-
-          if (Array.isArray(this.dataModule)) {
-            this.dataModuleTrasnform = this.formatedData(this.dataModule);
-          } else {
-            this.dataModuleTrasnform = [];
-          }
-
-          this.showForm = false;
+        if (response.original.success) {
+          this.onFetchData(this.parameterDefect);
           this.loading = false;
-          this.alertMessage('¡Éxito!', response.original.message, 'success');
+          this.showForm = false;
+          this.generalService.alertMessage('¡Éxito!', response.original.message, 'success');
         } else {
           this.loading = false;
-          this.alertMessage(
-            'Advertencia',
-            response.original.message,
-            'warning'
-          );
+          this.generalService.alertMessage('Advertencia', response.original.message, 'warning');
         }
       },
       error: (error) => {
         this.loading = false;
-        this.alertMessage(
+        this.generalService.alertMessage(
           'Error',
           'Hubo un problema al procesar tu solicitud. Por favor, inténtalo de nuevo.',
           'error'
@@ -238,10 +217,9 @@ export class GroupModuleComponent implements OnInit {
         this.loading = true;
         this.moduleService.deleteRecordGroupModuleById(id).subscribe({
           next: (response) => {
-            this.dataModule = response.data;
-            this.dataModuleTrasnform = this.formatedData(this.dataModule);
+            this.onFetchData(this.parameterDefect);
             this.loading = false;
-            this.alertMessage(
+            this.generalService.alertMessage(
               '¡Eliminado!',
               'El registro ha sido eliminado correctamente.',
               'success'
@@ -249,7 +227,7 @@ export class GroupModuleComponent implements OnInit {
           },
           error: (error) => {
             this.loading = false;
-            this.alertMessage(
+            this.generalService.alertMessage(
               'Error',
               'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.',
               'error'
@@ -283,14 +261,13 @@ export class GroupModuleComponent implements OnInit {
         const action = data.is_disabled === 0 ? 'enable' : 'disable';
         this.actionMap[action](data.id).subscribe({
           next: (response) => {
-            this.dataModule = response.data;
-            this.dataModuleTrasnform = this.formatedData(this.dataModule);
+            this.onFetchData(this.parameterDefect);
             this.loading = false;
-            this.alertMessage('¡Éxito!', successMessage, 'success');
+            this.generalService.alertMessage('¡Éxito!', successMessage, 'success');
           },
           error: (error) => {
             this.loading = false;
-            this.alertMessage(
+            this.generalService.alertMessage(
               'Error',
               'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.',
               'error'
@@ -314,24 +291,15 @@ export class GroupModuleComponent implements OnInit {
         <div>
         <p><strong>Nombre : </strong> <span>${data.name}</span> </p>
         <p> <strong>Fecha de Creación: </strong> <span>${moment(
-          data.created_at
-        ).format('DD/MM / YYYY hh: mm:ss A')}</span></p>
+        data.created_at
+      ).format('DD/MM / YYYY hh: mm:ss A')}</span></p>
           <p> <strong>Ultima actualización: </strong> <span>${moment(
-            data.updated_at
-          ).format('DD/MM / YYYY hh: mm:ss A')}</span></p>
+        data.updated_at
+      ).format('DD/MM / YYYY hh: mm:ss A')}</span></p>
             </div>
               `,
       icon: 'info',
       confirmButtonText: 'Cerrar',
-    });
-  }
-
-  public alertMessage(title: any, text: any, icon: any) {
-    Swal.fire({
-      title: title,
-      text: text,
-      icon: icon,
-      confirmButtonText: 'OK',
     });
   }
 
@@ -355,27 +323,6 @@ export class GroupModuleComponent implements OnInit {
 
   public exportData() {
     this.generalService.alertMessageInCreation();
-  }
-
-  checkPermissionsButton() {
-    const permissions = JSON.parse(localStorage.getItem('permissions') || '[]');
-    for (const group of permissions) {
-      for (const module of group.modules) {
-        if (module.module_name === 'Grupo de módulo') {
-          module.permissions.forEach((perm: any) => {
-            if (perm.name === 'Crear') {
-              this.showAddButton = true;
-            }
-            if (perm.name === 'Importar') {
-              this.showImportButton = true;
-            }
-            if (perm.name === 'Exportar') {
-              this.showExportButton = true;
-            }
-          });
-        }
-      }
-    }
   }
 
   getValidationClass(controlName: string): { [key: string]: any } {

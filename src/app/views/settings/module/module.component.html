@@ -1,9 +1,7 @@
 <app-loading-spinner *ngIf="loading"></app-loading-spinner>
-<div [hidden]="showForm && dataModule">
-    <div [hidden]="showForm">
-        <app-group-button-general (buttonClick)="handleButtonClick($event)" [component]="'Módulos'">
-        </app-group-button-general>
-    </div>
+<div [hidden]="showForm">
+    <app-group-button-general (buttonClick)="handleButtonClick($event)" [component]="'Módulos'">
+    </app-group-button-general>
     <app-general-table [columns]="fieldsTable" [transformedData]="dataModuleTrasnform" [data]="dataModule"
         [acciones]="acciones" [columnAlignments]="columnAlignments" [title]="'Módulos'"
         (fetchDataEvent)="onFetchData($event)" [totalRecords]="totalRecord" [loadingTable]="loadingTable"

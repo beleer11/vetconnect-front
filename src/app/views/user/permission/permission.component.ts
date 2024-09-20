@@ -4,7 +4,7 @@ import moment from 'moment';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { Observable } from 'rxjs';
-import { GeneralService } from 'src/app/services/general/general.service';
+import { GeneralService } from '../../../services/general/general.service';
 import { UserService } from '../../../services/user/user/user.service';
 
 @Component({
@@ -44,10 +44,11 @@ export class PermissionComponent implements OnInit {
   ) { }
 
   async ngOnInit(): Promise<void> {
+    this.createForm();
     this.dataPermissionTrasnform = await this.getData();
     this.fieldsTable = this.getFieldsTable();
     this.columnAlignments = this.getColumnAlignments();
-    this.createForm();
+    this.loading = false;
   }
 
   private async getData(): Promise<any> {
@@ -57,7 +58,7 @@ export class PermissionComponent implements OnInit {
           this.dataPermission = response.data;
           this.totalRecord = response.total;
           resolve(this.formatedData(response.data));
-          this.checkPermissionsButton();
+          this.loadingTable = false;
         },
         error => reject(error)
       );
@@ -82,7 +83,6 @@ export class PermissionComponent implements OnInit {
     });
   }
 
-
   private getFieldsTable() {
     return ['Nombre', 'Fecha creación', 'Ultima actualización'];
   }
@@ -95,7 +95,6 @@ export class PermissionComponent implements OnInit {
     this.formPermission = this.fb.group({
       nombre: ['', [Validators.required, Validators.minLength(3)]],
     });
-    this.loading = false;
   }
 
   public addNewPermission() {
@@ -152,24 +151,23 @@ export class PermissionComponent implements OnInit {
     this.permissionService.sendPermission({ "name": nombre }).subscribe({
       next: (response) => {
         if (response.original.success) {
-          this.dataPermission = response.original.data;
-          if (Array.isArray(this.dataPermission)) {
-            this.dataPermissionTrasnform = this.formatedData(this.dataPermission);
-          } else {
-            this.dataPermissionTrasnform = [];
-          }
-
+          this.onFetchData(this.parameterDefect);
+          this.formPermission.reset();
           this.showForm = false;
           this.loading = false;
-          this.alertMessage('¡Éxito!', response.original.message, 'success');
+          this.generalService.alertMessage('¡Éxito!', response.original?.message || 'Operación exitosa', 'success');
         } else {
           this.loading = false;
-          this.alertMessage('Advertencia', response.original.message, 'warning');
+          this.generalService.alertMessage(
+            '¡Ups! Algo salió mal',
+            'Tuvimos un problema al procesar tu solicitud. Por favor, inténtalo de nuevo o contacta a nuestro equipo de soporte si el problema persiste. ¡Estamos aquí para ayudarte!',
+            'warning'
+          );
         }
       },
       error: (error) => {
         this.loading = false;
-        this.alertMessage('Error', 'Hubo un problema al procesar tu solicitud. Por favor, inténtalo de nuevo.', 'error');
+        this.generalService.alertMessage('Error', 'Hubo un problema al procesar tu solicitud. Por favor, inténtalo de nuevo.', 'error');
       }
     });
   }
@@ -178,36 +176,25 @@ export class PermissionComponent implements OnInit {
     this.loading = true;
     this.permissionService.editPermission({ "name": nombre }, id).subscribe({
       next: (response) => {
-        if (response && response.original.data) {
-          this.dataPermission = response.original.data;
-
-          if (Array.isArray(this.dataPermission)) {
-            this.dataPermissionTrasnform = this.formatedData(this.dataPermission);
-          } else {
-            this.dataPermissionTrasnform = [];
-          }
-
+        if (response.original.success) {
+          this.onFetchData(this.parameterDefect);
+          this.formPermission.reset();
           this.showForm = false;
           this.loading = false;
-          this.alertMessage('¡Éxito!', response.original.message, 'success');
+          this.generalService.alertMessage('¡Éxito!', response.original?.message || 'Operación exitosa', 'success');
         } else {
           this.loading = false;
-          this.alertMessage('Advertencia', response.original.message, 'warning');
+          this.generalService.alertMessage(
+            '¡Ups! Algo salió mal',
+            'Tuvimos un problema al procesar tu solicitud. Por favor, inténtalo de nuevo o contacta a nuestro equipo de soporte si el problema persiste. ¡Estamos aquí para ayudarte!',
+            'warning'
+          );
         }
       },
       error: (error) => {
         this.loading = false;
-        this.alertMessage('Error', 'Hubo un problema al procesar tu solicitud. Por favor, inténtalo de nuevo.', 'error');
+        this.generalService.alertMessage('Error', 'Hubo un problema al procesar tu solicitud. Por favor, inténtalo de nuevo.', 'error');
       }
-    });
-  }
-
-  public alertMessage(title: any, text: any, icon: any) {
-    Swal.fire({
-      title: title,
-      text: text,
-      icon: icon,
-      confirmButtonText: 'OK'
     });
   }
 
@@ -226,14 +213,13 @@ export class PermissionComponent implements OnInit {
         this.loading = true;
         this.permissionService.deleteRecordById(id).subscribe({
           next: (response) => {
-            this.dataPermission = response.data;
-            this.dataPermissionTrasnform = this.formatedData(this.dataPermission);
+            this.onFetchData(this.parameterDefect);
             this.loading = false;
-            this.alertMessage('¡Eliminado!', 'El registro ha sido eliminado correctamente.', 'success');
+            this.generalService.alertMessage('¡Eliminado!', 'El registro ha sido eliminado correctamente.', 'success');
           },
           error: (error) => {
             this.loading = false;
-            this.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.', 'error');
+            this.generalService.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.', 'error');
           }
         });
       }
@@ -259,14 +245,13 @@ export class PermissionComponent implements OnInit {
         const action = data.is_disabled === 0 ? 'enable' : 'disable';
         this.actionMap[action](data.id).subscribe({
           next: (response) => {
-            this.dataPermission = response.data;
-            this.dataPermissionTrasnform = this.formatedData(this.dataPermission);
+            this.onFetchData(this.parameterDefect);
             this.loading = false;
-            this.alertMessage('¡Éxito!', successMessage, 'success');
+            this.generalService.alertMessage('¡Éxito!', successMessage, 'success');
           },
           error: (error) => {
             this.loading = false;
-            this.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.', 'error');
+            this.generalService.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.', 'error');
           }
         });
       }
@@ -315,27 +300,6 @@ export class PermissionComponent implements OnInit {
     this.generalService.alertMessageInCreation();
   }
 
-  checkPermissionsButton() {
-    const permissions = JSON.parse(localStorage.getItem('permissions') || '[]');
-    for (const group of permissions) {
-      for (const module of group.modules) {
-        if (module.module_name === 'Permisos') {
-          module.permissions.forEach((perm: any) => {
-            if (perm.name === 'Crear') {
-              this.showAddButton = true;
-            }
-            if (perm.name === 'Importar') {
-              this.showImportButton = true;
-            }
-            if (perm.name === 'Exportar') {
-              this.showExportButton = true;
-            }
-          });
-        }
-      }
-    }
-  }
-
   getValidationClass(controlName: string): { [key: string]: any } {
     const control = this.formPermission.get(controlName);
     return {
@@ -346,7 +310,7 @@ export class PermissionComponent implements OnInit {
 
   onFetchData(params: any): void {
     this.loadingTable = true;
-      this.permissionService.getDataPermission(params).subscribe((response) => {
+    this.permissionService.getDataPermission(params).subscribe((response) => {
       this.dataPermissionTrasnform = this.formatedData(response.data, true);
       this.dataPermission = response.data;
       this.totalRecord = response.total;

@@ -42,7 +42,7 @@
                                             (click)="sortColumn(column)">
                                             {{ column }}
                                             <i class="fa-solid fa-arrows-up-down ms-1"
-                                                *ngIf="(currentSortColumn !== column || !sortOrder) && column !== 'Foto'"></i>
+                                                *ngIf="(currentSortColumn !== column || !sortOrder) && (column !== 'Foto' && column !== 'Icono' && column !== 'No se encontraron resultados')"></i>
                                             <i class="fa-solid fa-arrow-up ms-1"
                                                 *ngIf="currentSortColumn === column && sortOrder === 'desc'"></i>
                                             <i class="fa-solid fa-arrow-down ms-1"
@@ -81,7 +81,7 @@
                                                     (click)="onAction(row.id, 'delete')" title="Eliminar">
                                                     <i class="fa-solid fa-trash"></i>
                                                 </button>
-                                                <button *ngIf="hasPermission('Ver')" class="btn btn-info btn-sm me-2"
+                                                <button class="btn btn-info btn-sm me-2"
                                                     (click)="onAction(row.id, 'view')" title="Ver">
                                                     <i class="fa-solid fa-eye"></i>
                                                 </button>

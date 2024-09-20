@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, OnChanges, Output, EventEmitter, SimpleChanges } from '@angular/core';
-import { PermissionService } from 'src/app/services/user/permission/permission.service';
+import { PermissionService } from '../../services/user/permission/permission.service';
 
 @Component({
   selector: 'app-general-table',
@@ -15,7 +15,7 @@ export class GeneralTableComponent implements OnInit, OnChanges {
   @Input() columnAlignments: string[] = [];
   @Input() title: string = '';
   @Input() totalRecords: number = 0;
-  @Input() loadingTable: boolean = true;  // Cambiado a loadingTable
+  @Input() loadingTable: boolean = true;
   @Output() actionEvent: EventEmitter<{ id: number, action: string }> = new EventEmitter();
   @Output() fetchDataEvent: EventEmitter<any> = new EventEmitter();
 
@@ -23,7 +23,7 @@ export class GeneralTableComponent implements OnInit, OnChanges {
   public currentSortColumn: string = '';
   public sortOrder: 'asc' | 'desc' = 'asc';
   public viewAcciones: boolean = false;
-  public isLoading: boolean = false;  // Esta es la propiedad que controla el spinner
+  public isLoading: boolean = false;
 
   // Paginador
   public currentPage: number = 1;
@@ -33,7 +33,7 @@ export class GeneralTableComponent implements OnInit, OnChanges {
   constructor(private permissionService: PermissionService) { }
 
   ngOnInit(): void {
-    this.acciones = this.hasAnyRequiredPermission();
+    this.hasAnyRequiredPermission();
     if (this.columns.length > 0) {
       this.currentSortColumn = this.columns[0];
     }
@@ -42,6 +42,10 @@ export class GeneralTableComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    if (changes['title'] || changes['acciones']) {
+      this.hasAnyRequiredPermission();
+    }
+
     if (changes['loadingTable']) {
       this.isLoading = changes['loadingTable'].currentValue;
     }
@@ -56,6 +60,7 @@ export class GeneralTableComponent implements OnInit, OnChanges {
 
     this.totalPages = Math.ceil(this.totalRecords / this.pageSize);
   }
+
 
   onSearch(): void {
     this.applySortingAndPagination();
@@ -72,7 +77,7 @@ export class GeneralTableComponent implements OnInit, OnChanges {
   }
 
   sortColumn(column: string): void {
-    if (column === 'Foto' || column === 'Icono') {
+    if (column === 'Foto' || column === 'Icono' || column === 'No se encontraron resultados') {
       return;
     }
     if (this.currentSortColumn === column) {
@@ -113,8 +118,9 @@ export class GeneralTableComponent implements OnInit, OnChanges {
   }
 
   hasAnyRequiredPermission(): boolean {
+
+
     return (
-      this.hasPermission('Ver') ||
       this.hasPermission('Editar') ||
       this.hasPermission('Eliminar')
     );

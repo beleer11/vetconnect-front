@@ -8,7 +8,7 @@ import * as bootstrap from 'bootstrap';
 import Swal from 'sweetalert2';
 import moment from 'moment';
 import { Observable } from 'rxjs';
-import { GeneralService } from 'src/app/services/general/general.service';
+import { GeneralService } from '../../../services/general/general.service';
 interface Icon {
   name: string;
   svg: string;
@@ -82,7 +82,8 @@ export class ModuleComponent implements AfterViewInit {
           this.fieldsTable = this.getFieldsTable();
           this.columnAlignments = this.getColumnAlignments();
           resolve(this.formatedData(response.data));
-          this.checkPermissionsButton();
+          this.loading = false;
+          this.loadingTable = false;
         },
         error => reject(error)
       );
@@ -184,7 +185,7 @@ export class ModuleComponent implements AfterViewInit {
         id: item.id,
         is_disabled: item.is_disabled,
         Nombre: item.name,
-        Grupo: item.group.name,
+        Grupo: item.group_name,
         Icono: this.getIconSVG(item.icon),
         Ruta: item.url,
       };
@@ -201,27 +202,24 @@ export class ModuleComponent implements AfterViewInit {
     this.moduleService.sendModule(data).subscribe({
       next: (response) => {
         if (response.original.success) {
-          this.dataModule = response.original.data;
-
-          if (Array.isArray(this.dataModule)) {
-            this.dataModuleTrasnform = this.formatedData(this.dataModule);
-          } else {
-            this.dataModuleTrasnform = [];
-          }
-
+          this.onFetchData(this.parameterDefect);
           this.loading = false;
           this.showForm = false;
           this.formModule.reset();
           this.selectedIcon = null;
-          this.alertMessage('¡Éxito!', response.original.message, 'success');
+          this.generalService.alertMessage('¡Éxito!', response.original.message, 'success');
         } else {
           this.loading = false;
-          this.alertMessage('Advertencia', response.original.message, 'warning');
+          this.generalService.alertMessage('Advertencia', response.original.message, 'warning');
         }
       },
       error: (error) => {
         this.loading = false;
-        this.alertMessage('Error', 'Hubo un problema al procesar tu solicitud. Por favor, inténtalo de nuevo.', 'error');
+        this.generalService.alertMessage(
+          '¡Ups! Algo salió mal',
+          'Tuvimos un problema al procesar tu solicitud. Por favor, inténtalo de nuevo o contacta a nuestro equipo de soporte si el problema persiste. ¡Estamos aquí para ayudarte!',
+          'warning'
+        );
       }
     });
   }
@@ -230,37 +228,26 @@ export class ModuleComponent implements AfterViewInit {
     this.loading = true;
     this.moduleService.editModule(data, id).subscribe({
       next: (response) => {
-        if (response && response.original.data) {
-          this.dataModule = response.original.data;
-
-          if (Array.isArray(this.dataModule)) {
-            this.dataModuleTrasnform = this.formatedData(this.dataModule);
-          } else {
-            this.dataModuleTrasnform = [];
-          }
+        if (response.original.success) {
+          this.onFetchData(this.parameterDefect);
           this.loading = false;
           this.showForm = false;
           this.formModule.reset();
           this.selectedIcon = null;
-          this.alertMessage('¡Éxito!', response.original.message, 'success');
+          this.generalService.alertMessage('¡Éxito!', response.original.message, 'success');
         } else {
           this.loading = false;
-          this.alertMessage('Advertencia', response.original.message, 'warning');
+          this.generalService.alertMessage('Advertencia', response.original.message, 'warning');
         }
       },
       error: (error) => {
         this.loading = false;
-        this.alertMessage('Error', 'Hubo un problema al procesar tu solicitud. Por favor, inténtalo de nuevo.', 'error');
+        this.generalService.alertMessage(
+          '¡Ups! Algo salió mal',
+          'Tuvimos un problema al procesar tu solicitud. Por favor, inténtalo de nuevo o contacta a nuestro equipo de soporte si el problema persiste. ¡Estamos aquí para ayudarte!',
+          'warning'
+        );
       }
-    });
-  }
-
-  public alertMessage(title: any, text: any, icon: any) {
-    Swal.fire({
-      title: title,
-      text: text,
-      icon: icon,
-      confirmButtonText: 'OK'
     });
   }
 
@@ -309,14 +296,13 @@ export class ModuleComponent implements AfterViewInit {
         this.loading = true;
         this.moduleService.deleteRecordModuleById(id).subscribe({
           next: (response) => {
-            this.dataModule = response.data;
-            this.dataModuleTrasnform = this.formatedData(this.dataModule);
+            this.onFetchData(this.parameterDefect);
             this.loading = false;
-            this.alertMessage('¡Eliminado!', 'El registro ha sido eliminado correctamente.', 'success');
+            this.generalService.alertMessage('¡Eliminado!', 'El registro ha sido eliminado correctamente.', 'success');
           },
           error: (error) => {
             this.loading = false;
-            this.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.', 'error');
+            this.generalService.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.', 'error');
           }
         });
       }
@@ -347,14 +333,13 @@ export class ModuleComponent implements AfterViewInit {
         const action = data.is_disabled === 0 ? 'enable' : 'disable';
         this.actionMap[action](data.id).subscribe({
           next: (response) => {
-            this.dataModule = response.data;
-            this.dataModuleTrasnform = this.formatedData(this.dataModule);
+            this.onFetchData(this.parameterDefect);
             this.loading = false;
-            this.alertMessage('¡Éxito!', successMessage, 'success');
+            this.generalService.alertMessage('¡Éxito!', successMessage, 'success');
           },
           error: (error) => {
             this.loading = false;
-            this.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.', 'error');
+            this.generalService.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.', 'error');
           }
         });
       }
@@ -440,31 +425,9 @@ export class ModuleComponent implements AfterViewInit {
     this.generalService.alertMessageInCreation();
   }
 
-  checkPermissionsButton() {
-    const permissions = JSON.parse(localStorage.getItem('permissions') || '[]');
-    for (const group of permissions) {
-      for (const module of group.modules) {
-        if (module.module_name === 'Módulos') {
-          module.permissions.forEach((perm: any) => {
-            if (perm.name === 'Crear') {
-              this.showAddButton = true;
-            }
-            if (perm.name === 'Importar') {
-              this.showImportButton = true;
-            }
-            if (perm.name === 'Exportar') {
-              this.showExportButton = true;
-            }
-          });
-        }
-      }
-    }
-    this.loading = false;
-  }
-
   onFetchData(params: any): void {
     this.loadingTable = true;
-      this.moduleService.getDataModule(params).subscribe((response) => {
+    this.moduleService.getDataModule(params).subscribe((response) => {
       this.dataModuleTrasnform = this.formatedData(response.data, true);
       this.dataModule = response.data;
       this.totalRecord = response.total;

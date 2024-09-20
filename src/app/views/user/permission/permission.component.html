@@ -1,16 +1,15 @@
 <app-loading-spinner *ngIf="loading"></app-loading-spinner>
-<div [hidden]="showForm && dataPermission">
-  <div *ngIf="!showForm">
-    <app-group-button-general [component]="'Permisos'" (buttonClick)="handleButtonClick($event)">
-    </app-group-button-general>
-  </div>
+<div [hidden]="showForm">
+
+  <app-group-button-general [component]="'Permisos'" (buttonClick)="handleButtonClick($event)">
+  </app-group-button-general>
   <app-general-table [columns]="fieldsTable" [transformedData]="dataPermissionTrasnform" [data]="dataPermission"
     [acciones]="acciones" [columnAlignments]="columnAlignments" [title]="'Permisos'"
     (fetchDataEvent)="onFetchData($event)" [totalRecords]="totalRecord" [loadingTable]="loadingTable"
     (actionEvent)="handleAction($event)">
   </app-general-table>
 </div>
-<c-row *ngIf="showForm">
+<c-row [hidden]="!showForm">
   <c-col xs>
     <c-card class="mb-4">
       <c-card-header>
