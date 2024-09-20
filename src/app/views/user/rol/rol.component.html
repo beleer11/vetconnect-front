@@ -1,8 +1,7 @@
 <app-loading-spinner *ngIf="loading"></app-loading-spinner>
 <div [hidden]="showForm && dataRol">
   <div [hidden]="showForm">
-    <app-group-button-general [showAddButton]="showAddButton" [showImportButton]="showImportButton"
-      [showExportButton]="showExportButton" (buttonClick)="handleButtonClick($event)">
+    <app-group-button-general [component]="'Roles'" (buttonClick)="handleButtonClick($event)">
     </app-group-button-general>
   </div>
   <app-general-table [columns]="fieldsTable" [transformedData]="dataRolTrasnform" [data]="dataRol" [acciones]="acciones"

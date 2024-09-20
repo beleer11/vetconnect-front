@@ -1,8 +1,7 @@
 <app-loading-spinner *ngIf="loading"></app-loading-spinner>
 <div [hidden]="showForm && dataUser">
     <div [hidden]="showForm">
-        <app-group-button-general [showAddButton]="showAddButton" [showImportButton]="showImportButton"
-            [showExportButton]="showExportButton" (buttonClick)="handleButtonClick($event)">
+        <app-group-button-general [component]="'Usuarios'" (buttonClick)="handleButtonClick($event)">
         </app-group-button-general>
     </div>
     <app-general-table [columns]="fieldsTable" [transformedData]="dataTransformada" [acciones]="acciones"

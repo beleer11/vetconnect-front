@@ -1,8 +1,7 @@
 <app-loading-spinner *ngIf="loading"></app-loading-spinner>
 <div [hidden]="showForm && dataPermission">
   <div *ngIf="!showForm">
-    <app-group-button-general [showAddButton]="showAddButton" [showImportButton]="showImportButton"
-      [showExportButton]="showExportButton" (buttonClick)="handleButtonClick($event)">
+    <app-group-button-general [component]="'Permisos'" (buttonClick)="handleButtonClick($event)">
     </app-group-button-general>
   </div>
   <app-general-table [columns]="fieldsTable" [transformedData]="dataPermissionTrasnform" [data]="dataPermission"
