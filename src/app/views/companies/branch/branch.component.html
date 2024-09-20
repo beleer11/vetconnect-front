@@ -1,26 +1,13 @@
 <app-loading-spinner *ngIf="loading"></app-loading-spinner>
 <div [hidden]="showForm && dataBranch">
   <div [hidden]="showForm">
-    <app-group-button-general
-      [showAddButton]="showAddButton"
-      [showImportButton]="showImportButton"
-      [showExportButton]="showExportButton"
-      (buttonClick)="handleButtonClick($event)"
-    >
+    <app-group-button-general [component]="'Sucursales'" (buttonClick)="handleButtonClick($event)">
     </app-group-button-general>
   </div>
-  <app-general-table
-    [columns]="fieldsTable"
-    [transformedData]="dataBranchTrasnform"
-    [data]="dataBranch"
-    [acciones]="acciones"
-    [columnAlignments]="columnAlignments"
-    [title]="'Sucursales'"
-    (fetchDataEvent)="onFetchData($event)"
-    [totalRecords]="totalRecord"
-    [loadingTable]="loadingTable"
-    (actionEvent)="handleAction($event)"
-  >
+  <app-general-table [columns]="fieldsTable" [transformedData]="dataBranchTrasnform" [data]="dataBranch"
+    [acciones]="acciones" [columnAlignments]="columnAlignments" [title]="'Sucursales'"
+    (fetchDataEvent)="onFetchData($event)" [totalRecords]="totalRecord" [loadingTable]="loadingTable"
+    (actionEvent)="handleAction($event)">
   </app-general-table>
 </div>
 <c-row [hidden]="!showForm">Hila </c-row>
