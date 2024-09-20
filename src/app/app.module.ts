@@ -46,7 +46,7 @@ import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinne
 import { CompanyComponent } from './views/companies/company/company.component';
 import { RolComponent } from './views/user/rol/rol.component';
 import { GroupButtonGeneralComponent } from './shared/group-button-general/group-button-general.component';
-
+import { BranchComponent } from './views/companies/branch/branch.component';
 
 // Import containers
 import {
@@ -74,7 +74,7 @@ import {
   SidebarModule,
   TabsModule,
   UtilitiesModule,
-  TableModule
+  TableModule,
 } from '@coreui/angular';
 
 import { IconModule, IconSetService } from '@coreui/icons-angular';
@@ -103,7 +103,8 @@ const APP_CONTAINERS = [
     PermissionComponent,
     CompanyComponent,
     RolComponent,
-    GroupButtonGeneralComponent
+    GroupButtonGeneralComponent,
+    BranchComponent,
   ],
   imports: [
     BrowserModule,
@@ -169,4 +170,4 @@ const APP_CONTAINERS = [
   ],
   bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
