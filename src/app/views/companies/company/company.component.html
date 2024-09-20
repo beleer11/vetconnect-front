@@ -1,23 +1,16 @@
 <app-loading-spinner *ngIf="loading"></app-loading-spinner>
 <div [hidden]="showForm && dataCompany">
   <div [hidden]="showForm">
-    <app-group-button-general [showAddButton]="showAddButton" [showImportButton]="showImportButton"
-      [showExportButton]="showExportButton" (buttonClick)="handleButtonClick($event)">
+    <app-group-button-general [component]="'Compañías'" (buttonClick)="handleButtonClick($event)">
     </app-group-button-general>
   </div>
 </div>
-<app-general-table [columns]="fieldsTable"
-[transformedData]="dataCompanyTrasnform"
-[data]="dataCompany"
-[acciones]="acciones"
-[columnAlignments]="columnAlignments"
-[title]="'Compañias'"
-(fetchDataEvent)="onFetchData($event)"
-[totalRecords]="totalRecord"
-[loadingTable]="loadingTable"
-(actionEvent)="handleAction($event)">
+<app-general-table [columns]="fieldsTable" [transformedData]="dataCompanyTrasnform" [data]="dataCompany"
+  [acciones]="acciones" [columnAlignments]="columnAlignments" [title]="'Compañías'"
+  (fetchDataEvent)="onFetchData($event)" [totalRecords]="totalRecord" [loadingTable]="loadingTable"
+  (actionEvent)="handleAction($event)">
 </app-general-table>
 
 <c-row *[hidden]="showForm">
-hola mundo
+  hola mundo
 </c-row>
