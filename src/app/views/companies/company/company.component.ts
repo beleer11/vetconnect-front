@@ -47,6 +47,18 @@ export class CompanyComponent implements OnInit {
     private generalService: GeneralService,
   ) { }
 
+  getValidationClass(controlName: string): { [key: string]: any } {
+    const control = this.formCompany.get(controlName);
+    return {
+      'is-invalid': control?.invalid && (control?.touched || control?.dirty),
+      'is-valid': control?.valid && (control?.touched || control?.dirty),
+    };
+  }
+
+  getTextClass() {
+    return this.formCompany.get('is_disabled')?.value ? 'text-success' : 'text-red';
+  }
+
   async ngOnInit() {
     this.createForm();
     this.dataCompanyTrasnform = await this.getData();
@@ -133,18 +145,26 @@ export class CompanyComponent implements OnInit {
     return ['left', 'left', 'center'];
   }
 
+  validateNumberInput(event: KeyboardEvent) {
+    const allowedKeys = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Tab', 'Delete'];
+    const isNumber = /^[0-9-()+]+$/.test(event.key);
+
+    if (!isNumber && !allowedKeys.includes(event.key)) {
+      event.preventDefault();
+    }
+  }
+
   public createForm() {
     this.formCompany = this.fb.group({
       nombre: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
       logo: [''],
       razon_social: ['', Validators.required, Validators.minLength(3)],
-      telefono: ['', [Validators.required, Validators.minLength(8), Validators.pattern(/^[0-9-()+]+$/)]],
-      nit: ['', [Validators.required, Validators.pattern(/^[0-9]+$/)]],
+      phone: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(15)]],
+      nit: ['', [Validators.required]],
       representante_legal: ['', [Validators.required, Validators.minLength(3)]]
     });
   }
-
 
   onSubmit() {
     if (this.formCompany.valid) {
@@ -255,55 +275,10 @@ export class CompanyComponent implements OnInit {
     });
   }
 
-  disableOrEnableRecord(data: any) {
-    const actionText = data.is_disabled === 0 ? 'habilitar' : 'inhabilitar';
-    const confirmButtonText =
-      data.is_disabled === 0 ? 'Sí, habilitar' : 'Sí, inhabilitar';
-    const successMessage =
-      data.is_disabled === 0
-        ? 'El registro ha sido habilitado correctamente.'
-        : 'El registro ha sido inhabilitado correctamente.';
-
-    Swal.fire({
-      title: `¿Deseas ${actionText} este registro?`,
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonColor: '#f39c12',
-      cancelButtonColor: '#3085d6',
-      confirmButtonText: confirmButtonText,
-      cancelButtonText: 'Cancelar',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.loading = true;
-        const action = data.is_disabled === 0 ? 'enable' : 'disable';
-        this.actionMap[action](data.id).subscribe({
-          next: (response) => {
-            this.dataCompany = response.data;
-            this.dataCompanyTrasnform = this.formatedData(this.dataCompany);
-            this.loading = false;
-            this.generalService.alertMessage('¡Éxito!', successMessage, 'success');
-          },
-          error: (error) => {
-            this.loading = false;
-            this.generalService.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.', 'error');
-          }
-        });
-      }
-    });
-  }
-
   private actionMap: { [key: string]: (id: number) => Observable<any> } = {
     enable: (id: number) => this.companyService.enableRecordById(id),
     disable: (id: number) => this.companyService.disableRecordById(id),
   };
-
-  getValidationClass(controlName: string): { [key: string]: any } {
-    const control = this.formCompany.get(controlName);
-    return {
-      'is-invalid': control?.invalid && (control?.touched || control?.dirty),
-      'is-valid': control?.valid && (control?.touched || control?.dirty),
-    };
-  }
 
   openModalView(data: any) {
     Swal.fire({
