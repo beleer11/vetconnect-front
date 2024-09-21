@@ -1,7 +1,8 @@
 import { BranchService } from './../../../services/companies/branch/branch.service';
 import { Component } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import moment from 'moment';
+import * as bootstrap from 'bootstrap';
 import { GeneralService } from 'src/app/services/general/general.service';
 import { UserService } from 'src/app/services/user/user/user.service';
 
@@ -25,6 +26,7 @@ export class BranchComponent {
   public loadingTable: boolean = false;
   public totalRecord: number = 0;
   public dataTemp: any = [];
+  public formBranch!: FormGroup;
   public parameterDefect = {
     search: '',
     sortColumn: 'name',
@@ -83,6 +85,8 @@ export class BranchComponent {
   }
 
   public addBranch() {
+    this.showForm = true;
+    this.resetForms();
     this.action = 'save';
   }
 
@@ -92,6 +96,12 @@ export class BranchComponent {
 
   public exportData() {
     this.generalService.alertMessageInCreation();
+  }
+
+  resetForms() {
+    this.formBranch.reset();
+    this.formBranch.untouched;
+    this.goToPreviewTab();
   }
 
   public formatedData(response: any, fecth = false) {
@@ -172,5 +182,18 @@ export class BranchComponent {
     if (action === "ban") {
       this.disableOrEnableRecord(this.dataTemp);
     }*/
+  }
+  goToPreviewTab() {
+    const tabTriggerEl = document.querySelector('#general-tab') as HTMLElement;
+    const tab = new bootstrap.Tab(tabTriggerEl);
+    tab.show();
+  }
+
+  getValidationClass(controlName: string): { [key: string]: any } {
+    const control = this.formBranch.get(controlName);
+    return {
+      'is-invalid': control?.invalid && (control?.touched || control?.dirty),
+      'is-valid': control?.valid && (control?.touched || control?.dirty),
+    };
   }
 }
