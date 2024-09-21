@@ -56,16 +56,6 @@ export class CompanyComponent implements OnInit {
     this.createForm();
   }
 
-  public addRole() {
-    this.action = 'save';
-    this.resetForms();
-  }
-
-  public backToTable() {
-    this.showForm = false;
-    this.resetForms();
-  }
-
   resetForms() {
     this.formCompany.reset();
     this.textSelectAll = 'Seleccionar todo';
@@ -106,6 +96,31 @@ export class CompanyComponent implements OnInit {
       this.disableOrEnableRecord(this.dataTemp);
     }
       */
+  }
+
+  handleButtonClick(action: string) {
+    switch (action) {
+      case 'add':
+        this.addCompany();
+        break;
+      case 'import':
+        this.importData();
+        break;
+      case 'export':
+        this.exportData();
+        break;
+    }
+  }
+
+  public addCompany() {
+    this.showForm = true;
+    this.formCompany.reset();
+    this.action = 'save';
+  }
+
+  public backToTable() {
+    this.showForm = false;
+    this.formCompany.reset();
   }
 
   private async getData(): Promise<any> {
@@ -326,20 +341,6 @@ export class CompanyComponent implements OnInit {
       icon: 'info',
       confirmButtonText: 'Cerrar',
     });
-  }
-
-  handleButtonClick(action: string) {
-    switch (action) {
-      case 'add':
-        this.addRole();
-        break;
-      case 'import':
-        this.importData();
-        break;
-      case 'export':
-        this.exportData();
-        break;
-    }
   }
 
   public importData() {
