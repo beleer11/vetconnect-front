@@ -42,18 +42,17 @@ export class CompanyComponent implements OnInit {
   };
 
   constructor(
-    private userService: UserService,
     private companyService: CompanyService,
     private fb: FormBuilder,
     private generalService: GeneralService,
   ) { }
 
   async ngOnInit() {
+    this.createForm();
     this.dataCompanyTrasnform = await this.getData();
     this.fieldsTable = this.getFieldsTable();
     this.columnAlignments = this.getColumnAlignments();
     this.loading = false;
-    this.createForm();
   }
 
   resetForms() {
@@ -68,34 +67,6 @@ export class CompanyComponent implements OnInit {
     this.action = action;
     this.dataTemp = this.dataCompany.find((item: any) => item.id === id);
 
-    /*
-    if (action === "edit") {
-      this.loading = true;
-      this.formCompany.controls["nombre"].setValue(this.dataTemp.name);
-      this.formCompany.controls["description"].setValue(this.dataTemp.description);
-      this.formCompany.markAllAsTouched();
-      this.companyService.getPermissionByCompany(this.dataTemp.id).subscribe(
-        response => {
-          this.checkedPermisosAsignados(response.original);
-        },
-        error => {
-          console.log(error.message);
-        }
-      );
-    }
-
-    if (action === 'delete') {
-      this.deleteRecord(id);
-    }
-
-    if (action === 'view') {
-      this.openModalView(this.dataTemp);
-    }
-
-    if (action === 'ban') {
-      this.disableOrEnableRecord(this.dataTemp);
-    }
-      */
   }
 
   handleButtonClick(action: string) {
@@ -167,10 +138,10 @@ export class CompanyComponent implements OnInit {
       nombre: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
       logo: [''],
-      razon_social: ['', Validators.required],
-      telefono: ['', [Validators.required, Validators.pattern(/^[0-9]+$/)]],
-      nit: ['', [Validators.required, Validators.minLength(8)]],
-      representante_legal: ['', Validators.required]
+      razon_social: ['', Validators.required, Validators.minLength(3)],
+      telefono: ['', [Validators.required, Validators.minLength(8), Validators.pattern(/^[0-9-()+]+$/)]],
+      nit: ['', [Validators.required, Validators.pattern(/^[0-9]+$/)]],
+      representante_legal: ['', [Validators.required, Validators.minLength(3)]]
     });
   }
 
@@ -178,10 +149,16 @@ export class CompanyComponent implements OnInit {
   onSubmit() {
     if (this.formCompany.valid) {
       let data = {
-        name: this.formCompany.get('nombre')?.value,
-        description: this.formCompany.get('description')?.value,
-        permissions: this.dataPermissionSelected
+        nombre: this.formCompany.get('nombre')?.value,
+        email: this.formCompany.get('email')?.value,
+        logo: this.formCompany.get('logo')?.value,
+        razon_social: this.formCompany.get('razonSocial')?.value,
+        telefono: this.formCompany.get('telefono')?.value,
+        nit: this.formCompany.get('nit')?.value,
+        representante_legal: this.formCompany.get('representante')?.value
       };
+
+      console.log(data);
 
       if (this.action === 'save') {
         this.saveNewCompany(data);
@@ -192,6 +169,7 @@ export class CompanyComponent implements OnInit {
       }
     }
   }
+
 
   public saveNewCompany(data: any) {
     this.loading = true;
@@ -329,19 +307,22 @@ export class CompanyComponent implements OnInit {
 
   openModalView(data: any) {
     Swal.fire({
-      title: 'Roles',
+      title: 'Companía',
       html: `
         <div id="custom-icon-container">
-          <p><strong>Nombre : </strong> <span>${data.name}</span> </p>
-          <p><strong>Descripción : </strong> <span>${data.description}</span> </p>
-          <p><strong>Fecha de Creación: </strong> <span>${moment(data.created_at).format('DD/MM/YYYY hh:mm:ss A')}</span></p>
-          <p><strong>Última actualización: </strong> <span>${moment(data.updated_at).format('DD/MM/YYYY hh:mm:ss A')}</span></p>
+          <p><strong>Nombre: </strong> <span>${data.nombre}</span></p>
+          <p><strong>Correo electrónico: </strong> <span>${data.email}</span></p>
+          <p><strong>Razón Social: </strong> <span>${data.razon_social}</span></p>
+          <p><strong>Teléfono: </strong> <span>${data.telefono}</span></p>
+          <p><strong>NIT: </strong> <span>${data.nit}</span></p>
+          <p><strong>Representante Legal: </strong> <span>${data.representante_legal}</span></p>
         </div>
       `,
       icon: 'info',
       confirmButtonText: 'Cerrar',
     });
   }
+
 
   public importData() {
     this.generalService.alertMessageInCreation();
