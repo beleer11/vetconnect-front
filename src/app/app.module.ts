@@ -170,4 +170,4 @@ const APP_CONTAINERS = [
   ],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule { }

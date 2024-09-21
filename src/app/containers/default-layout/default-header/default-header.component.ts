@@ -1,9 +1,9 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { AuthService } from 'src/app/services/auth/auth-service.service';
+import { AuthService } from '../../../services/auth/auth-service.service';
 import { ClassToggleService, HeaderComponent } from '@coreui/angular';
 import { Router } from '@angular/router';
-import { environment } from 'src/environments/environment';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-default-header',
@@ -12,25 +12,28 @@ import { environment } from 'src/environments/environment';
 export class DefaultHeaderComponent extends HeaderComponent {
 
   @Input() sidebarId: string = "sidebar";
+  @Output() logoutEvent: EventEmitter<any> = new EventEmitter();
 
   public newMessages = new Array(4)
   public newTasks = new Array(5)
   public newNotifications = new Array(5)
-  public user_information: any | null = localStorage.getItem('user_information');
-  public image_profile: string = '';
+  public user_information: any | null = null;
   public environment = environment;
 
   constructor(private classToggler: ClassToggleService, private authService: AuthService, private router: Router) {
     super();
-    this.image_profile = JSON.parse(this.user_information).image_profile;
+    const storedUserInfo = localStorage.getItem('user_information');
+    this.user_information = storedUserInfo ? JSON.parse(storedUserInfo).data : null;
   }
 
   logout() {
+    this.logoutEvent.emit(true);
     this.authService.logout().subscribe(
       (response) => {
         localStorage.removeItem('vet_connect_token');
         localStorage.removeItem('permissions');
         localStorage.removeItem('user_information');
+        this.logoutEvent.emit(false);
         this.router.navigate(['/login']);
       },
       (error) => {
