@@ -11,6 +11,8 @@ import * as bootstrap from 'bootstrap';
 import { GeneralService } from 'src/app/services/general/general.service';
 import { UserService } from 'src/app/services/user/user/user.service';
 import { CompanyService } from 'src/app/services/companies/company/company.service';
+import Swal from 'sweetalert2';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-branch',
@@ -33,6 +35,7 @@ export class BranchComponent {
   public totalRecord: number = 0;
   public dataTemp: any = [];
   public dataCompany: any = [];
+  public dataPermissionSelected: any = [];
   public permissionSuggested: any = [];
   public formBranch!: FormGroup;
   public searchControl = new FormControl('');
@@ -59,11 +62,26 @@ export class BranchComponent {
     this.formBranch = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
       description: ['', [Validators.required, Validators.minLength(10)]],
-      rol_id: [null, Validators.required],
+      address: ['', [Validators.required, Validators.minLength(10)]],
+      company_id: [{}, Validators.required],
+      phone: ['', [Validators.required, Validators.minLength(10)]],
+      is_disabled: [true],
     });
     this.fieldsTable = this.getFieldsTable();
     this.columnAlignments = this.getColumnAlignments();
-    this.dataBranchTrasnform = this.getData();
+    this.dataCompany = this.listCompany();
+  }
+
+  public listCompany() {
+    this.branchService.getListCompany().subscribe(
+      (response) => {
+        this.dataCompany = response;
+        this.dataBranchTrasnform = this.getData();
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
   }
 
   private async getData(): Promise<any> {
@@ -122,6 +140,11 @@ export class BranchComponent {
     this.goToPreviewTab();
   }
 
+  public backToTable() {
+    this.showForm = false;
+    this.resetForms();
+  }
+
   public formatedData(response: any, fecth = false) {
     if (response.length === 0 && fecth) {
       // Devuelve un mensaje personalizado cuando no hay datos
@@ -140,7 +163,172 @@ export class BranchComponent {
         Dirección: item.address,
         Descripción: item.description,
         Teléfono: item.phone,
+        is_disabled: item.is_disabled,
       };
+    });
+  }
+
+  onSubmit() {
+    if (this.formBranch.valid) {
+      let data = {
+        name: this.formBranch.get('name')?.value,
+        company_id: this.formBranch.get('company_id')?.value,
+        is_disabled:
+          this.formBranch.get('is_disabled')?.value === null
+            ? false
+            : this.formBranch.get('is_disabled')?.value,
+        permissions: this.dataPermissionSelected,
+      };
+      if (this.action === 'save') {
+        this.saveNewBranch(data);
+      }
+
+      if (this.action === 'edit') {
+        this.editBranch(data, this.dataTemp.id);
+      }
+    }
+  }
+
+  public saveNewBranch(data: {}) {
+    this.loading = true;
+    this.branchService.sendBranch(data).subscribe({
+      next: (response) => {
+        if (response.original.success) {
+          this.onFetchData(this.parameterDefect);
+          this.resetForms();
+          this.showForm = false;
+          this.loading = false;
+          this.generalService.alertMessage(
+            '¡Éxito!',
+            response.original?.message || 'Operación exitosa',
+            'success'
+          );
+        } else {
+          this.loading = false;
+          this.generalService.alertMessage(
+            '¡Ups! Algo salió mal',
+            'Tuvimos un problema al procesar tu solicitud. Por favor, inténtalo de nuevo o contacta a nuestro equipo de soporte si el problema persiste. ¡Estamos aquí para ayudarte!',
+            'warning'
+          );
+        }
+      },
+      error: (error) => {
+        this.loading = false;
+        this.generalService.alertMessage(
+          'Error',
+          'Hubo un problema al procesar tu solicitud. Por favor, inténtalo de nuevo.',
+          'error'
+        );
+      },
+    });
+  }
+
+  async setDataForm(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      try {
+        this.formBranch.controls['name'].setValue(this.dataTemp.name);
+        this.formBranch.controls['description'].setValue(
+          this.dataTemp.description
+        );
+        this.formBranch.controls['company_id'].setValue(
+          this.dataTemp.company_id
+        );
+        this.formBranch.controls['direction'].setValue(this.dataTemp.direction);
+        this.formBranch.controls['phone'].setValue(this.dataTemp.phone);
+        this.formBranch.controls['is_disabled'].setValue(
+          this.dataTemp.is_disabled === 1 ? true : false
+        );
+
+        // Marcar los controles como tocados y verificar su validez
+        this.formBranch.markAllAsTouched();
+
+        resolve();
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  disableOrEnableRecord(data: any) {
+    const actionText = data.is_disabled === 0 ? 'habilitar' : 'inhabilitar';
+    const confirmButtonText =
+      data.is_disabled === 0 ? 'Sí, habilitar' : 'Sí, inhabilitar';
+    const successMessage =
+      data.is_disabled === 0
+        ? 'El registro ha sido habilitado correctamente.'
+        : 'El registro ha sido inhabilitado correctamente.';
+
+    Swal.fire({
+      title: `¿Deseas ${actionText} este registro?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#f39c12',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: confirmButtonText,
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loading = true;
+        const action = data.is_disabled === 0 ? 'enable' : 'disable';
+        this.actionMap[action](data.id).subscribe({
+          next: (response: any) => {
+            this.onFetchData(this.parameterDefect);
+            this.loading = false;
+            this.generalService.alertMessage(
+              '¡Éxito!',
+              successMessage,
+              'success'
+            );
+          },
+          error: (error: any) => {
+            this.loading = false;
+            this.generalService.alertMessage(
+              'Error',
+              'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.',
+              'error'
+            );
+          },
+        });
+      }
+    });
+  }
+
+  private actionMap: { [key: string]: (id: number) => Observable<any> } = {
+    enable: (id: number) => this.branchService.enableRecordById(id),
+    disable: (id: number) => this.branchService.disableRecordById(id),
+  };
+
+  public editBranch(data: any, id: number) {
+    this.loading = true;
+    this.branchService.editBranch(data, id).subscribe({
+      next: (response) => {
+        if (response.original.success) {
+          this.onFetchData(this.parameterDefect);
+          this.resetForms();
+          this.showForm = false;
+          this.loading = false;
+          this.generalService.alertMessage(
+            '¡Éxito!',
+            response.original?.message || 'Operación exitosa',
+            'success'
+          );
+        } else {
+          this.loading = false;
+          this.generalService.alertMessage(
+            '¡Ups! Algo salió mal',
+            'Tuvimos un problema al procesar tu solicitud. Por favor, inténtalo de nuevo o contacta a nuestro equipo de soporte si el problema persiste. ¡Estamos aquí para ayudarte!',
+            'warning'
+          );
+        }
+      },
+      error: (error) => {
+        this.loading = false;
+        this.generalService.alertMessage(
+          'Error',
+          'Hubo un problema al procesar tu solicitud. Por favor, inténtalo de nuevo.',
+          'error'
+        );
+      },
     });
   }
 
@@ -220,15 +408,29 @@ export class BranchComponent {
     };
   }
 
-  async selectCompany(id: number): Promise<void> {
-    try {
-      const response = await this.companyService
-        .getPermissionByCompany(id)
-        .toPromise();
-      this.permissionSuggested = response.original;
-    } catch (error: any) {
-      console.error('Error al seleccionar compañia:', error.message);
-      throw error;
+  getTextClass() {
+    return this.formBranch.get('is_disabled')?.value
+      ? 'text-success'
+      : 'text-red';
+  }
+
+  onlyNumbers(event: KeyboardEvent): boolean {
+    const char = String.fromCharCode(event.which ? event.which : event.keyCode);
+
+    if (
+      event.key === 'Backspace' ||
+      event.key === 'ArrowLeft' ||
+      event.key === 'ArrowRight' ||
+      event.key === 'Delete'
+    ) {
+      return true;
     }
+
+    if (!/^[0-9]+$/.test(char)) {
+      event.preventDefault();
+      return false;
+    }
+
+    return true;
   }
 }

@@ -32,9 +32,41 @@ export class BranchService {
     });
   }
 
-  getPermissionByCompany(id: number): Observable<any> {
+  getListCompany(): Observable<any> {
     return this.http.get<any>(
-      `${this.apiUrl}/permission/getPermissionByCompany/${id}`,
+      `${this.apiUrl}/company/listCompany`,
+      this.getHttpOptions()
+    );
+  }
+
+  sendBranch(data: any): Observable<any> {
+    return this.http.post<any>(
+      `${this.apiUrl}/branch/setData`,
+      data,
+      this.getHttpOptions()
+    );
+  }
+
+  editBranch(data: any, id: number): Observable<any> {
+    return this.http.put<any>(
+      `${this.apiUrl}/branch/editData/${id}`,
+      data,
+      this.getHttpOptions()
+    );
+  }
+
+  disableRecordById(id: number): Observable<any> {
+    return this.http.patch(
+      `${this.apiUrl}/branch/disable/${id}`,
+      {},
+      this.getHttpOptions()
+    );
+  }
+
+  enableRecordById(id: number): Observable<any> {
+    return this.http.patch(
+      `${this.apiUrl}/branch/enable/${id}`,
+      {},
       this.getHttpOptions()
     );
   }
