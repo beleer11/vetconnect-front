@@ -6,6 +6,7 @@ import { environment } from '../../../environments/environment';
 import * as CryptoJS from 'crypto-js';
 import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
+import { AuthService } from '../auth/auth-service.service';
 
 @Injectable({
   providedIn: 'root',
@@ -15,9 +16,9 @@ export class GeneralService {
   private userActivityObservable$: Observable<any>;
   private inactivityTimer$: Observable<any>;
   private userActivitySubscription: Subscription | null = null;
-  private readonly INACTIVITY_TIME: number = 20 * 60 * 1000; // 20 minutos
+  private readonly INACTIVITY_TIME: number = 1 * 60 * 1000; // 20 minutos
 
-  constructor(private http: HttpClient, private router: Router) {
+  constructor(private http: HttpClient, private router: Router, private authService: AuthService) {
     this.userActivityObservable$ = merge(
       fromEvent(window, 'mousemove'),
       fromEvent(window, 'keydown'),
@@ -40,7 +41,6 @@ export class GeneralService {
 
   // Monitoreo de inactividad y cierre de sesión
   startInactivityMonitoring() {
-    console.log("entra a la funcion")
     this.userActivitySubscription = this.userActivityObservable$
       .pipe(
         switchMap(() => this.inactivityTimer$) // Reinicia el temporizador al detectar actividad
@@ -58,15 +58,21 @@ export class GeneralService {
 
   // Cierra sesión cuando hay inactividad
   private handleInactivityLogout() {
-    console.log("entra a ceerar")
-    localStorage.removeItem('vet_connect_token');
-    localStorage.removeItem('permissions');
-    localStorage.removeItem('user_information');
-    this.router.navigate(['/login']);
-    this.alertMessage(
-      '¡Te hemos desconectado por seguridad!',
-      'Por tu protección, hemos cerrado tu sesión debido a inactividad prolongada. Si deseas continuar, inicia sesión nuevamente para seguir disfrutando de nuestros servicios.',
-      'info'
+    this.authService.logout().subscribe(
+      (response) => {
+        localStorage.removeItem('vet_connect_token');
+        localStorage.removeItem('permissions');
+        localStorage.removeItem('user_information')
+        this.router.navigate(['/login']);
+        this.alertMessage(
+          '¡Te hemos desconectado por seguridad!',
+          'Por tu protección, hemos cerrado tu sesión debido a inactividad prolongada. Si deseas continuar, inicia sesión nuevamente para seguir disfrutando de nuestros servicios.',
+          'info'
+        );
+      },
+      (error) => {
+        console.error(error);
+      }
     );
   }
 
