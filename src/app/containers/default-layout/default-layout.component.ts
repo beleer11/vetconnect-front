@@ -10,10 +10,15 @@ import { getNavItemsFromPermissions } from './_nav'; // Ajusta la ruta según tu
 export class DefaultLayoutComponent implements OnInit {
 
   public navItems: INavData[] = [];
+  public loading = false;
 
   ngOnInit() {
-    const [items, noPermissions] = getNavItemsFromPermissions();
+    const [items] = getNavItemsFromPermissions();
     this.navItems = items;
+  }
+
+  onLogout(event: any) {
+    this.loading = event;
   }
 
   constructor() { }
