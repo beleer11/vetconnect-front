@@ -31,4 +31,11 @@ export class BranchService {
       ...this.getHttpOptions(),
     });
   }
+
+  getPermissionByCompany(id: number): Observable<any> {
+    return this.http.get<any>(
+      `${this.apiUrl}/permission/getPermissionByCompany/${id}`,
+      this.getHttpOptions()
+    );
+  }
 }
