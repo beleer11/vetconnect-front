@@ -1,12 +1,12 @@
 <app-loading-spinner *ngIf="loading"></app-loading-spinner>
-<div [hidden]="showForm && dataBranch">
-  <div [hidden]="showForm">
-    <app-group-button-general
-      [component]="'Sucursales'"
-      (buttonClick)="handleButtonClick($event)"
-    >
-    </app-group-button-general>
-  </div>
+
+<div [hidden]="showForm">
+  <app-group-button-general
+    [component]="'Sucursales'"
+    (buttonClick)="handleButtonClick($event)"
+  >
+  </app-group-button-general>
+
   <app-general-table
     [columns]="fieldsTable"
     [transformedData]="dataBranchTrasnform"
@@ -50,23 +50,140 @@
             </button>
           </li>
         </ul>
-        <div
-          class="tab-pane fade show active"
-          id="general"
-          role="tabpanel"
-          aria-labelledby="general-tab"
-        >
-          <form [formGroup]="formBranch" class="pt-3">
-            <div class="container">
-              <div class="row mb-4">
-                <div class="col-md-6 mb-4 mb-md-0">
+        <div class="tab-content border-tab" id="myTabContent">
+          <div
+            class="tab-pane fade show active"
+            id="general"
+            role="tabpanel"
+            aria-labelledby="general-tab"
+          >
+            <form [formGroup]="formBranch" class="pt-3">
+              <div class="container">
+                <!--Nombre-->>
+                <div class="row mb-4">
+                  <div class="col-md-6 mb-4 mb-md-0">
+                    <div class="form-group">
+                      <label for="name" class="bolder mb-1">Nombre</label>
+                      <input
+                        id="name"
+                        formControlName="name"
+                        type="text"
+                        class="form-control"
+                        [ngClass]="getValidationClass('name')"
+                      />
+                      <div
+                        *ngIf="
+                          formBranch.get('name')?.invalid &&
+                          (formBranch.get('name')?.touched ||
+                            formBranch.get('name')?.dirty)
+                        "
+                        class="invalid-feedback"
+                      >
+                        <div
+                          *ngIf="formBranch.get('name')?.errors?.['required']"
+                        >
+                          Nombre es requerido.
+                        </div>
+                        <div
+                          *ngIf="formBranch.get('name')?.errors?.['minlength']"
+                        >
+                          Nombre debe tener al menos 3 caracteres.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!--compañia-->
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="company" class="bolder mb-1">Compañia</label>
+                      <mat-select
+                        formControlName="company_id"
+                        placeholder="Seleccionar compañia"
+                        (selectionChange)="selectCompany($event.value)"
+                        ultiple="false"
+                        class="form-control"
+                        [ngClass]="getValidationClass('company_id')"
+                      >
+                        <ngx-mat-select-search
+                          [formControl]="searchControl"
+                          placeholderLabel="Buscar compañia"
+                          noEntriesFoundLabel="No se encontraron resultados"
+                        >
+                        </ngx-mat-select-search>
+                        <mat-option
+                          *ngFor="
+                            let company of dataCompany
+                              | filterCompany : searchControl.value
+                          "
+                          [value]="company.id"
+                        >
+                          {{ company.name }}
+                        </mat-option>
+                      </mat-select>
+                      <button
+                        *ngIf="formBranch.get('company_id')?.value"
+                        mat-icon-button
+                        (click)="clearSelection()"
+                        class="clear-icon"
+                      >
+                        <mat-icon>close</mat-icon>
+                      </button>
+                      <div
+                        *ngIf="
+                          formBranch.get('company_id')?.invalid &&
+                          (formBranch.get('company_id')?.touched ||
+                            formBranch.get('company_id')?.dirty)
+                        "
+                        class="invalid-feedback"
+                      >
+                        <div
+                          *ngIf="formBranch.get('company_id')?.errors?.['required']"
+                        >
+                          Compañia es requerida.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!--descripción-->
+                <div class="col-md-6">
                   <div class="form-group">
-                    <label for="name" class="bolder mb-1">Nombre</label>
+                    <label for="description" class="bolder mb-1"
+                      >Descripción</label
+                    >
+                    <input
+                      id="description"
+                      formControlName="description"
+                      type="text"
+                      class="form-control"
+                      [ngClass]="getValidationClass('description')"
+                    />
+                    <div
+                      *ngIf="
+                        formBranch.get('description')?.invalid &&
+                        (formBranch.get('description')?.touched ||
+                          formBranch.get('description')?.dirty)
+                      "
+                      class="invalid-feedback"
+                    >
+                      <div
+                        *ngIf="formBranch.get('description')?.errors?.['required']"
+                      >
+                        Descripción es requerida.
+                      </div>
+                      <div
+                        *ngIf="formBranch.get('description')?.errors?.['minlength']"
+                      >
+                        Descripción debe tener al menos 10 caracteres.
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </form>
+            </form>
+          </div>
         </div>
       </c-card-body>
     </c-card>

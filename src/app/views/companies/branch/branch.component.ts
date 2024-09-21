@@ -1,10 +1,16 @@
 import { BranchService } from './../../../services/companies/branch/branch.service';
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import moment from 'moment';
 import * as bootstrap from 'bootstrap';
 import { GeneralService } from 'src/app/services/general/general.service';
 import { UserService } from 'src/app/services/user/user/user.service';
+import { CompanyService } from 'src/app/services/companies/company/company.service';
 
 @Component({
   selector: 'app-branch',
@@ -26,7 +32,10 @@ export class BranchComponent {
   public loadingTable: boolean = false;
   public totalRecord: number = 0;
   public dataTemp: any = [];
+  public dataCompany: any = [];
+  public permissionSuggested: any = [];
   public formBranch!: FormGroup;
+  public searchControl = new FormControl('');
   public parameterDefect = {
     search: '',
     sortColumn: 'name',
@@ -36,16 +45,25 @@ export class BranchComponent {
   };
 
   constructor(
-    private userService: UserService,
     private branchService: BranchService,
     private fb: FormBuilder,
-    private generalService: GeneralService
+    private generalService: GeneralService,
+    private companyService: CompanyService
   ) {}
 
   async ngOnInit() {
+    this.createForm();
+  }
+
+  public createForm() {
+    this.formBranch = this.fb.group({
+      name: ['', [Validators.required, Validators.minLength(3)]],
+      description: ['', [Validators.required, Validators.minLength(10)]],
+      rol_id: [null, Validators.required],
+    });
     this.fieldsTable = this.getFieldsTable();
     this.columnAlignments = this.getColumnAlignments();
-    this.dataBranchTrasnform = await this.getData();
+    this.dataBranchTrasnform = this.getData();
   }
 
   private async getData(): Promise<any> {
@@ -183,6 +201,11 @@ export class BranchComponent {
       this.disableOrEnableRecord(this.dataTemp);
     }*/
   }
+
+  clearSelection(): void {
+    this.formBranch.get('company_id')?.reset();
+  }
+
   goToPreviewTab() {
     const tabTriggerEl = document.querySelector('#general-tab') as HTMLElement;
     const tab = new bootstrap.Tab(tabTriggerEl);
@@ -195,5 +218,17 @@ export class BranchComponent {
       'is-invalid': control?.invalid && (control?.touched || control?.dirty),
       'is-valid': control?.valid && (control?.touched || control?.dirty),
     };
+  }
+
+  async selectCompany(id: number): Promise<void> {
+    try {
+      const response = await this.companyService
+        .getPermissionByCompany(id)
+        .toPromise();
+      this.permissionSuggested = response.original;
+    } catch (error: any) {
+      console.error('Error al seleccionar compañia:', error.message);
+      throw error;
+    }
   }
 }
