@@ -32,3 +32,9 @@
 .switch-custom:checked::before {
   transform: translateX(24px);
 }
+
+.border-tab {
+  border-left: 1px solid #e4e0e0;
+  border-bottom: 1px solid #e4e0e0;
+  border-right: 1px solid #e4e0e0;
+}

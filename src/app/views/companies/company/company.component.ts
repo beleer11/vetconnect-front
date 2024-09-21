@@ -162,7 +162,8 @@ export class CompanyComponent implements OnInit {
       razon_social: ['', Validators.required, Validators.minLength(3)],
       phone: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(15)]],
       nit: ['', [Validators.required]],
-      representante_legal: ['', [Validators.required, Validators.minLength(3)]]
+      representante_legal: ['', [Validators.required, Validators.minLength(3)]],
+      is_disabled: [false, [Validators.required]],
     });
   }
 
