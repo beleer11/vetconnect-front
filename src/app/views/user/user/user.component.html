@@ -2,8 +2,8 @@
 <div [hidden]="showForm">
     <app-group-button-general [component]="'Usuarios'" (buttonClick)="handleButtonClick($event)">
     </app-group-button-general>
-    <app-general-table [columns]="fieldsTable" [transformedData]="dataTransformada" [acciones]="acciones"
-        [columnAlignments]="columnAlignments" [title]="'Usuarios'" (fetchDataEvent)="onFetchData($event)"
+    <app-general-table [columns]="getFieldsTable()" [transformedData]="dataTransformada" [acciones]="acciones"
+        [columnAlignments]="getColumnAlignments()" [title]="'Usuarios'" (fetchDataEvent)="onFetchData($event)"
         [totalRecords]="totalRecord" [loadingTable]="loadingTable" [data]="dataUser"
         (actionEvent)="handleAction($event)">
     </app-general-table>
@@ -118,6 +118,64 @@
                                                 class="invalid-feedback">
                                                 <div *ngIf="formUser.get('rol_id')?.errors?.['required']">Rol es
                                                     requerido.</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Compañia y Sucursal -->
+                                <div class="row mb-4">
+                                    <div class="col-md-6 mb-4 mb-md-0">
+                                        <div class="form-group">
+                                            <label for="role" class="bolder mb-1">Compañía</label>
+                                            <mat-select formControlName="company_id" placeholder="Seleccionar compañía"
+                                                (selectionChange)="selectRol($event.value)" ultiple="false"
+                                                class="form-control" [ngClass]="getValidationClass('company_id')">
+                                                <ngx-mat-select-search [formControl]="searchControl"
+                                                    placeholderLabel="Buscar compañía"
+                                                    noEntriesFoundLabel="No se encontraron resultados">
+                                                </ngx-mat-select-search>
+                                                <mat-option
+                                                    *ngFor="let rol of dataRol | filterRol : searchControl.value"
+                                                    [value]="rol.id">
+                                                    {{rol.name}}
+                                                </mat-option>
+                                            </mat-select>
+                                            <button *ngIf="formUser.get('company_id')?.value" mat-icon-button
+                                                (click)="clearSelection()" class="clear-icon">
+                                                <mat-icon>close</mat-icon>
+                                            </button>
+                                            <div *ngIf="formUser.get('company_id')?.invalid && (formUser.get('company_id')?.touched || formUser.get('company_id')?.dirty)"
+                                                class="invalid-feedback">
+                                                <div *ngIf="formUser.get('company_id')?.errors?.['required']">Compañía
+                                                    es
+                                                    requerida.</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="role" class="bolder mb-1">Sucursal</label>
+                                            <mat-select formControlName="branch_id" placeholder="Seleccionar sucursal"
+                                                (selectionChange)="selectRol($event.value)" ultiple="false"
+                                                class="form-control" [ngClass]="getValidationClass('branch_id')">
+                                                <ngx-mat-select-search [formControl]="searchControl"
+                                                    placeholderLabel="Buscar sucursar"
+                                                    noEntriesFoundLabel="No se encontraron resultados">
+                                                </ngx-mat-select-search>
+                                                <mat-option
+                                                    *ngFor="let rol of dataRol | filterRol : searchControl.value"
+                                                    [value]="rol.id">
+                                                    {{rol.name}}
+                                                </mat-option>
+                                            </mat-select>
+                                            <button *ngIf="formUser.get('branch_id')?.value" mat-icon-button
+                                                (click)="clearSelection()" class="clear-icon">
+                                                <mat-icon>close</mat-icon>
+                                            </button>
+                                            <div *ngIf="formUser.get('branch_id')?.invalid && (formUser.get('branch_id')?.touched || formUser.get('branch_id')?.dirty)"
+                                                class="invalid-feedback">
+                                                <div *ngIf="formUser.get('branch_id')?.errors?.['required']">Sucursal es
+                                                    requerida.</div>
                                             </div>
                                         </div>
                                     </div>
