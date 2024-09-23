@@ -9,6 +9,7 @@ import Swal from 'sweetalert2';
 import moment from 'moment';
 import * as bootstrap from 'bootstrap';
 import { PermissionService } from '../../../services/user/permission/permission.service';
+import { CompanyService } from '../../../services/companies/company/company.service';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -21,8 +22,6 @@ export class UserComponent implements OnInit {
 
   public dataUser: any = [];
   public dataTransformada: any = [];
-  public fieldsTable: any = [];
-  public columnAlignments: any = [];
   public loading: boolean = true;
   public showForm: boolean = false;
   public formUser!: FormGroup;
@@ -55,13 +54,15 @@ export class UserComponent implements OnInit {
     page: 1,
     pageSize: 10
   };
+  public dataCompany: any = [];
 
   constructor(
     private userService: UserService,
     private rolService: RolService,
     private permissionService: PermissionService,
     private generalService: GeneralService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private companyService: CompanyService
   ) { }
 
 
@@ -77,7 +78,9 @@ export class UserComponent implements OnInit {
       password: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(20)]],
       image_profile: [null],
       is_disabled: [true],
-      rol_id: [null, Validators.required]
+      rol_id: [null, Validators.required],
+      company_id: [null, Validators.required],
+      branch_id: [{ value: '', disabled: true }, Validators.required],
     });
     this.listPermission();
   }
@@ -121,11 +124,11 @@ export class UserComponent implements OnInit {
     });
   }
 
-  private getFieldsTable() {
+  public getFieldsTable() {
     return ['Nombres', 'Usuario', 'Correo', 'Foto'];
   }
 
-  private getColumnAlignments() {
+  public getColumnAlignments() {
     return ['left', 'left', 'left', 'center'];
   }
 
@@ -416,20 +419,26 @@ export class UserComponent implements OnInit {
 
   async getRol(): Promise<void> {
     try {
-      // Convierte el observable en una promesa
       let response: any;
       response = await this.rolService.listRol().toPromise();
       this.dataRol = response?.data;
       this.filteredRoles = this.dataRol;
-
-      this.fieldsTable = this.getFieldsTable();
-      this.columnAlignments = this.getColumnAlignments();
-      this.dataTransformada = await this.getDataUser(this.parameterDefect);
+      this.dataCompany = this.getCompanyData();
       this.loading = false;
     } catch (error: any) {
       console.error('Error al obtener roles:', error.message);
-      // Maneja el error según sea necesario
     }
+  }
+
+  public getCompanyData() {
+    /*this.companyService.().subscribe(
+        response => {
+          this.dataTransformada = await this.getDataUser(this.parameterDefect);
+        },
+        error => {
+          console.log(error.message);
+        }
+      );*/
   }
 
   getModulesByGroup(groupId: number) {
@@ -762,15 +771,6 @@ export class UserComponent implements OnInit {
       this.dataTransformada = this.formatedData(response.data, true);
       this.dataUser = response.data;
       this.totalRecord = response.total;
-      if (response.data.length === 0) {
-        this.fieldsTable = ["No se encontraron resultados"];
-        this.columnAlignments = ["center"];
-        this.acciones = false;
-      } else {
-        this.fieldsTable = this.getFieldsTable();
-        this.columnAlignments = this.getColumnAlignments();
-        this.acciones = true;
-      }
       this.loadingTable = false;
     }, (error) => {
       this.loadingTable = false;
