@@ -1,7 +1,7 @@
 .switch-custom {
   width: 50px;
   height: 26px;
-  background-color: #ddd;
+  background-color: rgb(104, 93, 93);
   border-radius: 25px;
   position: relative;
   transition: background-color 0.3s ease;

@@ -176,19 +176,28 @@ export class CompanyComponent implements OnInit {
         razon_social: this.formCompany.get('razonSocial')?.value,
         telefono: this.formCompany.get('telefono')?.value,
         nit: this.formCompany.get('nit')?.value,
-        representante_legal: this.formCompany.get('representante')?.value
+        representante_legal: this.formCompany.get('representante')?.value,
       };
-
       console.log(data);
-
       if (this.action === 'save') {
         this.saveNewCompany(data);
       }
-
       if (this.action === 'edit') {
         this.editCompany(data, this.dataTemp.id);
       }
     }
+  }
+
+  goToNextTab() {
+    const tabTriggerEl = document.querySelector('#permissions-tab') as HTMLElement;
+    const tab = new bootstrap.Tab(tabTriggerEl);
+    tab.show();
+  }
+
+  goToPreviewTab() {
+    const tabTriggerEl = document.querySelector('#general-tab') as HTMLElement;
+    const tab = new bootstrap.Tab(tabTriggerEl);
+    tab.show();
   }
 
 

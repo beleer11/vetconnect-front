@@ -147,9 +147,12 @@
                     </div>
                   </div>
                 </div>
-                <!-- Botón de Enviar -->
-                <div class="d-flex justify-content-end mt-2">
-                  <button type="submit" class="btn btn-success" [disabled]="formCompany.invalid">Guardar</button>
+                <!-- Botón de Guardar -->
+                <div class="d-flex mt-2 justify-content-end">
+                  <button type="submit" class="btn btn-success text-white" (click)="onSubmit()"
+                    [disabled]="formCompany.invalid">
+                    Guardar
+                  </button>
                 </div>
               </div>
             </form>
