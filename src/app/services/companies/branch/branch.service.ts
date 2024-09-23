@@ -31,4 +31,50 @@ export class BranchService {
       ...this.getHttpOptions(),
     });
   }
+
+  getListCompany(): Observable<any> {
+    return this.http.get<any>(
+      `${this.apiUrl}/company/listCompany`,
+      this.getHttpOptions()
+    );
+  }
+
+  sendBranch(data: any): Observable<any> {
+    return this.http.post<any>(
+      `${this.apiUrl}/branch/setData`,
+      data,
+      this.getHttpOptions()
+    );
+  }
+
+  editBranch(data: any, id: number): Observable<any> {
+    return this.http.put<any>(
+      `${this.apiUrl}/branch/editData/${id}`,
+      data,
+      this.getHttpOptions()
+    );
+  }
+
+  disableRecordById(id: number): Observable<any> {
+    return this.http.patch(
+      `${this.apiUrl}/branch/disable/${id}`,
+      {},
+      this.getHttpOptions()
+    );
+  }
+
+  enableRecordById(id: number): Observable<any> {
+    return this.http.patch(
+      `${this.apiUrl}/branch/enable/${id}`,
+      {},
+      this.getHttpOptions()
+    );
+  }
+
+  deleteRecordById(id: number): Observable<any> {
+    return this.http.delete(
+      `${this.apiUrl}/branch/remove/${id}`,
+      this.getHttpOptions()
+    );
+  }
 }
