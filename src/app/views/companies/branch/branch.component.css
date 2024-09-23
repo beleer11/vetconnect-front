@@ -91,3 +91,11 @@
 .btn-submit:hover {
   opacity: 0.9;
 }
+
+.text-red {
+  color: red;
+}
+
+.text-success {
+  color: green;
+}

@@ -1,13 +1,20 @@
-import { Component, Input, OnInit, OnChanges, Output, EventEmitter, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnInit,
+  OnChanges,
+  Output,
+  EventEmitter,
+  SimpleChanges,
+} from '@angular/core';
 import { PermissionService } from '../../services/user/permission/permission.service';
 
 @Component({
   selector: 'app-general-table',
   templateUrl: './general-table.component.html',
-  styleUrls: ['./general-table.component.css']
+  styleUrls: ['./general-table.component.css'],
 })
 export class GeneralTableComponent implements OnInit, OnChanges {
-
   @Input() columns: string[] = [];
   @Input() transformedData: any[] = [];
   @Input() data: any[] = [];
@@ -16,7 +23,8 @@ export class GeneralTableComponent implements OnInit, OnChanges {
   @Input() title: string = '';
   @Input() totalRecords: number = 0;
   @Input() loadingTable: boolean = true;
-  @Output() actionEvent: EventEmitter<{ id: number, action: string }> = new EventEmitter();
+  @Output() actionEvent: EventEmitter<{ id: number; action: string }> =
+    new EventEmitter();
   @Output() fetchDataEvent: EventEmitter<any> = new EventEmitter();
 
   public searchValue: string = '';
@@ -30,7 +38,7 @@ export class GeneralTableComponent implements OnInit, OnChanges {
   public pageSize: number = 10;
   public totalPages: number = 0;
 
-  constructor(private permissionService: PermissionService) { }
+  constructor(private permissionService: PermissionService) {}
 
   ngOnInit(): void {
     this.hasAnyRequiredPermission();
@@ -61,7 +69,6 @@ export class GeneralTableComponent implements OnInit, OnChanges {
     this.totalPages = Math.ceil(this.totalRecords / this.pageSize);
   }
 
-
   onSearch(): void {
     this.applySortingAndPagination();
   }
@@ -77,7 +84,11 @@ export class GeneralTableComponent implements OnInit, OnChanges {
   }
 
   sortColumn(column: string): void {
-    if (column === 'Foto' || column === 'Icono' || column === 'No se encontraron resultados') {
+    if (
+      column === 'Foto' ||
+      column === 'Icono' ||
+      column === 'No se encontraron resultados'
+    ) {
       return;
     }
     if (this.currentSortColumn === column) {
@@ -118,12 +129,7 @@ export class GeneralTableComponent implements OnInit, OnChanges {
   }
 
   hasAnyRequiredPermission(): boolean {
-
-
-    return (
-      this.hasPermission('Editar') ||
-      this.hasPermission('Eliminar')
-    );
+    return this.hasPermission('Editar') || this.hasPermission('Eliminar');
   }
 
   emitFetchDataEvent(): void {
@@ -132,7 +138,7 @@ export class GeneralTableComponent implements OnInit, OnChanges {
       sortColumn: this.currentSortColumn,
       sortOrder: this.sortOrder,
       page: this.currentPage,
-      pageSize: this.pageSize
+      pageSize: this.pageSize,
     };
     this.fetchDataEvent.emit(params);
   }

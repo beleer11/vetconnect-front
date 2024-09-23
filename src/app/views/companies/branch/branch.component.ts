@@ -65,18 +65,18 @@ export class BranchComponent {
       address: ['', [Validators.required, Validators.minLength(10)]],
       company_id: [{}, Validators.required],
       phone: ['', [Validators.required, Validators.minLength(10)]],
-      is_disabled: [false, Validators.required],
+      is_active: [false, Validators.required],
     });
     this.fieldsTable = this.getFieldsTable();
     this.columnAlignments = this.getColumnAlignments();
-    this.dataCompany = this.listCompany();
+    this.listCompany();
   }
 
   public listCompany() {
     this.branchService.getListCompany().subscribe(
       (response) => {
         this.dataCompany = response;
-        this.dataBranchTrasnform = this.getData();
+        this.getData();
       },
       (err) => {
         console.log(err);
@@ -90,7 +90,8 @@ export class BranchComponent {
         (response) => {
           this.dataBranch = response.data;
           this.totalRecord = response.total;
-          resolve(this.formatedData(response.data));
+          this.dataBranchTrasnform = this.formatedData(response.data);
+          resolve(this.dataBranchTrasnform);
           this.loading = false;
         },
         (error) => reject(error)
@@ -137,7 +138,6 @@ export class BranchComponent {
   resetForms() {
     this.formBranch.reset();
     this.formBranch.untouched;
-    this.goToPreviewTab();
   }
 
   public backToTable() {
@@ -159,11 +159,11 @@ export class BranchComponent {
       return {
         id: item.id,
         Nombre: item.name,
-        Compañía: item.company.name,
+        Compañía: item.company_name,
         Dirección: item.address,
         Descripción: item.description,
         Teléfono: item.phone,
-        is_disabled: item.is_disabled,
+        is_disabled: item.is_active,
       };
     });
   }
@@ -176,12 +176,11 @@ export class BranchComponent {
         company_id: this.formBranch.get('company_id')?.value,
         address: this.formBranch.get('address')?.value,
         phone: this.formBranch.get('phone')?.value,
-        is_disabled:
-          this.formBranch.get('is_disabled')?.value === null
+        is_active:
+          this.formBranch.get('is_active')?.value === null
             ? false
-            : this.formBranch.get('is_disabled')?.value,
+            : this.formBranch.get('is_active')?.value,
       };
-      console.log(data);
       if (this.action === 'save') {
         this.saveNewBranch(data);
       }
@@ -236,10 +235,10 @@ export class BranchComponent {
         this.formBranch.controls['company_id'].setValue(
           this.dataTemp.company_id
         );
-        this.formBranch.controls['direction'].setValue(this.dataTemp.direction);
+        this.formBranch.controls['address'].setValue(this.dataTemp.address);
         this.formBranch.controls['phone'].setValue(this.dataTemp.phone);
-        this.formBranch.controls['is_disabled'].setValue(
-          this.dataTemp.is_disabled === 1 ? true : false
+        this.formBranch.controls['is_active'].setValue(
+          this.dataTemp.is_active === 1 ? true : false
         );
 
         // Marcar los controles como tocados y verificar su validez
@@ -253,11 +252,11 @@ export class BranchComponent {
   }
 
   disableOrEnableRecord(data: any) {
-    const actionText = data.is_disabled === 0 ? 'habilitar' : 'inhabilitar';
+    const actionText = data.is_active === 0 ? 'habilitar' : 'inhabilitar';
     const confirmButtonText =
-      data.is_disabled === 0 ? 'Sí, habilitar' : 'Sí, inhabilitar';
+      data.is_active === 0 ? 'Sí, habilitar' : 'Sí, inhabilitar';
     const successMessage =
-      data.is_disabled === 0
+      data.is_active === 0
         ? 'El registro ha sido habilitado correctamente.'
         : 'El registro ha sido inhabilitado correctamente.';
 
@@ -272,7 +271,7 @@ export class BranchComponent {
     }).then((result) => {
       if (result.isConfirmed) {
         this.loading = true;
-        const action = data.is_disabled === 0 ? 'enable' : 'disable';
+        const action = data.is_active === 0 ? 'enable' : 'disable';
         this.actionMap[action](data.id).subscribe({
           next: (response: any) => {
             this.onFetchData(this.parameterDefect);
@@ -365,42 +364,26 @@ export class BranchComponent {
     this.action = action;
     this.dataTemp = this.dataBranch.find((item: any) => item.id === id);
 
-    /*if (action === "edit") {
-      this.loading = true;
-      this.formRol.controls["nombre"].setValue(this.dataTemp.name);
-      this.formRol.controls["description"].setValue(this.dataTemp.description);
-      this.formRol.markAllAsTouched();
-      this.rolService.getPermissionByRol(this.dataTemp.id).subscribe(
-        response => {
-          this.checkedPermisosAsignados(response.original);
-        },
-        error => {
-          console.log(error.message);
-        }
-      );
+    if (action === 'edit') {
+      this.setDataForm();
+      this.showForm = true;
     }
 
-    if (action === "delete") {
+    if (action === 'delete') {
       this.deleteRecord(id);
     }
 
-    if (action === "view") {
+    if (action === 'view') {
       this.openModalView(this.dataTemp);
     }
 
-    if (action === "ban") {
+    if (action === 'ban') {
       this.disableOrEnableRecord(this.dataTemp);
-    }*/
+    }
   }
 
   clearSelection(): void {
     this.formBranch.get('company_id')?.reset();
-  }
-
-  goToPreviewTab() {
-    const tabTriggerEl = document.querySelector('#general-tab') as HTMLElement;
-    const tab = new bootstrap.Tab(tabTriggerEl);
-    tab.show();
   }
 
   getValidationClass(controlName: string): { [key: string]: any } {
@@ -412,7 +395,7 @@ export class BranchComponent {
   }
 
   getTextClass() {
-    return this.formBranch.get('is_disabled')?.value
+    return this.formBranch.get('is_active')?.value
       ? 'text-success'
       : 'text-red';
   }
@@ -435,5 +418,66 @@ export class BranchComponent {
     }
 
     return true;
+  }
+
+  deleteRecord(id: number) {
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: 'Esta acción eliminará el registro permanentemente. ¡No podrás revertirlo!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminarlo',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loading = true;
+        this.branchService.deleteRecordById(id).subscribe({
+          next: (response) => {
+            this.onFetchData(this.parameterDefect);
+            this.loading = false;
+            this.generalService.alertMessage(
+              '¡Eliminado!',
+              'El registro ha sido eliminado correctamente.',
+              'success'
+            );
+          },
+          error: (error) => {
+            this.loading = false;
+            this.generalService.alertMessage(
+              'Error',
+              'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.',
+              'error'
+            );
+          },
+        });
+      }
+    });
+  }
+
+  openModalView(data: any) {
+    Swal.fire({
+      title: 'Sucursal',
+      html: `
+        <div id="custom-icon-container">
+          <p><strong>Nombre : </strong> <span>${data.name}</span> </p>
+          <p><strong>Descripción : </strong> <span>${
+            data.description
+          }</span> </p>
+          <p><strong>Compañía : </strong> <span>${data.company_name}</span> </p>
+          <p><strong>Dirección : </strong> <span>${data.address}</span> </p>
+          <p><strong>Teléfono : </strong> <span>${data.phone}</span> </p
+          <p><strong>Fecha de Creación: </strong> <span>${moment(
+            data.created_at
+          ).format('DD/MM/YYYY hh:mm:ss A')}</span></p>
+          <p><strong>Última actualización: </strong> <span>${moment(
+            data.updated_at
+          ).format('DD/MM/YYYY hh:mm:ss A')}</span></p>
+        </div>
+      `,
+      icon: 'info',
+      confirmButtonText: 'Cerrar',
+    });
   }
 }
