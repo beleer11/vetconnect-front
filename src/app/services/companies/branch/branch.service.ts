@@ -70,4 +70,11 @@ export class BranchService {
       this.getHttpOptions()
     );
   }
+
+  deleteRecordById(id: number): Observable<any> {
+    return this.http.delete(
+      `${this.apiUrl}/branch/remove/${id}`,
+      this.getHttpOptions()
+    );
+  }
 }

@@ -93,8 +93,8 @@
                   <div class="col-md-6">
                     <div class="form-group">
                       <label for="description" class="bolder mb-1">Descripción</label>
-                      <input id="description" formControlName="description" type="text" class="form-control"
-                        [ngClass]="getValidationClass('description')" />
+                      <textarea id="description" formControlName="description" type="text" rows="3" class="form-control"
+                        [ngClass]="getValidationClass('description')"> </textarea>
                       <div *ngIf="
                           formBranch.get('description')?.invalid &&
                           (formBranch.get('description')?.touched ||
@@ -153,10 +153,10 @@
                   <div class="col-12 col-md-6 mb-4 mb-md-0">
                     <div class="form-group form-switch d-flex justify-content-center align-items-center"
                       style="height: 40px; background-color: white; ">
-                      <input class="form-check-input switch-custom" type="checkbox" id="is_disabled"
-                        formControlName="is_disabled" />
-                      <label class="form-check-label ms-4 bolder mb-1 " for="is_disabled" [ngClass]="getTextClass()">
-                        {{ formBranch.get('is_disabled')?.value ? 'Activo' : 'Inactivo' }}
+                      <input class="form-check-input switch-custom" type="checkbox" id="is_active"
+                        formControlName="is_active" />
+                      <label class="form-check-label ms-4 bolder mb-1 " for="is_active" [ngClass]="getTextClass()">
+                        {{ formBranch.get('is_active')?.value ? 'Activo' : 'Inactivo' }}
                       </label>
                     </div>
                   </div>
