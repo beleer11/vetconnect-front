@@ -10,6 +10,7 @@ import moment from 'moment';
 import * as bootstrap from 'bootstrap';
 import { PermissionService } from '../../../services/user/permission/permission.service';
 import { CompanyService } from '../../../services/companies/company/company.service';
+import { BranchService } from '../../../services/companies/branch/branch.service';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -55,6 +56,8 @@ export class UserComponent implements OnInit {
     pageSize: 10
   };
   public dataCompany: any = [];
+  public dataBranch: any = [];
+  public loadingBranch: boolean = false;
 
   constructor(
     private userService: UserService,
@@ -62,7 +65,8 @@ export class UserComponent implements OnInit {
     private permissionService: PermissionService,
     private generalService: GeneralService,
     private fb: FormBuilder,
-    private companyService: CompanyService
+    private companyService: CompanyService,
+    private branchService: BranchService
   ) { }
 
 
@@ -78,9 +82,9 @@ export class UserComponent implements OnInit {
       password: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(20)]],
       image_profile: [null],
       is_disabled: [true],
-      rol_id: [null, Validators.required],
-      company_id: [null, Validators.required],
-      branch_id: [{ value: '', disabled: true }, Validators.required],
+      rol_id: [{}, Validators.required],
+      company_id: [{}, Validators.required],
+      branch_id: [{ value: {}, disabled: true }, Validators.required],
     });
     this.listPermission();
   }
@@ -93,6 +97,7 @@ export class UserComponent implements OnInit {
           this.dataUser = response.data;
           this.dataTransformada = this.formatedData(response.data);
           resolve(this.dataTransformada)
+          this.loading = false;
         },
         error => {
           reject(error);
@@ -188,8 +193,11 @@ export class UserComponent implements OnInit {
         rol_id: this.formUser.get('rol_id')?.value,
         image_profile: this.selectedFile || null,
         is_disabled: (this.formUser.get('is_disabled')?.value === null) ? false : this.formUser.get('is_disabled')?.value,
+        company_id: this.formUser.get('company_id')?.value,
+        branch_id: this.formUser.get('branch_id')?.value,
         permissions: this.dataPermissionSelected
       };
+
       if (this.action === 'save') {
         this.saveNewUser(data);
       }
@@ -423,22 +431,26 @@ export class UserComponent implements OnInit {
       response = await this.rolService.listRol().toPromise();
       this.dataRol = response?.data;
       this.filteredRoles = this.dataRol;
-      this.dataCompany = this.getCompanyData();
-      this.loading = false;
+      this.dataCompany = await this.getCompanyData();
     } catch (error: any) {
       console.error('Error al obtener roles:', error.message);
     }
   }
 
-  public getCompanyData() {
-    /*this.companyService.().subscribe(
-        response => {
+  async getCompanyData(): Promise<void> {
+    try {
+      this.branchService.getListCompany().subscribe(
+        async response => {
+          this.dataCompany = response;
           this.dataTransformada = await this.getDataUser(this.parameterDefect);
         },
         error => {
           console.log(error.message);
         }
-      );*/
+      );
+    } catch (error: any) {
+      console.error('Error al obtener roles:', error.message);
+    }
   }
 
   getModulesByGroup(groupId: number) {
@@ -614,6 +626,18 @@ export class UserComponent implements OnInit {
     this.formUser.get('rol_id')?.reset();
   }
 
+  clearSelectionCompany(): void {
+    this.formUser.get('company_id')?.reset();
+    this.formUser.get('company_id')?.markAsTouched();
+    this.formUser.controls['branch_id'].disable();
+    this.dataBranch = [];
+  }
+
+  clearSelectionBranch(): void {
+    this.formUser.get('branch_id')?.reset();
+    this.formUser.get('branch_id')?.markAsTouched();
+  }
+
   async onFileSelected(event: any) {
     const file = event.target.files[0];
     if (file) {
@@ -661,8 +685,11 @@ export class UserComponent implements OnInit {
         this.formUser.controls["username"].setValue(this.dataTemp.username);
         this.formUser.controls["email"].setValue(this.dataTemp.email);
         this.formUser.controls["rol_id"].setValue(this.dataTemp.rol_id);
+        this.formUser.controls["company_id"].setValue(this.dataTemp.company_id);
+        this.formUser.controls["branch_id"].setValue(this.dataTemp.branch_id);
         this.formUser.controls["is_disabled"].setValue((this.dataTemp.is_disabled === 1) ? true : false);
 
+        this.getBranchByCompany(this.dataTemp.company_id);
         // Marcar los controles como tocados y verificar su validez
         this.formUser.markAllAsTouched();
 
@@ -776,6 +803,21 @@ export class UserComponent implements OnInit {
       this.loadingTable = false;
       console.error('Error fetching data', error);
     });
+  }
+
+  public getBranchByCompany(id: any) {
+    this.loadingBranch = true;
+    this.branchService.getCompanyByBranch(id).subscribe(
+      async response => {
+        this.dataBranch = response;
+        this.loadingBranch = false;
+        this.formUser.controls['branch_id'].enable();
+      },
+      error => {
+        console.log(error.message);
+        this.loadingBranch = true;
+      }
+    );
   }
 
 }
