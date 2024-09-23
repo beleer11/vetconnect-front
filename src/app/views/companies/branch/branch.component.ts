@@ -65,7 +65,7 @@ export class BranchComponent {
       address: ['', [Validators.required, Validators.minLength(10)]],
       company_id: [{}, Validators.required],
       phone: ['', [Validators.required, Validators.minLength(10)]],
-      is_disabled: [true],
+      is_disabled: [false, Validators.required],
     });
     this.fieldsTable = this.getFieldsTable();
     this.columnAlignments = this.getColumnAlignments();
@@ -172,13 +172,16 @@ export class BranchComponent {
     if (this.formBranch.valid) {
       let data = {
         name: this.formBranch.get('name')?.value,
+        description: this.formBranch.get('description')?.value,
         company_id: this.formBranch.get('company_id')?.value,
+        address: this.formBranch.get('address')?.value,
+        phone: this.formBranch.get('phone')?.value,
         is_disabled:
           this.formBranch.get('is_disabled')?.value === null
             ? false
             : this.formBranch.get('is_disabled')?.value,
-        permissions: this.dataPermissionSelected,
       };
+      console.log(data);
       if (this.action === 'save') {
         this.saveNewBranch(data);
       }
