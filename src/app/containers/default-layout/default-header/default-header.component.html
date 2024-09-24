@@ -16,29 +16,24 @@
 <ng-template #userDropdown>
   <c-dropdown alignment="end" variant="nav-item">
     <button cButton color="" [caret]="false" cDropdownToggle class="py-0">
-      <c-avatar *ngIf="image_profile === ''" cTextColor="primary" shape="rounded-1" style="width: 60px; height: 45px;"
+      <c-avatar *ngIf="user_information.image_profile === null && user_information.image_profile === ''"
+        cTextColor="primary" shape="rounded-1" style="width: 60px; height: 45px;"
         src="../../../../assets/images/veterinario-black-img.png" status="success">
       </c-avatar>
-      <c-avatar *ngIf="image_profile !== ''" cTextColor="primary" shape="rounded-1" size="md"
-        [src]="environment.apiStorage + image_profile" status="success">
+      <c-avatar *ngIf="user_information.image_profile !== null || user_information.image_profile !== ''"
+        cTextColor="primary" shape="rounded-1" size="md" [src]="environment.apiStorage + user_information.image_profile"
+        status="success">
       </c-avatar>
     </button>
     <ul cDropdownMenu class="pt-0 pr-5 w-auto">
-
       <li>
-        <h6 cDropdownHeader class="bg-light fw-semibold py-2">Configuración</h6>
+        <h5 cDropdownHeader class="bg-light fw-semibold text-center">{{user_information.username}}</h5>
       </li>
       <li></li>
       <li>
-        <a routerLink="./" cDropdownItem>
+        <a [routerLink]="'/company'" cDropdownItem>
           <svg cIcon class="me-2" name="cilUser"></svg>
           Perfil
-        </a>
-      </li>
-      <li>
-        <a routerLink="./" cDropdownItem>
-          <svg cIcon class="me-2" name="cilSettings"></svg>
-          Ajustes
         </a>
       </li>
       <li>

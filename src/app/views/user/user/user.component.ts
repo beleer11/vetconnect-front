@@ -1,14 +1,16 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { UserService } from 'src/app/services/user/user/user.service';
-import { RolService } from 'src/app/services/user/rol/rol.service';
-import { GeneralService } from 'src/app/services/general/general.service';
-import { environment } from 'src/environments/environment';
+import { UserService } from '../../../services/user/user/user.service';
+import { RolService } from '../../../services/user/rol/rol.service';
+import { GeneralService } from '../../../services/general/general.service';
+import { environment } from '../../../../environments/environment';
 import Swal from 'sweetalert2';
 import moment from 'moment';
 import * as bootstrap from 'bootstrap';
-import { PermissionService } from 'src/app/services/user/permission/permission.service';
+import { PermissionService } from '../../../services/user/permission/permission.service';
+import { CompanyService } from '../../../services/companies/company/company.service';
+import { BranchService } from '../../../services/companies/branch/branch.service';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -21,8 +23,6 @@ export class UserComponent implements OnInit {
 
   public dataUser: any = [];
   public dataTransformada: any = [];
-  public fieldsTable: any = [];
-  public columnAlignments: any = [];
   public loading: boolean = true;
   public showForm: boolean = false;
   public formUser!: FormGroup;
@@ -55,13 +55,18 @@ export class UserComponent implements OnInit {
     page: 1,
     pageSize: 10
   };
+  public dataCompany: any = [];
+  public dataBranch: any = [];
+  public loadingBranch: boolean = false;
 
   constructor(
     private userService: UserService,
     private rolService: RolService,
     private permissionService: PermissionService,
     private generalService: GeneralService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private companyService: CompanyService,
+    private branchService: BranchService
   ) { }
 
 
@@ -77,13 +82,14 @@ export class UserComponent implements OnInit {
       password: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(20)]],
       image_profile: [null],
       is_disabled: [true],
-      rol_id: [null, Validators.required]
+      rol_id: [{}, Validators.required],
+      company_id: [{}, Validators.required],
+      branch_id: [{ value: {}, disabled: true }, Validators.required],
     });
     this.listPermission();
   }
 
   private async getDataUser(params: any): Promise<any> {
-    this.loadingTable = true;
     return new Promise((resolve, reject) => {
       this.userService.getDataUser(params).subscribe(
         response => {
@@ -91,12 +97,10 @@ export class UserComponent implements OnInit {
           this.dataUser = response.data;
           this.dataTransformada = this.formatedData(response.data);
           resolve(this.dataTransformada)
-          this.checkPermissionsButton();
-          this.loadingTable = false;
+          this.loading = false;
         },
         error => {
           reject(error);
-          this.loadingTable = false; // Asegúrate de ocultar el spinner en caso de error
         }
       );
     });
@@ -125,11 +129,11 @@ export class UserComponent implements OnInit {
     });
   }
 
-  private getFieldsTable() {
+  public getFieldsTable() {
     return ['Nombres', 'Usuario', 'Correo', 'Foto'];
   }
 
-  private getColumnAlignments() {
+  public getColumnAlignments() {
     return ['left', 'left', 'left', 'center'];
   }
 
@@ -170,6 +174,8 @@ export class UserComponent implements OnInit {
     this.dataPermissionSelected = [];
     this.permissionSuggested = [];
     this.selectAllCheck = true;
+    this.selectedFile = '';
+    this.goToPreviewTab();
   }
 
   public backToTable() {
@@ -186,9 +192,12 @@ export class UserComponent implements OnInit {
         password: this.formUser.get('password')?.value,
         rol_id: this.formUser.get('rol_id')?.value,
         image_profile: this.selectedFile || null,
-        is_disabled: this.formUser.get('is_disabled')?.value,
+        is_disabled: (this.formUser.get('is_disabled')?.value === null) ? false : this.formUser.get('is_disabled')?.value,
+        company_id: this.formUser.get('company_id')?.value,
+        branch_id: this.formUser.get('branch_id')?.value,
         permissions: this.dataPermissionSelected
       };
+
       if (this.action === 'save') {
         this.saveNewUser(data);
       }
@@ -204,30 +213,23 @@ export class UserComponent implements OnInit {
     this.userService.sendUser(data).subscribe({
       next: (response) => {
         if (response.original.success) {
-          this.dataUser = response.original.data;
-          if (Array.isArray(this.dataUser)) {
-            this.dataTransformada = this.formatedData(this.dataUser);
-          } else {
-            this.dataTransformada = [];
-          }
-
-          this.loading = false;
+          this.onFetchData(this.parameterDefect);
+          this.resetForms();
           this.showForm = false;
-          this.generalService.alertMessage('¡Éxito!', response.original.message, 'success');
+          this.loading = false;
+          this.generalService.alertMessage('¡Éxito!', response.original?.message || 'Operación exitosa', 'success');
         } else {
           this.loading = false;
-          this.generalService.alertMessage('Advertencia', response.original.message, 'warning');
+          this.generalService.alertMessage(
+            '¡Ups! Algo salió mal',
+            'Tuvimos un problema al procesar tu solicitud. Por favor, inténtalo de nuevo o contacta a nuestro equipo de soporte si el problema persiste. ¡Estamos aquí para ayudarte!',
+            'warning'
+          );
         }
       },
       error: (error) => {
         this.loading = false;
-        // Verifica si hay errores de validación
-        if (error.error && error.error.errors) {
-          const validationErrors = this.formatValidationErrors(error.error.errors);
-          this.generalService.alertMessage('Error de validación', validationErrors, 'error');
-        } else {
-          this.generalService.alertMessage('Error', 'Hubo un problema al procesar tu solicitud. Por favor, inténtalo de nuevo.', 'error');
-        }
+        this.generalService.alertMessage('Error', 'Hubo un problema al procesar tu solicitud. Por favor, inténtalo de nuevo.', 'error');
       }
     });
   }
@@ -236,22 +238,19 @@ export class UserComponent implements OnInit {
     this.loading = true;
     this.userService.editUser(data, id).subscribe({
       next: (response) => {
-        if (response && response.original.data) {
-          this.dataUser = response.original.data;
-
-          if (Array.isArray(this.dataUser)) {
-            this.dataPermissionSelected = [];
-            this.dataTransformada = this.formatedData(this.dataUser);
-            this.resetForms();
-          } else {
-            this.dataTransformada = [];
-          }
+        if (response.original.success) {
+          this.onFetchData(this.parameterDefect);
+          this.resetForms();
           this.showForm = false;
           this.loading = false;
-          this.generalService.alertMessage('¡Éxito!', response.original.message, 'success');
+          this.generalService.alertMessage('¡Éxito!', response.original?.message || 'Operación exitosa', 'success');
         } else {
           this.loading = false;
-          this.generalService.alertMessage('Advertencia', response.original.message, 'warning');
+          this.generalService.alertMessage(
+            '¡Ups! Algo salió mal',
+            'Tuvimos un problema al procesar tu solicitud. Por favor, inténtalo de nuevo o contacta a nuestro equipo de soporte si el problema persiste. ¡Estamos aquí para ayudarte!',
+            'warning'
+          );
         }
       },
       error: (error) => {
@@ -428,39 +427,30 @@ export class UserComponent implements OnInit {
 
   async getRol(): Promise<void> {
     try {
-      // Convierte el observable en una promesa
-      const response = await this.rolService.getDataRoles().toPromise();
-      this.dataRol = response.original;
+      let response: any;
+      response = await this.rolService.listRol().toPromise();
+      this.dataRol = response?.data;
       this.filteredRoles = this.dataRol;
-      this.fieldsTable = this.getFieldsTable();
-      this.columnAlignments = this.getColumnAlignments();
-      this.dataTransformada = await this.getDataUser(this.parameterDefect);
+      this.dataCompany = await this.getCompanyData();
     } catch (error: any) {
       console.error('Error al obtener roles:', error.message);
-      // Maneja el error según sea necesario
     }
   }
 
-  checkPermissionsButton() {
-    const permissions = JSON.parse(localStorage.getItem('permissions') || '[]');
-    for (const group of permissions) {
-      for (const module of group.modules) {
-        if (module.module_name === 'Usuarios') {
-          module.permissions.forEach((perm: any) => {
-            if (perm.name === 'Crear') {
-              this.showAddButton = true;
-            }
-            if (perm.name === 'Importar') {
-              this.showImportButton = true;
-            }
-            if (perm.name === 'Exportar') {
-              this.showExportButton = true;
-            }
-          });
+  async getCompanyData(): Promise<void> {
+    try {
+      this.branchService.getListCompany().subscribe(
+        async response => {
+          this.dataCompany = response;
+          this.dataTransformada = await this.getDataUser(this.parameterDefect);
+        },
+        error => {
+          console.log(error.message);
         }
-      }
+      );
+    } catch (error: any) {
+      console.error('Error al obtener roles:', error.message);
     }
-    this.loading = false;
   }
 
   getModulesByGroup(groupId: number) {
@@ -636,21 +626,23 @@ export class UserComponent implements OnInit {
     this.formUser.get('rol_id')?.reset();
   }
 
+  clearSelectionCompany(): void {
+    this.formUser.get('company_id')?.reset();
+    this.formUser.get('company_id')?.markAsTouched();
+    this.formUser.controls['branch_id'].disable();
+    this.dataBranch = [];
+  }
+
+  clearSelectionBranch(): void {
+    this.formUser.get('branch_id')?.reset();
+    this.formUser.get('branch_id')?.markAsTouched();
+  }
+
   async onFileSelected(event: any) {
     const file = event.target.files[0];
     if (file) {
       this.selectedFile = await this.generalService.convertToBase64Files(file);
     }
-  }
-
-  private formatValidationErrors(errors: any): string {
-    let errorMessage = '';
-    for (const key in errors) {
-      if (errors.hasOwnProperty(key)) {
-        errorMessage += `${errors[key].join(' ')}\n`;
-      }
-    }
-    return errorMessage.trim();
   }
 
   async handleAction(event: { id: number, action: string }) {
@@ -693,8 +685,11 @@ export class UserComponent implements OnInit {
         this.formUser.controls["username"].setValue(this.dataTemp.username);
         this.formUser.controls["email"].setValue(this.dataTemp.email);
         this.formUser.controls["rol_id"].setValue(this.dataTemp.rol_id);
+        this.formUser.controls["company_id"].setValue(this.dataTemp.company_id);
+        this.formUser.controls["branch_id"].setValue(this.dataTemp.branch_id);
         this.formUser.controls["is_disabled"].setValue((this.dataTemp.is_disabled === 1) ? true : false);
 
+        this.getBranchByCompany(this.dataTemp.company_id);
         // Marcar los controles como tocados y verificar su validez
         this.formUser.markAllAsTouched();
 
@@ -724,8 +719,7 @@ export class UserComponent implements OnInit {
         const action = data.is_disabled === 0 ? 'enable' : 'disable';
         this.actionMap[action](data.id).subscribe({
           next: (response: any) => {
-            this.dataUser = response.data;
-            this.dataTransformada = this.formatedData(this.dataUser);
+            this.onFetchData(this.parameterDefect);
             this.loading = false;
             this.generalService.alertMessage('¡Éxito!', successMessage, 'success');
           },
@@ -804,20 +798,26 @@ export class UserComponent implements OnInit {
       this.dataTransformada = this.formatedData(response.data, true);
       this.dataUser = response.data;
       this.totalRecord = response.total;
-      if (response.data.length === 0) {
-        this.fieldsTable = ["No se encontraron resultados"];
-        this.columnAlignments = ["center"];
-        this.acciones = false;
-      } else {
-        this.fieldsTable = this.getFieldsTable();
-        this.columnAlignments = this.getColumnAlignments();
-        this.acciones = true;
-      }
       this.loadingTable = false;
     }, (error) => {
       this.loadingTable = false;
       console.error('Error fetching data', error);
     });
+  }
+
+  public getBranchByCompany(id: any) {
+    this.loadingBranch = true;
+    this.branchService.getCompanyByBranch(id).subscribe(
+      async response => {
+        this.dataBranch = response;
+        this.loadingBranch = false;
+        this.formUser.controls['branch_id'].enable();
+      },
+      error => {
+        console.log(error.message);
+        this.loadingBranch = true;
+      }
+    );
   }
 
 }

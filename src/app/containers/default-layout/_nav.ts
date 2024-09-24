@@ -24,10 +24,10 @@ export function getNavItemsFromPermissions(): [INavData[], boolean] {
 
     group.modules.forEach((module: any) => {
       // Verificar permisos del módulo
-      const hasVerPermission = module.permissions.some((permission: any) => permission.module_name === 'Ver');
+      const hasVerPermission = module.permissions.some((permission: any) => permission.name === 'Ver');
 
-      // Solo añadir el módulo si no tiene el permiso de 'Ver'
-      if (!hasVerPermission) {
+      // Solo añadir el módulo si tiene el permiso de 'Ver'
+      if (hasVerPermission) {
         navItems.push({
           name: module.module_name,
           url: module.module_url,

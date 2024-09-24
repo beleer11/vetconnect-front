@@ -1,13 +1,20 @@
-import { Component, Input, OnInit, OnChanges, Output, EventEmitter, SimpleChanges } from '@angular/core';
-import { PermissionService } from 'src/app/services/user/permission/permission.service';
+import {
+  Component,
+  Input,
+  OnInit,
+  OnChanges,
+  Output,
+  EventEmitter,
+  SimpleChanges,
+} from '@angular/core';
+import { PermissionService } from '../../services/user/permission/permission.service';
 
 @Component({
   selector: 'app-general-table',
   templateUrl: './general-table.component.html',
-  styleUrls: ['./general-table.component.css']
+  styleUrls: ['./general-table.component.css'],
 })
 export class GeneralTableComponent implements OnInit, OnChanges {
-
   @Input() columns: string[] = [];
   @Input() transformedData: any[] = [];
   @Input() data: any[] = [];
@@ -15,25 +22,26 @@ export class GeneralTableComponent implements OnInit, OnChanges {
   @Input() columnAlignments: string[] = [];
   @Input() title: string = '';
   @Input() totalRecords: number = 0;
-  @Input() loadingTable: boolean = true;  // Cambiado a loadingTable
-  @Output() actionEvent: EventEmitter<{ id: number, action: string }> = new EventEmitter();
+  @Input() loadingTable: boolean = true;
+  @Output() actionEvent: EventEmitter<{ id: number; action: string }> =
+    new EventEmitter();
   @Output() fetchDataEvent: EventEmitter<any> = new EventEmitter();
 
   public searchValue: string = '';
   public currentSortColumn: string = '';
   public sortOrder: 'asc' | 'desc' = 'asc';
   public viewAcciones: boolean = false;
-  public isLoading: boolean = false;  // Esta es la propiedad que controla el spinner
+  public isLoading: boolean = false;
 
   // Paginador
   public currentPage: number = 1;
   public pageSize: number = 10;
   public totalPages: number = 0;
 
-  constructor(private permissionService: PermissionService) { }
+  constructor(private permissionService: PermissionService) {}
 
   ngOnInit(): void {
-    this.acciones = this.hasAnyRequiredPermission();
+    this.hasAnyRequiredPermission();
     if (this.columns.length > 0) {
       this.currentSortColumn = this.columns[0];
     }
@@ -42,6 +50,10 @@ export class GeneralTableComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    if (changes['title'] || changes['acciones']) {
+      this.hasAnyRequiredPermission();
+    }
+
     if (changes['loadingTable']) {
       this.isLoading = changes['loadingTable'].currentValue;
     }
@@ -72,7 +84,11 @@ export class GeneralTableComponent implements OnInit, OnChanges {
   }
 
   sortColumn(column: string): void {
-    if (column === 'Foto' || column === 'Icono') {
+    if (
+      column === 'Foto' ||
+      column === 'Icono' ||
+      column === 'No se encontraron resultados'
+    ) {
       return;
     }
     if (this.currentSortColumn === column) {
@@ -113,11 +129,7 @@ export class GeneralTableComponent implements OnInit, OnChanges {
   }
 
   hasAnyRequiredPermission(): boolean {
-    return (
-      this.hasPermission('Ver') ||
-      this.hasPermission('Editar') ||
-      this.hasPermission('Eliminar')
-    );
+    return this.hasPermission('Editar') || this.hasPermission('Eliminar');
   }
 
   emitFetchDataEvent(): void {
@@ -126,7 +138,7 @@ export class GeneralTableComponent implements OnInit, OnChanges {
       sortColumn: this.currentSortColumn,
       sortOrder: this.sortOrder,
       page: this.currentPage,
-      pageSize: this.pageSize
+      pageSize: this.pageSize,
     };
     this.fetchDataEvent.emit(params);
   }

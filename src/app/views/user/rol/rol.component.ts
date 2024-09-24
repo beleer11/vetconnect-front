@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import moment from 'moment';
-import { UserService } from 'src/app/services/user/user/user.service';
-import { RolService } from 'src/app/services/user/rol/rol.service';
+import { UserService } from '../../../services/user/user/user.service';
+import { RolService } from '../../../services/user/rol/rol.service';
 import Swal from 'sweetalert2';
 import * as bootstrap from 'bootstrap';
 import { Observable } from 'rxjs';
-import { GeneralService } from 'src/app/services/general/general.service';
+import { GeneralService } from '../../../services/general/general.service';
 
 @Component({
   selector: 'app-rol',
@@ -14,8 +14,8 @@ import { GeneralService } from 'src/app/services/general/general.service';
   styleUrls: ['./rol.component.css']
 })
 export class RolComponent implements OnInit {
-  public dataModule: any = [];
-  public dataModuleTrasnform: any = [];
+  public dataRol: any = [];
+  public dataRolTrasnform: any = [];
   public fieldsTable: any = [];
   public columnAlignments: any = [];
   public showForm: boolean = false;
@@ -30,6 +30,16 @@ export class RolComponent implements OnInit {
   public showAddButton: boolean = false;
   public showImportButton: boolean = false;
   public showExportButton: boolean = false;
+  public totalRecord: number = 0;
+  public loadingTable: boolean = false;
+  public acciones: boolean = true;
+  public parameterDefect = {
+    search: '',
+    sortColumn: 'name',
+    sortOrder: 'desc',
+    page: 1,
+    pageSize: 10
+  };
 
   constructor(
     private userService: UserService,
@@ -39,15 +49,16 @@ export class RolComponent implements OnInit {
   ) { }
 
   async ngOnInit() {
-    this.dataModuleTrasnform = await this.getData();
+    this.createForm();
+    this.dataRolTrasnform = await this.getData();
     this.fieldsTable = this.getFieldsTable();
     this.columnAlignments = this.getColumnAlignments();
     this.loading = false;
-    this.createForm();
   }
 
   public addRole() {
     this.action = 'save';
+    this.showForm = true;
     this.resetForms();
   }
 
@@ -61,12 +72,13 @@ export class RolComponent implements OnInit {
     this.textSelectAll = 'Seleccionar todo';
     this.dataPermissionSelected = [];
     this.selectAllCheck = true;
+    this.goToPreviewTab();
   }
 
   handleAction(event: { id: number, action: string }) {
     const { id, action } = event;
     this.action = action;
-    this.dataTemp = this.dataModule.find((item: any) => item.id === id);
+    this.dataTemp = this.dataRol.find((item: any) => item.id === id);
 
     if (action === "edit") {
       this.loading = true;
@@ -98,24 +110,31 @@ export class RolComponent implements OnInit {
 
   private async getData(): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.rolService.getDataRoles().subscribe(
+      this.rolService.getDataRoles(this.parameterDefect).subscribe(
         response => {
-          this.dataModule = response.original;
-          resolve(this.formatedData(response.original));
-          this.checkPermissionsButton();
+          this.dataRol = response.data;
+          this.totalRecord = response.total;
+          resolve(this.formatedData(response.data));
+          this.loadingTable = false;
         },
         error => reject(error)
       );
     });
   }
 
-  public formatedData(response: any) {
+  public formatedData(response: any, fecth = false) {
+    if (response.length === 0 && fecth) {
+      // Devuelve un mensaje personalizado cuando no hay datos
+      return [{
+        "No se encontraron resultados": "No se encontraron registros que coincidan con los criterios de búsqueda. Intente con otros términos.",
+      }];
+    }
     return response.map((item: any) => {
       return {
         id: item.id,
         is_disabled: item.is_disabled,
         "Nombre": item.name,
-        "Descripcion": item.description,
+        "Descripción": item.description,
         "Fecha creación": moment(item.created_at).format('DD/MM/YYYY hh:mm:ss A'),
         "Ultima actualización": moment(item.updated_at).format('DD/MM/YYYY hh:mm:ss A')
       };
@@ -123,7 +142,7 @@ export class RolComponent implements OnInit {
   }
 
   private getFieldsTable() {
-    return ['Nombre', 'Descripcion', 'Fecha creación', 'Ultima actualización'];
+    return ['Nombre', 'Descripción', 'Fecha creación', 'Ultima actualización'];
   }
 
   private getColumnAlignments() {
@@ -161,24 +180,23 @@ export class RolComponent implements OnInit {
     this.rolService.sendRol(data).subscribe({
       next: (response) => {
         if (response.original.success) {
-          this.dataModule = response.original.data;
-          if (Array.isArray(this.dataModule)) {
-            this.dataPermissionSelected = [];
-            this.dataModuleTrasnform = this.formatedData(this.dataModule);
-          } else {
-            this.dataModuleTrasnform = [];
-          }
-          this.loading = false;
+          this.onFetchData(this.parameterDefect);
+          this.resetForms();
           this.showForm = false;
-          this.alertMessage('¡Éxito!', response.original.message, 'success');
+          this.loading = false;
+          this.generalService.alertMessage('¡Éxito!', response.original?.message || 'Operación exitosa', 'success');
         } else {
           this.loading = false;
-          this.alertMessage('Advertencia', response.original.message, 'warning');
+          this.generalService.alertMessage(
+            '¡Ups! Algo salió mal',
+            'Tuvimos un problema al procesar tu solicitud. Por favor, inténtalo de nuevo o contacta a nuestro equipo de soporte si el problema persiste. ¡Estamos aquí para ayudarte!',
+            'warning'
+          );
         }
       },
       error: (error) => {
         this.loading = false;
-        this.alertMessage('Error', 'Hubo un problema al procesar tu solicitud. Por favor, inténtalo de nuevo.', 'error');
+        this.generalService.alertMessage('Error', 'Hubo un problema al procesar tu solicitud. Por favor, inténtalo de nuevo.', 'error');
       }
     });
   }
@@ -187,36 +205,25 @@ export class RolComponent implements OnInit {
     this.loading = true;
     this.rolService.editRol(data, id).subscribe({
       next: (response) => {
-        if (response && response.original.data) {
-          this.dataModule = response.original.data;
-
-          if (Array.isArray(this.dataModule)) {
-            this.dataPermissionSelected = [];
-            this.dataModuleTrasnform = this.formatedData(this.dataModule);
-          } else {
-            this.dataModuleTrasnform = [];
-          }
+        if (response.original.success) {
+          this.onFetchData(this.parameterDefect);
+          this.resetForms();
           this.showForm = false;
           this.loading = false;
-          this.alertMessage('¡Éxito!', response.original.message, 'success');
+          this.generalService.alertMessage('¡Éxito!', response.original?.message || 'Operación exitosa', 'success');
         } else {
           this.loading = false;
-          this.alertMessage('Advertencia', response.original.message, 'warning');
+          this.generalService.alertMessage(
+            '¡Ups! Algo salió mal',
+            'Tuvimos un problema al procesar tu solicitud. Por favor, inténtalo de nuevo o contacta a nuestro equipo de soporte si el problema persiste. ¡Estamos aquí para ayudarte!',
+            'warning'
+          );
         }
       },
       error: (error) => {
         this.loading = false;
-        this.alertMessage('Error', 'Hubo un problema al procesar tu solicitud. Por favor, inténtalo de nuevo.', 'error');
+        this.generalService.alertMessage('Error', 'Hubo un problema al procesar tu solicitud. Por favor, inténtalo de nuevo.', 'error');
       }
-    });
-  }
-
-  public alertMessage(title: any, text: any, icon: any) {
-    Swal.fire({
-      title: title,
-      text: text,
-      icon: icon,
-      confirmButtonText: 'OK'
     });
   }
 
@@ -383,14 +390,13 @@ export class RolComponent implements OnInit {
         this.loading = true;
         this.rolService.deleteRecordById(id).subscribe({
           next: (response) => {
-            this.dataModule = response.data;
-            this.dataModuleTrasnform = this.formatedData(this.dataModule);
+            this.onFetchData(this.parameterDefect);
             this.loading = false;
-            this.alertMessage('¡Eliminado!', 'El registro ha sido eliminado correctamente.', 'success');
+            this.generalService.alertMessage('¡Eliminado!', 'El registro ha sido eliminado correctamente.', 'success');
           },
           error: (error) => {
             this.loading = false;
-            this.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.', 'error');
+            this.generalService.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.', 'error');
           }
         });
       }
@@ -416,14 +422,13 @@ export class RolComponent implements OnInit {
         const action = data.is_disabled === 0 ? 'enable' : 'disable';
         this.actionMap[action](data.id).subscribe({
           next: (response) => {
-            this.dataModule = response.data;
-            this.dataModuleTrasnform = this.formatedData(this.dataModule);
+            this.onFetchData(this.parameterDefect);
             this.loading = false;
-            this.alertMessage('¡Éxito!', successMessage, 'success');
+            this.generalService.alertMessage('¡Éxito!', successMessage, 'success');
           },
           error: (error) => {
             this.loading = false;
-            this.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.', 'error');
+            this.generalService.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.', 'error');
           }
         });
       }
@@ -481,25 +486,26 @@ export class RolComponent implements OnInit {
     this.generalService.alertMessageInCreation();
   }
 
-  checkPermissionsButton() {
-    const permissions = JSON.parse(localStorage.getItem('permissions') || '[]');
-    for (const group of permissions) {
-      for (const module of group.modules) {
-        if (module.module_name === 'Roles') {
-          module.permissions.forEach((perm: any) => {
-            if (perm.name === 'Crear') {
-              this.showAddButton = true;
-            }
-            if (perm.name === 'Importar') {
-              this.showImportButton = true;
-            }
-            if (perm.name === 'Exportar') {
-              this.showExportButton = true;
-            }
-          });
-        }
+  onFetchData(params: any): void {
+    this.loadingTable = true;
+    this.rolService.getDataRoles(params).subscribe((response) => {
+      this.dataRolTrasnform = this.formatedData(response.data, true);
+      this.dataRol = response.data;
+      this.totalRecord = response.total;
+      if (response.data.length === 0) {
+        this.fieldsTable = ["No se encontraron resultados"];
+        this.columnAlignments = ["center"];
+        this.acciones = false;
+      } else {
+        this.fieldsTable = this.getFieldsTable();
+        this.columnAlignments = this.getColumnAlignments();
+        this.acciones = true;
       }
-    }
+      this.loadingTable = false;
+    }, (error) => {
+      this.loadingTable = false;
+      console.error('Error fetching data', error);
+    });
   }
 
 }

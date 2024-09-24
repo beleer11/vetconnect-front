@@ -144,6 +144,19 @@
     color: rgba(0, 0, 0, 0.54);
 }
 
+.spinner {
+    position: absolute;
+    top: 70%;
+    right: 35px;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    outline: none;
+    padding: 0;
+    cursor: pointer;
+    color: rgba(0, 0, 0, 0.54);
+}
+
 .clear-icon:hover {
     color: rgba(0, 0, 0, 0.87);
 }

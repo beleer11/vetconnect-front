@@ -11,7 +11,7 @@ $primary: #007bff;
 .btn-float {
   position: fixed;
   bottom: 52px; /* Distancia desde la parte inferior */
-  right: 20px; /* Distancia desde la parte derecha */
+  right: 10px; /* Distancia desde la parte derecha */
   z-index: 1000; /* Para asegurarte de que esté por encima de otros elementos */
   border-radius: 50%; /* Para hacer el botón circular */
   width: 65px; /* Tamaño del botón */

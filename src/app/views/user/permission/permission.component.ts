@@ -4,7 +4,8 @@ import moment from 'moment';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { Observable } from 'rxjs';
-import { GeneralService } from 'src/app/services/general/general.service';
+import { GeneralService } from '../../../services/general/general.service';
+import { UserService } from '../../../services/user/user/user.service';
 
 @Component({
   selector: 'app-permission',
@@ -13,8 +14,8 @@ import { GeneralService } from 'src/app/services/general/general.service';
 })
 export class PermissionComponent implements OnInit {
   public loading: boolean = true;
-  public dataModuleTrasnform: any = [];
-  public dataModule: any = [];
+  public dataPermissionTrasnform: any = [];
+  public dataPermission: any = [];
   public fieldsTable: any = [];
   public columnAlignments: any = [];
   public showForm: boolean = false;
@@ -24,34 +25,53 @@ export class PermissionComponent implements OnInit {
   public showAddButton: boolean = false;
   public showImportButton: boolean = false;
   public showExportButton: boolean = false;
+  public totalRecord: number = 0;
+  public loadingTable: boolean = false;
+  public acciones: boolean = true;
+  public parameterDefect = {
+    search: '',
+    sortColumn: 'name',
+    sortOrder: 'desc',
+    page: 1,
+    pageSize: 10
+  };
 
   constructor(
+    private userService: UserService,
     private permissionService: PermissionService,
     private fb: FormBuilder,
     private generalService: GeneralService
   ) { }
 
   async ngOnInit(): Promise<void> {
-    this.dataModuleTrasnform = await this.getData();
+    this.createForm();
+    this.dataPermissionTrasnform = await this.getData();
     this.fieldsTable = this.getFieldsTable();
     this.columnAlignments = this.getColumnAlignments();
-    this.createForm();
+    this.loading = false;
   }
 
   private async getData(): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.permissionService.getDataPermission().subscribe(
+      this.permissionService.getDataPermission(this.parameterDefect).subscribe(
         response => {
-          this.dataModule = response;
-          resolve(this.formatedData(response));
-          this.checkPermissionsButton();
+          this.dataPermission = response.data;
+          this.totalRecord = response.total;
+          resolve(this.formatedData(response.data));
+          this.loadingTable = false;
         },
         error => reject(error)
       );
     });
   }
 
-  public formatedData(response: any) {
+  public formatedData(response: any, fetch = false) {
+    if (response.length === 0 && fetch) {
+      // Devuelve un mensaje personalizado cuando no hay datos
+      return [{
+        "No se encontraron resultados": "No se encontraron registros que coincidan con los criterios de búsqueda. Intente con otros términos.",
+      }];
+    }
     return response.map((item: any) => {
       return {
         id: item.id,
@@ -75,7 +95,6 @@ export class PermissionComponent implements OnInit {
     this.formPermission = this.fb.group({
       nombre: ['', [Validators.required, Validators.minLength(3)]],
     });
-    this.loading = false;
   }
 
   public addNewPermission() {
@@ -92,7 +111,7 @@ export class PermissionComponent implements OnInit {
   handleAction(event: { id: number, action: string }) {
     const { id, action } = event;
     this.action = action;
-    this.dataTemp = this.dataModule.find((item: any) => item.id === id);
+    this.dataTemp = this.dataPermission.find((item: any) => item.id === id);
 
     if (action === "edit") {
       this.loading = true;
@@ -132,24 +151,23 @@ export class PermissionComponent implements OnInit {
     this.permissionService.sendPermission({ "name": nombre }).subscribe({
       next: (response) => {
         if (response.original.success) {
-          this.dataModule = response.original.data;
-          if (Array.isArray(this.dataModule)) {
-            this.dataModuleTrasnform = this.formatedData(this.dataModule);
-          } else {
-            this.dataModuleTrasnform = [];
-          }
-
+          this.onFetchData(this.parameterDefect);
+          this.formPermission.reset();
           this.showForm = false;
           this.loading = false;
-          this.alertMessage('¡Éxito!', response.original.message, 'success');
+          this.generalService.alertMessage('¡Éxito!', response.original?.message || 'Operación exitosa', 'success');
         } else {
           this.loading = false;
-          this.alertMessage('Advertencia', response.original.message, 'warning');
+          this.generalService.alertMessage(
+            '¡Ups! Algo salió mal',
+            'Tuvimos un problema al procesar tu solicitud. Por favor, inténtalo de nuevo o contacta a nuestro equipo de soporte si el problema persiste. ¡Estamos aquí para ayudarte!',
+            'warning'
+          );
         }
       },
       error: (error) => {
         this.loading = false;
-        this.alertMessage('Error', 'Hubo un problema al procesar tu solicitud. Por favor, inténtalo de nuevo.', 'error');
+        this.generalService.alertMessage('Error', 'Hubo un problema al procesar tu solicitud. Por favor, inténtalo de nuevo.', 'error');
       }
     });
   }
@@ -158,36 +176,25 @@ export class PermissionComponent implements OnInit {
     this.loading = true;
     this.permissionService.editPermission({ "name": nombre }, id).subscribe({
       next: (response) => {
-        if (response && response.original.data) {
-          this.dataModule = response.original.data;
-
-          if (Array.isArray(this.dataModule)) {
-            this.dataModuleTrasnform = this.formatedData(this.dataModule);
-          } else {
-            this.dataModuleTrasnform = [];
-          }
-
+        if (response.original.success) {
+          this.onFetchData(this.parameterDefect);
+          this.formPermission.reset();
           this.showForm = false;
           this.loading = false;
-          this.alertMessage('¡Éxito!', response.original.message, 'success');
+          this.generalService.alertMessage('¡Éxito!', response.original?.message || 'Operación exitosa', 'success');
         } else {
           this.loading = false;
-          this.alertMessage('Advertencia', response.original.message, 'warning');
+          this.generalService.alertMessage(
+            '¡Ups! Algo salió mal',
+            'Tuvimos un problema al procesar tu solicitud. Por favor, inténtalo de nuevo o contacta a nuestro equipo de soporte si el problema persiste. ¡Estamos aquí para ayudarte!',
+            'warning'
+          );
         }
       },
       error: (error) => {
         this.loading = false;
-        this.alertMessage('Error', 'Hubo un problema al procesar tu solicitud. Por favor, inténtalo de nuevo.', 'error');
+        this.generalService.alertMessage('Error', 'Hubo un problema al procesar tu solicitud. Por favor, inténtalo de nuevo.', 'error');
       }
-    });
-  }
-
-  public alertMessage(title: any, text: any, icon: any) {
-    Swal.fire({
-      title: title,
-      text: text,
-      icon: icon,
-      confirmButtonText: 'OK'
     });
   }
 
@@ -206,14 +213,13 @@ export class PermissionComponent implements OnInit {
         this.loading = true;
         this.permissionService.deleteRecordById(id).subscribe({
           next: (response) => {
-            this.dataModule = response.data;
-            this.dataModuleTrasnform = this.formatedData(this.dataModule);
+            this.onFetchData(this.parameterDefect);
             this.loading = false;
-            this.alertMessage('¡Eliminado!', 'El registro ha sido eliminado correctamente.', 'success');
+            this.generalService.alertMessage('¡Eliminado!', 'El registro ha sido eliminado correctamente.', 'success');
           },
           error: (error) => {
             this.loading = false;
-            this.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.', 'error');
+            this.generalService.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.', 'error');
           }
         });
       }
@@ -239,14 +245,13 @@ export class PermissionComponent implements OnInit {
         const action = data.is_disabled === 0 ? 'enable' : 'disable';
         this.actionMap[action](data.id).subscribe({
           next: (response) => {
-            this.dataModule = response.data;
-            this.dataModuleTrasnform = this.formatedData(this.dataModule);
+            this.onFetchData(this.parameterDefect);
             this.loading = false;
-            this.alertMessage('¡Éxito!', successMessage, 'success');
+            this.generalService.alertMessage('¡Éxito!', successMessage, 'success');
           },
           error: (error) => {
             this.loading = false;
-            this.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.', 'error');
+            this.generalService.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.', 'error');
           }
         });
       }
@@ -295,27 +300,6 @@ export class PermissionComponent implements OnInit {
     this.generalService.alertMessageInCreation();
   }
 
-  checkPermissionsButton() {
-    const permissions = JSON.parse(localStorage.getItem('permissions') || '[]');
-    for (const group of permissions) {
-      for (const module of group.modules) {
-        if (module.module_name === 'Permisos') {
-          module.permissions.forEach((perm: any) => {
-            if (perm.name === 'Crear') {
-              this.showAddButton = true;
-            }
-            if (perm.name === 'Importar') {
-              this.showImportButton = true;
-            }
-            if (perm.name === 'Exportar') {
-              this.showExportButton = true;
-            }
-          });
-        }
-      }
-    }
-  }
-
   getValidationClass(controlName: string): { [key: string]: any } {
     const control = this.formPermission.get(controlName);
     return {
@@ -324,5 +308,25 @@ export class PermissionComponent implements OnInit {
     };
   }
 
-
+  onFetchData(params: any): void {
+    this.loadingTable = true;
+    this.permissionService.getDataPermission(params).subscribe((response) => {
+      this.dataPermissionTrasnform = this.formatedData(response.data, true);
+      this.dataPermission = response.data;
+      this.totalRecord = response.total;
+      if (response.data.length === 0) {
+        this.fieldsTable = ["No se encontraron resultados"];
+        this.columnAlignments = ["center"];
+        this.acciones = false;
+      } else {
+        this.fieldsTable = this.getFieldsTable();
+        this.columnAlignments = this.getColumnAlignments();
+        this.acciones = true;
+      }
+      this.loadingTable = false;
+    }, (error) => {
+      this.loadingTable = false;
+      console.error('Error fetching data', error);
+    });
+  }
 }
