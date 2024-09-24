@@ -22,11 +22,8 @@ export class CompanyComponent implements OnInit {
   public formCompany!: FormGroup;
   public action: string = 'save';
   public dataTemp: any = [];
+  public selectedFile: any;
   public loading: boolean = true;
-  public dataPermission: any = [];
-  public dataPermissionSelected: any = [];
-  public textSelectAll: string = 'Seleccionar todo';
-  public selectAllCheck: boolean = true;
   public showAddButton: boolean = false;
   public showImportButton: boolean = false;
   public showExportButton: boolean = false;
@@ -56,7 +53,7 @@ export class CompanyComponent implements OnInit {
   }
 
   getTextClass() {
-    return this.formCompany.get('is_disabled')?.value ? 'text-success' : 'text-red';
+    return this.formCompany.get('is_active')?.value ? 'text-success' : 'text-red';
   }
 
   async ngOnInit() {
@@ -68,10 +65,15 @@ export class CompanyComponent implements OnInit {
   }
 
   resetForms() {
+    this.selectedFile = '';
     this.formCompany.reset();
-    this.textSelectAll = 'Seleccionar todo';
-    this.dataPermissionSelected = [];
-    this.selectAllCheck = true;
+  }
+
+  async onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFile = await this.generalService.convertToBase64Files(file);
+    }
   }
 
   handleAction(event: { id: number; action: string }) {
@@ -121,7 +123,6 @@ export class CompanyComponent implements OnInit {
 
   public formatedData(response: any, fecth = false) {
     if (response.length === 0 && fecth) {
-      // Devuelve un mensaje personalizado cuando no hay datos
       return [{
         "No se encontraron resultados": "No se encontraron registros que coincidan con los criterios de búsqueda. Intente con otros términos.",
       }];
@@ -129,16 +130,16 @@ export class CompanyComponent implements OnInit {
     return response.map((item: any) => {
       return {
         id: item.id,
-        is_disabled: item.is_disabled,
-        "Nombre": item.name,
-        "Correo": item.email,
+        Nombre: item.name,
+        "Correo electrónico": item.email,
         "Razón social": item.legal_representative,
+        is_disabled: item.is_active,
       };
     });
   }
 
   private getFieldsTable() {
-    return ['Nombre', 'Correo', 'Razón social'];
+    return ['Nombre', 'Correo electrónico', 'Razón social'];
   }
 
   private getColumnAlignments() {
@@ -156,66 +157,115 @@ export class CompanyComponent implements OnInit {
 
   public createForm() {
     this.formCompany = this.fb.group({
-      nombre: ['', [Validators.required, Validators.minLength(3)]],
+      name: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
       logo: [''],
-      razon_social: ['', Validators.required, Validators.minLength(3)],
+      business_name: ['', [Validators.required, Validators.minLength(3)]],
       phone: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(15)]],
       nit: ['', [Validators.required]],
-      representante_legal: ['', [Validators.required, Validators.minLength(3)]],
-      is_disabled: [false, [Validators.required]],
+      legal_representative: ['', [Validators.required, Validators.minLength(3)]],
+      is_active: [false],
     });
   }
 
   onSubmit() {
     if (this.formCompany.valid) {
       let data = {
-        nombre: this.formCompany.get('nombre')?.value,
+        name: this.formCompany.get('name')?.value,
         email: this.formCompany.get('email')?.value,
-        logo: this.formCompany.get('logo')?.value,
-        razon_social: this.formCompany.get('razonSocial')?.value,
-        telefono: this.formCompany.get('telefono')?.value,
-        nit: this.formCompany.get('nit')?.value,
-        representante_legal: this.formCompany.get('representante')?.value,
+        logo: this.selectedFile || null,
+        business_name: this.formCompany.get('business_name')?.value,
+        phone: this.formCompany.get('phone')?.value,
+        tax_id: this.formCompany.get('nit')?.value,
+        legal_representative: this.formCompany.get('legal_representative')?.value,
+        is_active:
+          this.formCompany.get('is_active')?.value === null
+            ? false
+            : this.formCompany.get('is_active')?.value,
       };
-      console.log(data);
+
       if (this.action === 'save') {
         this.saveNewCompany(data);
       }
+      /*
       if (this.action === 'edit') {
         this.editCompany(data, this.dataTemp.id);
-      }
+      }*/
     }
   }
 
-  goToNextTab() {
-    const tabTriggerEl = document.querySelector('#permissions-tab') as HTMLElement;
-    const tab = new bootstrap.Tab(tabTriggerEl);
-    tab.show();
+  async setDataForm(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      try {
+        this.formCompany.controls['name'].setValue(this.dataTemp.name);
+        this.formCompany.controls['email'].setValue(this.dataTemp.email);
+        this.formCompany.controls['business_name'].setValue(this.dataTemp.business_name);
+        this.formCompany.controls['phone'].setValue(this.dataTemp.phone);
+        this.formCompany.controls['nit'].setValue(this.dataTemp.tax_id);
+        this.formCompany.controls['legal_representative'].setValue(this.dataTemp.legal_representative);
+        this.formCompany.controls['is_active'].setValue(this.dataTemp.is_active === 1 ? true : false);
+        this.formCompany.markAllAsTouched();
+        resolve();
+      }
+      catch (error) {
+        reject(error);
+      }
+    })
   }
 
-  goToPreviewTab() {
-    const tabTriggerEl = document.querySelector('#general-tab') as HTMLElement;
-    const tab = new bootstrap.Tab(tabTriggerEl);
-    tab.show();
-  }
+  disableOrEnableRecord(data: any) {
+    const actionText = data.is_active === 0 ? 'habilitar' : 'inhabilitar';
+    const confirmButtonText =
+      data.is_active === 0 ? 'Sí, habilitar' : 'Sí, inhabilitar';
+    const successMessage =
+      data.is_active === 0
+        ? 'El registro ha sido habilitado correctamente.'
+        : 'El registro ha sido inhabilitado correctamente.';
 
+    Swal.fire({
+      title: `¿Deseas ${actionText} este registro ?, icon: 'question'`,
+      showCancelButton: true,
+      confirmButtonColor: '#f39c12',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: confirmButtonText,
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loading = true;
+        const action = data.is_active === 0 ? 'enable' : 'disable';
+        this.actionMap[action](data.id).subscribe({
+          next: (response: any) => {
+            this.onFetchData(this.parameterDefect);
+            this.loading = false;
+            this.generalService.alertMessage(
+              '¡Éxito!',
+              successMessage,
+              'success'
+            );
+          },
+          error: (error: any) => {
+            this.loading = false;
+            this.generalService.alertMessage(
+              'Error',
+              'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.',
+              'error'
+            );
+          },
+        });
+      }
+    });
+  }
 
   public saveNewCompany(data: any) {
     this.loading = true;
     this.companyService.sendCompany(data).subscribe({
       next: (response) => {
         if (response.original.success) {
-          this.dataCompany = response.original.data;
-          if (Array.isArray(this.dataCompany)) {
-            this.dataPermissionSelected = [];
-            this.dataCompanyTrasnform = this.formatedData(this.dataCompany);
-          } else {
-            this.dataCompanyTrasnform = [];
-          }
-          this.loading = false;
+          this.onFetchData(this.parameterDefect);
+          this.resetForms();
           this.showForm = false;
-          this.generalService.alertMessage('¡Éxito!', response.original.message, 'success');
+          this.loading = false;
+          this.generalService.alertMessage('¡Éxito!', response.original.message, 'success')
         } else {
           this.loading = false;
           this.generalService.alertMessage('Advertencia', response.original.message, 'warning');
@@ -232,21 +282,19 @@ export class CompanyComponent implements OnInit {
     this.loading = true;
     this.companyService.editCompany(data, id).subscribe({
       next: (response) => {
-        if (response && response.original.data) {
-          this.dataCompany = response.original.data;
-
-          if (Array.isArray(this.dataCompany)) {
-            this.dataPermissionSelected = [];
-            this.dataCompanyTrasnform = this.formatedData(this.dataCompany);
-          } else {
-            this.dataCompanyTrasnform = [];
-          }
+        if (response.original.success) {
+          this.onFetchData(this.parameterDefect);
+          this.resetForms();
           this.showForm = false;
           this.loading = false;
-          this.generalService.alertMessage('¡Éxito!', response.original.message, 'success');
+          this.generalService.alertMessage('¡Éxito!', response.original?.message || 'Operación exitosa', 'success');
         } else {
           this.loading = false;
-          this.generalService.alertMessage('Advertencia', response.original.message, 'warning');
+          this.generalService.alertMessage(
+            '¡Ups! Algo salió mal',
+            'Tuvimos un problema al procesar tu solicitud. Por favor, inténtalo de nuevo o contacta a nuestro equipo de soporte si el problema persiste. ¡Estamos aquí para ayudarte!',
+            'warning'
+          );
         }
       },
       error: (error) => {
@@ -295,19 +343,18 @@ export class CompanyComponent implements OnInit {
       title: 'Companía',
       html: `
         <div id="custom-icon-container">
-          <p><strong>Nombre: </strong> <span>${data.nombre}</span></p>
+          <p><strong>Nombre: </strong> <span>${data.name}</span></p>
           <p><strong>Correo electrónico: </strong> <span>${data.email}</span></p>
-          <p><strong>Razón Social: </strong> <span>${data.razon_social}</span></p>
-          <p><strong>Teléfono: </strong> <span>${data.telefono}</span></p>
-          <p><strong>NIT: </strong> <span>${data.nit}</span></p>
-          <p><strong>Representante Legal: </strong> <span>${data.representante_legal}</span></p>
+          <p><strong>Razón Social: </strong> <span>${data.business_name}</span></p>
+          <p><strong>Teléfono: </strong> <span>${data.phone}</span></p>
+          <p><strong>NIT: </strong> <span>${data.tax_id}</span></p>
+          <p><strong>Representante Legal: </strong> <span>${data.legal_representative}</span></p>
         </div>
       `,
       icon: 'info',
       confirmButtonText: 'Cerrar',
     });
   }
-
 
   public importData() {
     this.generalService.alertMessageInCreation();

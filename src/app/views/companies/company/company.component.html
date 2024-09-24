@@ -37,14 +37,14 @@
                   <!-- Campo Nombre -->
                   <div class="col-md-6 mb-4 mb-md-0">
                     <div class="form-group">
-                      <label for="nombre" class="mb-1 bolder">Nombre</label>
-                      <input id="nombre" formControlName="nombre" type="text" class="form-control"
-                        [ngClass]="getValidationClass('nombre')" spellcheck="false" />
+                      <label for="name" class="mb-1 bolder">Nombre</label>
+                      <input id="name" formControlName="name" type="text" class="form-control"
+                        [ngClass]="getValidationClass('name')" spellcheck="false" />
                       <div
-                        *ngIf="formCompany.get('nombre')?.invalid && (formCompany.get('nombre')?.touched || formCompany.get('nombre')?.dirty)"
+                        *ngIf="formCompany.get('name')?.invalid && (formCompany.get('name')?.touched || formCompany.get('name')?.dirty)"
                         class="invalid-feedback">
-                        <div *ngIf="formCompany.get('nombre')?.errors?.['required']">Nombre es requerido.</div>
-                        <div *ngIf="formCompany.get('nombre')?.errors?.['minlength']">Nombre debe tener al menos 3
+                        <div *ngIf="formCompany.get('name')?.errors?.['required']">Nombre es requerido.</div>
+                        <div *ngIf="formCompany.get('name')?.errors?.['minlength']">Nombre debe tener al menos 3
                           caracteres.</div>
                       </div>
                     </div>
@@ -74,18 +74,16 @@
                   </div>
                   <!-- Campo Razón Social -->
                   <div class="col-12 col-md-6 form-group mb-0">
-                    <label for="razon_social" class="mb-1 bolder">Razón Social</label>
-                    <input id="razon_social" formControlName="razon_social" type="text" class="form-control"
-                      [ngClass]="getValidationClass('razon_social')" spellcheck="false" />
-                    <div
-                      *ngIf="formCompany.get('razon_social')?.invalid && (formCompany.get('razon_social')?.touched || formCompany.get('razon_social')?.dirty)"
-                      class="invalid-feedback">
-                      <div *ngIf="formCompany.get('razon_social')?.errors?.['required']">Razón social es requerida.
+                    <label for="business_name" class="mb-1 bolder">Razón social</label>
+                      <input id="business_name" formControlName="business_name" type="text" class="form-control"
+                        [ngClass]="getValidationClass('business_name')" spellcheck="false" />
+                      <div
+                        *ngIf="formCompany.get('business_name')?.invalid && (formCompany.get('business_name')?.touched || formCompany.get('business_name')?.dirty)"
+                        class="invalid-feedback">
+                        <div *ngIf="formCompany.get('business_name')?.errors?.['required']">Razón social es requerido.</div>
+                        <div *ngIf="formCompany.get('business_name')?.errors?.['minlength']">Razón social debe tener al menos 3
+                          caracteres.</div>
                       </div>
-                      <div *ngIf="formCompany.get('razon_social')?.errors?.['minlength']">Razón social debe tener al
-                        menos
-                        3 caracteres.</div>
-                    </div>
                   </div>
                 </div>
                 <div class="row mb-4">
@@ -93,7 +91,7 @@
                   <div class="col-12 col-md-6 form-group mb-0">
                     <label for="phone" class="mb-1 bolder">Teléfono</label>
                     <input id="phone" formControlName="phone" type="text" class="form-control"
-                      [ngClass]="getValidationClass('phone')" (keydown)="validateNumberInput($event)" />
+                      [ngClass]="getValidationClass('phone')"  />
                     <div
                       *ngIf="formCompany.get('phone')?.invalid && (formCompany.get('phone')?.touched || formCompany.get('phone')?.dirty)"
                       class="invalid-feedback">
@@ -112,7 +110,7 @@
                   <div class="col-12 col-md-6 form-group mb-0">
                     <label for="nit" class="mb-1 bolder">NIT</label>
                     <input id="nit" formControlName="nit" type="text" class="form-control"
-                      [ngClass]="getValidationClass('nit')" (keydown)="validateNumberInput($event)" />
+                      [ngClass]="getValidationClass('nit')"  />
                     <div
                       *ngIf="formCompany.get('nit')?.invalid && (formCompany.get('nit')?.touched || formCompany.get('nit')?.dirty)"
                       class="invalid-feedback">
@@ -124,25 +122,25 @@
                 <div class="row mb-4">
                   <!-- Campo Representante Legal -->
                   <div class="col-12 col-md-6 form-group mb-0">
-                    <label for="representante_legal" class="mb-1 bolder">Representante Legal</label>
-                    <input id="representante_legal" formControlName="representante_legal" type="text"
-                      class="form-control" [ngClass]="getValidationClass('representante_legal')" spellcheck="false" />
+                    <label for="legal_representative" class="mb-1 bolder">Representante Legal</label>
+                    <input id="legal_representative" formControlName="legal_representative" type="text"
+                      class="form-control" [ngClass]="getValidationClass('legal_representative')" spellcheck="false" />
                     <div
-                      *ngIf="formCompany.get('representante_legal')?.invalid && (formCompany.get('representante_legal')?.touched || formCompany.get('representante_legal')?.dirty)"
+                      *ngIf="formCompany.get('legal_representative')?.invalid && (formCompany.get('legal_representative')?.touched || formCompany.get('legal_representative')?.dirty)"
                       class="invalid-feedback">
-                      <div *ngIf="formCompany.get('representante_legal')?.errors?.['required']">Representante Legal es
+                      <div *ngIf="formCompany.get('legal_representative')?.errors?.['required']">Representante Legal es
                         requerido.</div>
-                      <div *ngIf="formCompany.get('representante_legal')?.errors?.['minlength']">Representante Legal
+                      <div *ngIf="formCompany.get('legal_representative')?.errors?.['minlength']">Representante Legal
                         debe
                         tener al menos 3 caracteres.</div>
                     </div>
                   </div>
                   <div class="col-12 col-md-6 mb-4 mb-md-0">
                     <div class="form-group form-switch d-flex justify-content-center align-items-center">
-                      <input class="form-check-input switch-custom" type="checkbox" id="is_disabled"
-                        formControlName="is_disabled" />
-                      <label class="form-check-label ms-4 bolder mb-1" for="is_disabled" [ngClass]="getTextClass()">
-                        {{ formCompany.get('is_disabled')?.value ? 'Activo' : 'Inactivo' }}
+                      <input class="form-check-input switch-custom" type="checkbox" id="is_active"
+                        formControlName="is_active" />
+                      <label class="form-check-label ms-4 bolder mb-1" for="is_active" [ngClass]="getTextClass()">
+                        {{ formCompany.get('is_active')?.value ? 'Activo' : 'Inactivo' }}
                       </label>
                     </div>
                   </div>
