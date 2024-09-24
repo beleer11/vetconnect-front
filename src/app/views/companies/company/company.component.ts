@@ -174,8 +174,8 @@ export class CompanyComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       logo: [''],
       business_name: ['', [Validators.required, Validators.minLength(3)]],
-      phone: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(10)]],
-      tax_id: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(12)]],
+      phone: ['', [Validators.required, Validators.minLength(8)]],
+      tax_id: ['', [Validators.required, Validators.minLength(8)]],
       legal_representative: ['', [Validators.required, Validators.minLength(3)]],
       is_active: [false],
     });
@@ -237,6 +237,7 @@ export class CompanyComponent implements OnInit {
 
     Swal.fire({
       title: `¿Deseas ${actionText} este registro?`,
+      icon: 'question',
       showCancelButton: true,
       confirmButtonColor: '#f39c12',
       cancelButtonColor: '#3085d6',
@@ -332,15 +333,22 @@ export class CompanyComponent implements OnInit {
         this.loading = true;
         this.companyService.deleteRecordById(id).subscribe({
           next: (response) => {
-            this.dataCompany = response.data;
-            this.dataCompanyTrasnform = this.formatedData(this.dataCompany);
+            this.onFetchData(this.parameterDefect);
             this.loading = false;
-            this.generalService.alertMessage('¡Eliminado!', 'El registro ha sido eliminado correctamente.', 'success');
+            this.generalService.alertMessage(
+              '¡Eliminado!',
+              'El registro ha sido eliminado correctamente.',
+              'success'
+            );
           },
           error: (error) => {
             this.loading = false;
-            this.generalService.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.', 'error');
-          }
+            this.generalService.alertMessage(
+              'Error',
+              'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.',
+              'error'
+            );
+          },
         });
       }
     });
@@ -360,7 +368,7 @@ export class CompanyComponent implements OnInit {
           <p><strong>Correo electrónico: </strong> <span>${data.email}</span></p>
           <p><strong>Razón Social: </strong> <span>${data.business_name}</span></p>
           <p><strong>Teléfono: </strong> <span>${data.phone}</span></p>
-          <p><strong>TAX_ID: </strong> <span>${data.tax_id}</span></p>
+          <p><strong>NIT: </strong> <span>${data.tax_id}</span></p>
           <p><strong>Representante Legal: </strong> <span>${data.legal_representative}</span></p>
         </div>
       `,
