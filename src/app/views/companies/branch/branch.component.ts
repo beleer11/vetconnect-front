@@ -236,7 +236,7 @@ export class BranchComponent {
         this.formBranch.controls['address'].setValue(this.dataTemp.address);
         this.formBranch.controls['phone'].setValue(this.dataTemp.phone);
         this.formBranch.controls['is_active'].setValue(
-          this.dataTemp.is_active === 1 ? false : true
+          this.dataTemp.is_active === 1 ? true : false
         );
 
         // Marcar los controles como tocados y verificar su validez
