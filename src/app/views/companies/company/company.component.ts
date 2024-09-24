@@ -1,11 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import moment from 'moment';
 import { CompanyService } from '../../../services/companies/company/company.service';
 import { GeneralService } from '../../../services/general/general.service';
-import { UserService } from 'src/app/services/user/user/user.service';
 import Swal from 'sweetalert2';
-import * as bootstrap from 'bootstrap';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -44,6 +41,14 @@ export class CompanyComponent implements OnInit {
     private generalService: GeneralService,
   ) { }
 
+  async ngOnInit() {
+    this.createForm();
+    this.dataCompanyTrasnform = await this.getData();
+    this.fieldsTable = this.getFieldsTable();
+    this.columnAlignments = this.getColumnAlignments();
+    this.loading = false;
+  }
+
   getValidationClass(controlName: string): { [key: string]: any } {
     const control = this.formCompany.get(controlName);
     return {
@@ -54,14 +59,6 @@ export class CompanyComponent implements OnInit {
 
   getTextClass() {
     return this.formCompany.get('is_active')?.value ? 'text-success' : 'text-red';
-  }
-
-  async ngOnInit() {
-    this.createForm();
-    this.dataCompanyTrasnform = await this.getData();
-    this.fieldsTable = this.getFieldsTable();
-    this.columnAlignments = this.getColumnAlignments();
-    this.loading = false;
   }
 
   resetForms() {
@@ -81,6 +78,22 @@ export class CompanyComponent implements OnInit {
     this.action = action;
     this.dataTemp = this.dataCompany.find((item: any) => item.id === id);
 
+    if (action === 'edit') {
+      this.setDataForm();
+      this.showForm = true;
+    }
+
+    if (action === 'delete') {
+      this.deleteRecord(id);
+    }
+
+    if (action === 'view') {
+      this.openModalView(this.dataTemp);
+    }
+
+    if (action === 'ban') {
+      this.disableOrEnableRecord(this.dataTemp);
+    }
   }
 
   handleButtonClick(action: string) {
@@ -148,7 +161,7 @@ export class CompanyComponent implements OnInit {
 
   validateNumberInput(event: KeyboardEvent) {
     const allowedKeys = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Tab', 'Delete'];
-    const isNumber = /^[0-9-()+]+$/.test(event.key);
+    const isNumber = /^[0-9]+$/.test(event.key);
 
     if (!isNumber && !allowedKeys.includes(event.key)) {
       event.preventDefault();
@@ -161,8 +174,8 @@ export class CompanyComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       logo: [''],
       business_name: ['', [Validators.required, Validators.minLength(3)]],
-      phone: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(15)]],
-      nit: ['', [Validators.required]],
+      phone: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(10)]],
+      tax_id: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(12)]],
       legal_representative: ['', [Validators.required, Validators.minLength(3)]],
       is_active: [false],
     });
@@ -176,7 +189,7 @@ export class CompanyComponent implements OnInit {
         logo: this.selectedFile || null,
         business_name: this.formCompany.get('business_name')?.value,
         phone: this.formCompany.get('phone')?.value,
-        tax_id: this.formCompany.get('nit')?.value,
+        tax_id: this.formCompany.get('tax_id')?.value,
         legal_representative: this.formCompany.get('legal_representative')?.value,
         is_active:
           this.formCompany.get('is_active')?.value === null
@@ -187,10 +200,10 @@ export class CompanyComponent implements OnInit {
       if (this.action === 'save') {
         this.saveNewCompany(data);
       }
-      /*
+
       if (this.action === 'edit') {
         this.editCompany(data, this.dataTemp.id);
-      }*/
+      }
     }
   }
 
@@ -201,7 +214,7 @@ export class CompanyComponent implements OnInit {
         this.formCompany.controls['email'].setValue(this.dataTemp.email);
         this.formCompany.controls['business_name'].setValue(this.dataTemp.business_name);
         this.formCompany.controls['phone'].setValue(this.dataTemp.phone);
-        this.formCompany.controls['nit'].setValue(this.dataTemp.tax_id);
+        this.formCompany.controls['tax_id'].setValue(this.dataTemp.tax_id);
         this.formCompany.controls['legal_representative'].setValue(this.dataTemp.legal_representative);
         this.formCompany.controls['is_active'].setValue(this.dataTemp.is_active === 1 ? true : false);
         this.formCompany.markAllAsTouched();
@@ -223,7 +236,7 @@ export class CompanyComponent implements OnInit {
         : 'El registro ha sido inhabilitado correctamente.';
 
     Swal.fire({
-      title: `¿Deseas ${actionText} este registro ?, icon: 'question'`,
+      title: `¿Deseas ${actionText} este registro?`,
       showCancelButton: true,
       confirmButtonColor: '#f39c12',
       cancelButtonColor: '#3085d6',
@@ -347,7 +360,7 @@ export class CompanyComponent implements OnInit {
           <p><strong>Correo electrónico: </strong> <span>${data.email}</span></p>
           <p><strong>Razón Social: </strong> <span>${data.business_name}</span></p>
           <p><strong>Teléfono: </strong> <span>${data.phone}</span></p>
-          <p><strong>NIT: </strong> <span>${data.tax_id}</span></p>
+          <p><strong>TAX_ID: </strong> <span>${data.tax_id}</span></p>
           <p><strong>Representante Legal: </strong> <span>${data.legal_representative}</span></p>
         </div>
       `,

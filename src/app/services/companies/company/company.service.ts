@@ -9,10 +9,8 @@ import { environment } from 'src/environments/environment';
 export class CompanyService {
   private apiUrl: string = environment.apiUrl;
   private data: any = null;
-
   private getHttpOptions() {
     const accessToken = localStorage.getItem('vet_connect_token')?.replace(/['"]+/g, '');
-
     return {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',

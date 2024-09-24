@@ -75,15 +75,17 @@
                   <!-- Campo Razón Social -->
                   <div class="col-12 col-md-6 form-group mb-0">
                     <label for="business_name" class="mb-1 bolder">Razón social</label>
-                      <input id="business_name" formControlName="business_name" type="text" class="form-control"
-                        [ngClass]="getValidationClass('business_name')" spellcheck="false" />
-                      <div
-                        *ngIf="formCompany.get('business_name')?.invalid && (formCompany.get('business_name')?.touched || formCompany.get('business_name')?.dirty)"
-                        class="invalid-feedback">
-                        <div *ngIf="formCompany.get('business_name')?.errors?.['required']">Razón social es requerido.</div>
-                        <div *ngIf="formCompany.get('business_name')?.errors?.['minlength']">Razón social debe tener al menos 3
-                          caracteres.</div>
+                    <input id="business_name" formControlName="business_name" type="text" class="form-control"
+                      [ngClass]="getValidationClass('business_name')" spellcheck="false" />
+                    <div
+                      *ngIf="formCompany.get('business_name')?.invalid && (formCompany.get('business_name')?.touched || formCompany.get('business_name')?.dirty)"
+                      class="invalid-feedback">
+                      <div *ngIf="formCompany.get('business_name')?.errors?.['required']">Razón social es requerido.
                       </div>
+                      <div *ngIf="formCompany.get('business_name')?.errors?.['minlength']">Razón social debe tener al
+                        menos 3
+                        caracteres.</div>
+                    </div>
                   </div>
                 </div>
                 <div class="row mb-4">
@@ -91,7 +93,7 @@
                   <div class="col-12 col-md-6 form-group mb-0">
                     <label for="phone" class="mb-1 bolder">Teléfono</label>
                     <input id="phone" formControlName="phone" type="text" class="form-control"
-                      [ngClass]="getValidationClass('phone')"  />
+                      [ngClass]="getValidationClass('phone')" (keydown)="validateNumberInput($event)" />
                     <div
                       *ngIf="formCompany.get('phone')?.invalid && (formCompany.get('phone')?.touched || formCompany.get('phone')?.dirty)"
                       class="invalid-feedback">
@@ -108,13 +110,13 @@
 
                   <!-- Campo NIT -->
                   <div class="col-12 col-md-6 form-group mb-0">
-                    <label for="nit" class="mb-1 bolder">NIT</label>
-                    <input id="nit" formControlName="nit" type="text" class="form-control"
-                      [ngClass]="getValidationClass('nit')"  />
+                    <label for="tax_id" class="mb-1 bolder">NIT</label>
+                    <input id="tax_id" formControlName="tax_id" type="text" class="form-control"
+                      [ngClass]="getValidationClass('tax_id')" (keydown)="validateNumberInput($event)" />
                     <div
-                      *ngIf="formCompany.get('nit')?.invalid && (formCompany.get('nit')?.touched || formCompany.get('nit')?.dirty)"
+                      *ngIf="formCompany.get('tax_id')?.invalid && (formCompany.get('tax_id')?.touched || formCompany.get('tax_id')?.dirty)"
                       class="invalid-feedback">
-                      <div *ngIf="formCompany.get('nit')?.errors?.['required']">NIT es requerido.</div>
+                      <div *ngIf="formCompany.get('tax_id')?.errors?.['required']">NIT es requerido.</div>
                       <div *ngIf="formCompany.get('phone')?.errors?.['pattern']">Solo se permiten números.</div>
                     </div>
                   </div>
