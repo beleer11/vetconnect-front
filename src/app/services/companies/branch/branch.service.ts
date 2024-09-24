@@ -22,7 +22,7 @@ export class BranchService {
     };
   }
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   // Método GET para obtener los datos de la sucursal
   getDataBranch(params: any): Observable<any> {
@@ -74,6 +74,13 @@ export class BranchService {
   deleteRecordById(id: number): Observable<any> {
     return this.http.delete(
       `${this.apiUrl}/branch/remove/${id}`,
+      this.getHttpOptions()
+    );
+  }
+
+  getCompanyByBranch(id: number): Observable<any> {
+    return this.http.get(
+      `${this.apiUrl}/branch/getCompanyByBranch/${id}`,
       this.getHttpOptions()
     );
   }

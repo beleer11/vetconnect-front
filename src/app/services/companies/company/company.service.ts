@@ -9,10 +9,8 @@ import { environment } from 'src/environments/environment';
 export class CompanyService {
   private apiUrl: string = environment.apiUrl;
   private data: any = null;
-
   private getHttpOptions() {
     const accessToken = localStorage.getItem('vet_connect_token')?.replace(/['"]+/g, '');
-
     return {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
@@ -26,10 +24,6 @@ export class CompanyService {
   // Método GET para obtener los datos de la compañía
   getDataCompany(params: any): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/company/index`, { params: params, ...this.getHttpOptions() });
-  }
-
-  getPermissionByCompany(id: number): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/permission/getPermissionByCompany/${id}`, this.getHttpOptions());
   }
 
   getDataCompanies(params: any): Observable<any> {
@@ -59,19 +53,5 @@ export class CompanyService {
   public setData(data: any) {
     this.data = data;
   }
-/*
-  // Método POST para guardar los datos de una nueva compañía
-  saveCompany(companyData: {
-    name: string;
-    email: string;
-    business_name: string;
-    phone: string;
-    tax_id: string;
-    legal_representative: string;
-    is_active: boolean;
-    logo: string | null;
-  }): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/company/setData`, companyData, this.httpOptions);
-  }
-    */
+
 }

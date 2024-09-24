@@ -1,16 +1,170 @@
 <app-loading-spinner *ngIf="loading"></app-loading-spinner>
-<div [hidden]="showForm && dataCompany">
-  <div [hidden]="showForm">
-    <app-group-button-general [component]="'Compañías'" (buttonClick)="handleButtonClick($event)">
-    </app-group-button-general>
-  </div>
+<div [hidden]="showForm">
+  <app-group-button-general [component]="'Compañías'" (buttonClick)="handleButtonClick($event)">
+  </app-group-button-general>
+  <app-general-table [columns]="fieldsTable" [transformedData]="dataCompanyTrasnform" [data]="dataCompany"
+    [acciones]="acciones" [columnAlignments]="columnAlignments" [title]="'Compañías'"
+    (fetchDataEvent)="onFetchData($event)" [totalRecords]="totalRecord" [loadingTable]="loadingTable"
+    (actionEvent)="handleAction($event)">
+  </app-general-table>
 </div>
-<app-general-table [columns]="fieldsTable" [transformedData]="dataCompanyTrasnform" [data]="dataCompany"
-  [acciones]="acciones" [columnAlignments]="columnAlignments" [title]="'Compañías'"
-  (fetchDataEvent)="onFetchData($event)" [totalRecords]="totalRecord" [loadingTable]="loadingTable"
-  (actionEvent)="handleAction($event)">
-</app-general-table>
+<c-row [hidden]="!showForm">
+  <c-col xs>
+    <c-card class="mb-4">
+      <c-card-header>
+        <div class="container">
+          <div class="row justify-content-between align-items-center mb-2">
+            <div class="col-12 col-md-auto text-center text-md-start pt-2">
+              <h1 class="mb-0">Agregar compañía</h1>
+            </div>
+          </div>
+        </div>
+      </c-card-header>
+      <c-card-body>
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active tab-custom" id="general-tab" data-bs-toggle="tab" data-bs-target="#general"
+              type="button" role="tab" aria-controls="general" aria-selected="true">
+              <span class="bolder">Información General</span>
+            </button>
+          </li>
+        </ul>
+        <div class="tab-content border-tab" id="myTabContent">
+          <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab">
+            <form [formGroup]="formCompany" class="pt-3 pb-3">
+              <div class="container">
+                <div class="row mb-4">
+                  <!-- Campo Nombre -->
+                  <div class="col-md-6 mb-4 mb-md-0">
+                    <div class="form-group">
+                      <label for="name" class="mb-1 bolder">Nombre</label>
+                      <input id="name" formControlName="name" type="text" class="form-control"
+                        [ngClass]="getValidationClass('name')" spellcheck="false" />
+                      <div
+                        *ngIf="formCompany.get('name')?.invalid && (formCompany.get('name')?.touched || formCompany.get('name')?.dirty)"
+                        class="invalid-feedback">
+                        <div *ngIf="formCompany.get('name')?.errors?.['required']">Nombre es requerido.</div>
+                        <div *ngIf="formCompany.get('name')?.errors?.['minlength']">Nombre debe tener al menos 3
+                          caracteres.</div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Campo Correo Electrónico -->
+                  <div class="col-md-6 mb-4 mb-md-0">
+                    <div class="form-group">
+                      <label for="email" class="mb-1 bolder">Correo Electrónico</label>
+                      <input id="email" formControlName="email" type="email" class="form-control"
+                        [ngClass]="getValidationClass('email')" />
+                      <div
+                        *ngIf="formCompany.get('email')?.invalid && (formCompany.get('email')?.touched || formCompany.get('email')?.dirty)"
+                        class="invalid-feedback">
+                        <div *ngIf="formCompany.get('email')?.errors?.['required']">Correo electrónico es requerido.
+                        </div>
+                        <div *ngIf="formCompany.get('email')?.errors?.['email']">Correo electrónico no es válido.</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row mb-4">
+                  <!-- Campo Logo -->
+                  <div class="col-12 col-md-6 form-group mb-0">
+                    <label for="logo" class="mb-1 bolder">Logo</label>
+                    <input id="logo" formControlName="logo" type="file" class="form-control"
+                      [ngClass]="getValidationClass('logo')" />
+                  </div>
+                  <!-- Campo Razón Social -->
+                  <div class="col-12 col-md-6 form-group mb-0">
+                    <label for="business_name" class="mb-1 bolder">Razón social</label>
+                    <input id="business_name" formControlName="business_name" type="text" class="form-control"
+                      [ngClass]="getValidationClass('business_name')" spellcheck="false" />
+                    <div
+                      *ngIf="formCompany.get('business_name')?.invalid && (formCompany.get('business_name')?.touched || formCompany.get('business_name')?.dirty)"
+                      class="invalid-feedback">
+                      <div *ngIf="formCompany.get('business_name')?.errors?.['required']">Razón social es requerido.
+                      </div>
+                      <div *ngIf="formCompany.get('business_name')?.errors?.['minlength']">Razón social debe tener al
+                        menos 3
+                        caracteres.</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row mb-4">
+                  <!-- Campo Teléfono -->
+                  <div class="col-12 col-md-6 form-group mb-0">
+                    <label for="phone" class="mb-1 bolder">Teléfono</label>
+                    <input id="phone" formControlName="phone" type="text" class="form-control"
+                      [ngClass]="getValidationClass('phone')" (keydown)="validateNumberInput($event)" />
+                    <div
+                      *ngIf="formCompany.get('phone')?.invalid && (formCompany.get('phone')?.touched || formCompany.get('phone')?.dirty)"
+                      class="invalid-feedback">
+                      <div *ngIf="formCompany.get('phone')?.errors?.['required']">Teléfono es requerido.</div>
+                      <div *ngIf="formCompany.get('phone')?.errors?.['minlength']">El teléfono debe tener al menos 8
+                        dígitos.</div>
+                      <div *ngIf="formCompany.get('phone')?.errors?.['maxlength']">El teléfono no puede exceder los 12
+                        dígitos.</div>
+                      <div *ngIf="formCompany.get('phone')?.errors?.['pattern']">
+                        Teléfono solo puede contener números.
+                      </div>
+                    </div>
+                  </div>
 
-<c-row *[hidden]="showForm">
-  hola mundo
+                  <!-- Campo NIT -->
+                  <div class="col-12 col-md-6 form-group mb-0">
+                    <label for="tax_id" class="mb-1 bolder">NIT</label>
+                    <input id="tax_id" formControlName="tax_id" type="text" class="form-control"
+                      [ngClass]="getValidationClass('tax_id')" (keydown)="validateNumberInput($event)" />
+                    <div
+                      *ngIf="formCompany.get('tax_id')?.invalid && (formCompany.get('tax_id')?.touched || formCompany.get('tax_id')?.dirty)"
+                      class="invalid-feedback">
+                      <div *ngIf="formCompany.get('tax_id')?.errors?.['required']">NIT es requerido.</div>
+                      <div *ngIf="formCompany.get('phone')?.errors?.['pattern']">Solo se permiten números.</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row mb-4">
+                  <!-- Campo Representante Legal -->
+                  <div class="col-12 col-md-6 form-group mb-0">
+                    <label for="legal_representative" class="mb-1 bolder">Representante Legal</label>
+                    <input id="legal_representative" formControlName="legal_representative" type="text"
+                      class="form-control" [ngClass]="getValidationClass('legal_representative')" spellcheck="false" />
+                    <div
+                      *ngIf="formCompany.get('legal_representative')?.invalid && (formCompany.get('legal_representative')?.touched || formCompany.get('legal_representative')?.dirty)"
+                      class="invalid-feedback">
+                      <div *ngIf="formCompany.get('legal_representative')?.errors?.['required']">Representante Legal es
+                        requerido.</div>
+                      <div *ngIf="formCompany.get('legal_representative')?.errors?.['minlength']">Representante Legal
+                        debe
+                        tener al menos 3 caracteres.</div>
+                    </div>
+                  </div>
+                  <div class="col-12 col-md-6 mb-4 mb-md-0">
+                    <div class="form-group form-switch d-flex justify-content-center align-items-center">
+                      <input class="form-check-input switch-custom" type="checkbox" id="is_active"
+                        formControlName="is_active" />
+                      <label class="form-check-label ms-4 bolder mb-1" for="is_active" [ngClass]="getTextClass()">
+                        {{ formCompany.get('is_active')?.value ? 'Activo' : 'Inactivo' }}
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <!-- Botón de Guardar -->
+                <div class="d-flex mt-2 justify-content-end">
+                  <button type="submit" class="btn btn-success text-white" (click)="onSubmit()"
+                    [disabled]="formCompany.invalid">
+                    Guardar
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        <!--Boton de atras-->
+        <div class="d-flex justify-content-center mt-3">
+          <button class="btn btn-secondary text-white" (click)="backToTable()">
+            Atrás
+          </button>
+        </div>
+      </c-card-body>
+    </c-card>
+  </c-col>
 </c-row>

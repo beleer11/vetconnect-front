@@ -1,11 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import moment from 'moment';
 import { CompanyService } from '../../../services/companies/company/company.service';
 import { GeneralService } from '../../../services/general/general.service';
-import { UserService } from 'src/app/services/user/user/user.service';
 import Swal from 'sweetalert2';
-import * as bootstrap from 'bootstrap';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -22,11 +19,8 @@ export class CompanyComponent implements OnInit {
   public formCompany!: FormGroup;
   public action: string = 'save';
   public dataTemp: any = [];
+  public selectedFile: any;
   public loading: boolean = true;
-  public dataPermission: any = [];
-  public dataPermissionSelected: any = [];
-  public textSelectAll: string = 'Seleccionar todo';
-  public selectAllCheck: boolean = true;
   public showAddButton: boolean = false;
   public showImportButton: boolean = false;
   public showExportButton: boolean = false;
@@ -42,35 +36,41 @@ export class CompanyComponent implements OnInit {
   };
 
   constructor(
-    private userService: UserService,
     private companyService: CompanyService,
     private fb: FormBuilder,
     private generalService: GeneralService,
   ) { }
 
   async ngOnInit() {
+    this.createForm();
     this.dataCompanyTrasnform = await this.getData();
     this.fieldsTable = this.getFieldsTable();
     this.columnAlignments = this.getColumnAlignments();
     this.loading = false;
-    this.createForm();
   }
 
-  public addRole() {
-    this.action = 'save';
-    this.resetForms();
+  getValidationClass(controlName: string): { [key: string]: any } {
+    const control = this.formCompany.get(controlName);
+    return {
+      'is-invalid': control?.invalid && (control?.touched || control?.dirty),
+      'is-valid': control?.valid && (control?.touched || control?.dirty),
+    };
   }
 
-  public backToTable() {
-    this.showForm = false;
-    this.resetForms();
+  getTextClass() {
+    return this.formCompany.get('is_active')?.value ? 'text-success' : 'text-red';
   }
 
   resetForms() {
+    this.selectedFile = '';
     this.formCompany.reset();
-    this.textSelectAll = 'Seleccionar todo';
-    this.dataPermissionSelected = [];
-    this.selectAllCheck = true;
+  }
+
+  async onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFile = await this.generalService.convertToBase64Files(file);
+    }
   }
 
   handleAction(event: { id: number; action: string }) {
@@ -78,20 +78,9 @@ export class CompanyComponent implements OnInit {
     this.action = action;
     this.dataTemp = this.dataCompany.find((item: any) => item.id === id);
 
-    /*
-    if (action === "edit") {
-      this.loading = true;
-      this.formCompany.controls["nombre"].setValue(this.dataTemp.name);
-      this.formCompany.controls["description"].setValue(this.dataTemp.description);
-      this.formCompany.markAllAsTouched();
-      this.companyService.getPermissionByCompany(this.dataTemp.id).subscribe(
-        response => {
-          this.checkedPermisosAsignados(response.original);
-        },
-        error => {
-          console.log(error.message);
-        }
-      );
+    if (action === 'edit') {
+      this.setDataForm();
+      this.showForm = true;
     }
 
     if (action === 'delete') {
@@ -105,7 +94,31 @@ export class CompanyComponent implements OnInit {
     if (action === 'ban') {
       this.disableOrEnableRecord(this.dataTemp);
     }
-      */
+  }
+
+  handleButtonClick(action: string) {
+    switch (action) {
+      case 'add':
+        this.addCompany();
+        break;
+      case 'import':
+        this.importData();
+        break;
+      case 'export':
+        this.exportData();
+        break;
+    }
+  }
+
+  public addCompany() {
+    this.showForm = true;
+    this.formCompany.reset();
+    this.action = 'save';
+  }
+
+  public backToTable() {
+    this.showForm = false;
+    this.formCompany.reset();
   }
 
   private async getData(): Promise<any> {
@@ -123,7 +136,6 @@ export class CompanyComponent implements OnInit {
 
   public formatedData(response: any, fecth = false) {
     if (response.length === 0 && fecth) {
-      // Devuelve un mensaje personalizado cuando no hay datos
       return [{
         "No se encontraron resultados": "No se encontraron registros que coincidan con los criterios de búsqueda. Intente con otros términos.",
       }];
@@ -131,41 +143,58 @@ export class CompanyComponent implements OnInit {
     return response.map((item: any) => {
       return {
         id: item.id,
-        is_disabled: item.is_disabled,
-        "Nombre": item.name,
-        "Correo": item.email,
+        Nombre: item.name,
+        "Correo electrónico": item.email,
         "Razón social": item.legal_representative,
+        is_disabled: item.is_active,
       };
     });
   }
 
   private getFieldsTable() {
-    return ['Nombre', 'Correo', 'Razón social'];
+    return ['Nombre', 'Correo electrónico', 'Razón social'];
   }
 
   private getColumnAlignments() {
     return ['left', 'left', 'center'];
   }
 
-  public createForm() {
-    this.formCompany = this.fb.group({
-      nombre: ['', [Validators.required, Validators.minLength(3)]],
-      email: ['', [Validators.required, Validators.email]],
-      logo: [''],
-      razon_social: ['', Validators.required],
-      telefono: ['', [Validators.required, Validators.pattern(/^[0-9]+$/)]],
-      nit: ['', [Validators.required, Validators.minLength(8)]],
-      representante_legal: ['', Validators.required]
-    });
+  validateNumberInput(event: KeyboardEvent) {
+    const allowedKeys = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Tab', 'Delete'];
+    const isNumber = /^[0-9]+$/.test(event.key);
+
+    if (!isNumber && !allowedKeys.includes(event.key)) {
+      event.preventDefault();
+    }
   }
 
+  public createForm() {
+    this.formCompany = this.fb.group({
+      name: ['', [Validators.required, Validators.minLength(3)]],
+      email: ['', [Validators.required, Validators.email]],
+      logo: [''],
+      business_name: ['', [Validators.required, Validators.minLength(3)]],
+      phone: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(10)]],
+      tax_id: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(12)]],
+      legal_representative: ['', [Validators.required, Validators.minLength(3)]],
+      is_active: [false],
+    });
+  }
 
   onSubmit() {
     if (this.formCompany.valid) {
       let data = {
-        name: this.formCompany.get('nombre')?.value,
-        description: this.formCompany.get('description')?.value,
-        permissions: this.dataPermissionSelected
+        name: this.formCompany.get('name')?.value,
+        email: this.formCompany.get('email')?.value,
+        logo: this.selectedFile || null,
+        business_name: this.formCompany.get('business_name')?.value,
+        phone: this.formCompany.get('phone')?.value,
+        tax_id: this.formCompany.get('tax_id')?.value,
+        legal_representative: this.formCompany.get('legal_representative')?.value,
+        is_active:
+          this.formCompany.get('is_active')?.value === null
+            ? false
+            : this.formCompany.get('is_active')?.value,
       };
 
       if (this.action === 'save') {
@@ -178,21 +207,78 @@ export class CompanyComponent implements OnInit {
     }
   }
 
+  async setDataForm(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      try {
+        this.formCompany.controls['name'].setValue(this.dataTemp.name);
+        this.formCompany.controls['email'].setValue(this.dataTemp.email);
+        this.formCompany.controls['business_name'].setValue(this.dataTemp.business_name);
+        this.formCompany.controls['phone'].setValue(this.dataTemp.phone);
+        this.formCompany.controls['tax_id'].setValue(this.dataTemp.tax_id);
+        this.formCompany.controls['legal_representative'].setValue(this.dataTemp.legal_representative);
+        this.formCompany.controls['is_active'].setValue(this.dataTemp.is_active === 1 ? true : false);
+        this.formCompany.markAllAsTouched();
+        resolve();
+      }
+      catch (error) {
+        reject(error);
+      }
+    })
+  }
+
+  disableOrEnableRecord(data: any) {
+    const actionText = data.is_active === 0 ? 'habilitar' : 'inhabilitar';
+    const confirmButtonText =
+      data.is_active === 0 ? 'Sí, habilitar' : 'Sí, inhabilitar';
+    const successMessage =
+      data.is_active === 0
+        ? 'El registro ha sido habilitado correctamente.'
+        : 'El registro ha sido inhabilitado correctamente.';
+
+    Swal.fire({
+      title: `¿Deseas ${actionText} este registro?`,
+      showCancelButton: true,
+      confirmButtonColor: '#f39c12',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: confirmButtonText,
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loading = true;
+        const action = data.is_active === 0 ? 'enable' : 'disable';
+        this.actionMap[action](data.id).subscribe({
+          next: (response: any) => {
+            this.onFetchData(this.parameterDefect);
+            this.loading = false;
+            this.generalService.alertMessage(
+              '¡Éxito!',
+              successMessage,
+              'success'
+            );
+          },
+          error: (error: any) => {
+            this.loading = false;
+            this.generalService.alertMessage(
+              'Error',
+              'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.',
+              'error'
+            );
+          },
+        });
+      }
+    });
+  }
+
   public saveNewCompany(data: any) {
     this.loading = true;
     this.companyService.sendCompany(data).subscribe({
       next: (response) => {
         if (response.original.success) {
-          this.dataCompany = response.original.data;
-          if (Array.isArray(this.dataCompany)) {
-            this.dataPermissionSelected = [];
-            this.dataCompanyTrasnform = this.formatedData(this.dataCompany);
-          } else {
-            this.dataCompanyTrasnform = [];
-          }
-          this.loading = false;
+          this.onFetchData(this.parameterDefect);
+          this.resetForms();
           this.showForm = false;
-          this.generalService.alertMessage('¡Éxito!', response.original.message, 'success');
+          this.loading = false;
+          this.generalService.alertMessage('¡Éxito!', response.original.message, 'success')
         } else {
           this.loading = false;
           this.generalService.alertMessage('Advertencia', response.original.message, 'warning');
@@ -209,21 +295,19 @@ export class CompanyComponent implements OnInit {
     this.loading = true;
     this.companyService.editCompany(data, id).subscribe({
       next: (response) => {
-        if (response && response.original.data) {
-          this.dataCompany = response.original.data;
-
-          if (Array.isArray(this.dataCompany)) {
-            this.dataPermissionSelected = [];
-            this.dataCompanyTrasnform = this.formatedData(this.dataCompany);
-          } else {
-            this.dataCompanyTrasnform = [];
-          }
+        if (response.original.success) {
+          this.onFetchData(this.parameterDefect);
+          this.resetForms();
           this.showForm = false;
           this.loading = false;
-          this.generalService.alertMessage('¡Éxito!', response.original.message, 'success');
+          this.generalService.alertMessage('¡Éxito!', response.original?.message || 'Operación exitosa', 'success');
         } else {
           this.loading = false;
-          this.generalService.alertMessage('Advertencia', response.original.message, 'warning');
+          this.generalService.alertMessage(
+            '¡Ups! Algo salió mal',
+            'Tuvimos un problema al procesar tu solicitud. Por favor, inténtalo de nuevo o contacta a nuestro equipo de soporte si el problema persiste. ¡Estamos aquí para ayudarte!',
+            'warning'
+          );
         }
       },
       error: (error) => {
@@ -262,84 +346,27 @@ export class CompanyComponent implements OnInit {
     });
   }
 
-  disableOrEnableRecord(data: any) {
-    const actionText = data.is_disabled === 0 ? 'habilitar' : 'inhabilitar';
-    const confirmButtonText =
-      data.is_disabled === 0 ? 'Sí, habilitar' : 'Sí, inhabilitar';
-    const successMessage =
-      data.is_disabled === 0
-        ? 'El registro ha sido habilitado correctamente.'
-        : 'El registro ha sido inhabilitado correctamente.';
-
-    Swal.fire({
-      title: `¿Deseas ${actionText} este registro?`,
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonColor: '#f39c12',
-      cancelButtonColor: '#3085d6',
-      confirmButtonText: confirmButtonText,
-      cancelButtonText: 'Cancelar',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.loading = true;
-        const action = data.is_disabled === 0 ? 'enable' : 'disable';
-        this.actionMap[action](data.id).subscribe({
-          next: (response) => {
-            this.dataCompany = response.data;
-            this.dataCompanyTrasnform = this.formatedData(this.dataCompany);
-            this.loading = false;
-            this.generalService.alertMessage('¡Éxito!', successMessage, 'success');
-          },
-          error: (error) => {
-            this.loading = false;
-            this.generalService.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.', 'error');
-          }
-        });
-      }
-    });
-  }
-
   private actionMap: { [key: string]: (id: number) => Observable<any> } = {
     enable: (id: number) => this.companyService.enableRecordById(id),
     disable: (id: number) => this.companyService.disableRecordById(id),
   };
 
-  getValidationClass(controlName: string): { [key: string]: any } {
-    const control = this.formCompany.get(controlName);
-    return {
-      'is-invalid': control?.invalid && (control?.touched || control?.dirty),
-      'is-valid': control?.valid && (control?.touched || control?.dirty),
-    };
-  }
-
   openModalView(data: any) {
     Swal.fire({
-      title: 'Roles',
+      title: 'Companía',
       html: `
         <div id="custom-icon-container">
-          <p><strong>Nombre : </strong> <span>${data.name}</span> </p>
-          <p><strong>Descripción : </strong> <span>${data.description}</span> </p>
-          <p><strong>Fecha de Creación: </strong> <span>${moment(data.created_at).format('DD/MM/YYYY hh:mm:ss A')}</span></p>
-          <p><strong>Última actualización: </strong> <span>${moment(data.updated_at).format('DD/MM/YYYY hh:mm:ss A')}</span></p>
+          <p><strong>Nombre: </strong> <span>${data.name}</span></p>
+          <p><strong>Correo electrónico: </strong> <span>${data.email}</span></p>
+          <p><strong>Razón Social: </strong> <span>${data.business_name}</span></p>
+          <p><strong>Teléfono: </strong> <span>${data.phone}</span></p>
+          <p><strong>TAX_ID: </strong> <span>${data.tax_id}</span></p>
+          <p><strong>Representante Legal: </strong> <span>${data.legal_representative}</span></p>
         </div>
       `,
       icon: 'info',
       confirmButtonText: 'Cerrar',
     });
-  }
-
-  handleButtonClick(action: string) {
-    switch (action) {
-      case 'add':
-        this.addRole();
-        break;
-      case 'import':
-        this.importData();
-        break;
-      case 'export':
-        this.exportData();
-        break;
-    }
   }
 
   public importData() {
