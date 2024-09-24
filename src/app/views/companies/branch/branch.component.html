@@ -109,8 +109,8 @@
                       </div>
                     </div>
                   </div>
-                  <div class="col-md-6 mb-4 mb-md-0">
-                    <div class="form-group">
+                  <div class="col-md-6 mb-4 mb-md-0 ">
+                    <div class="form-group ">
                       <label for="address" class="bolder mb-1">Dirección</label>
                       <input id="address" formControlName="address" type="text" class="form-control"
                         [ngClass]="getValidationClass('address')" />
@@ -135,7 +135,7 @@
                   <div class="col-md-6 mb-4 mb-md-0">
                     <div class="form-group">
                       <label for="phone" class="bolder mb-1">Teléfono</label>
-                      <input id="phone" formControlName="phone" type="text" class="form-control"
+                      <input id="phone" formControlName="phone" type="text" class="form-control" maxlength="10"
                         [ngClass]="getValidationClass('phone')" (keypress)="onlyNumbers($event)" />
                       <div *ngIf="
                           formBranch.get('phone')?.invalid &&
@@ -151,7 +151,7 @@
                     </div>
                   </div>
                   <div class="col-12 col-md-6 mb-4 mb-md-0">
-                    <div class="form-group form-switch d-flex justify-content-center align-items-center"
+                    <div class="form-group form-switch d-flex justify-content-center align-items-center pt-5"
                       style="height: 40px; background-color: white; ">
                       <input class="form-check-input switch-custom" type="checkbox" id="is_active"
                         formControlName="is_active" />

@@ -35,8 +35,6 @@ export class BranchComponent {
   public totalRecord: number = 0;
   public dataTemp: any = [];
   public dataCompany: any = [];
-  public dataPermissionSelected: any = [];
-  public permissionSuggested: any = [];
   public formBranch!: FormGroup;
   public searchControl = new FormControl('');
   public parameterDefect = {
@@ -65,7 +63,7 @@ export class BranchComponent {
       address: ['', [Validators.required, Validators.minLength(10)]],
       company_id: [{}, Validators.required],
       phone: ['', [Validators.required, Validators.minLength(10)]],
-      is_active: [false, Validators.required],
+      is_active: [false],
     });
     this.fieldsTable = this.getFieldsTable();
     this.columnAlignments = this.getColumnAlignments();
@@ -191,7 +189,7 @@ export class BranchComponent {
     }
   }
 
-  public saveNewBranch(data: {}) {
+  public saveNewBranch(data: any) {
     this.loading = true;
     this.branchService.sendBranch(data).subscribe({
       next: (response) => {
