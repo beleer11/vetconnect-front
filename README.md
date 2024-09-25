@@ -61,9 +61,11 @@ Sigue estos pasos para instalar y ejecutar VetConnect en tu entorno local:
 ```
  npm install
 ```
-	El proyecto estará disponible en
+
+<p>El proyecto estará disponible en</p>
+
   
-```plaintext
+```
 http://localhost:4200/
 ```
 ---
