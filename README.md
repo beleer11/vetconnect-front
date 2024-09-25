@@ -1,222 +1,136 @@
-[![@coreui angular](https://img.shields.io/badge/@coreui%20-angular-lightgrey.svg?style=flat-square)](https://github.com/coreui/angular)
-[![npm-coreui-angular][npm-coreui-angular-badge]][npm-coreui-angular]
-[![NPM downloads][npm-coreui-angular-download]][npm-coreui-angular]  
-[![@coreui coreui](https://img.shields.io/badge/@coreui%20-coreui-lightgrey.svg?style=flat-square)](https://github.com/coreui/coreui)
-[![npm package][npm-coreui-badge]][npm-coreui]
-[![NPM downloads][npm-coreui-download]][npm-coreui]  
-![angular](https://img.shields.io/badge/angular-^17.2.0-lightgrey.svg?style=flat-square&logo=angular)
+#**VetConnect**
 
-[npm-coreui-angular]: https://www.npmjs.com/package/@coreui/angular
-[npm-coreui-angular-badge]: https://img.shields.io/npm/v/@coreui/angular.png?style=flat-square
-[npm-coreui-angular-badge-next]: https://img.shields.io/npm/v/@coreui/angular/next?style=flat-square&color=red
-[npm-coreui-angular-download]: https://img.shields.io/npm/dm/@coreui/angular.svg?style=flat-square
-[npm-coreui]: https://www.npmjs.com/package/@coreui/coreui
-[npm-coreui-badge]: https://img.shields.io/npm/v/@coreui/coreui.png?style=flat-square
-[npm-coreui-download]: https://img.shields.io/npm/dm/@coreui/coreui.svg?style=flat-square
+## Tu Asistente Digital para la Gestión Veterinaria
 
-# CoreUI Free Admin Dashboard Template for Angular 17
+**VetConnect** es una innovadora plataforma creada para clínicas veterinarias que buscan mejorar su eficiencia y cuidado al cliente. Con VetConnect, el trabajo diario de veterinarios y personal administrativo se convierte en una tarea más fluida y organizada. La aplicación facilita:
 
-CoreUI is meant to be the UX game changer. Pure & transparent code is devoid of redundant components, so the app is light enough to offer ultimate user experience. This means mobile devices also, where the navigation is just as easy and intuitive as on a desktop or laptop. The CoreUI Layout API lets you customize your project for almost any device – be it Mobile, Web or WebApp – CoreUI covers them all!
+- 🗓️ **Coordinación Perfecta de Citas**: Gestiona y programa citas de manera sencilla, asegurando que cada paciente reciba la atención necesaria.
 
-- [CoreUI Angular Admin Dashboard Template & UI Components Library](https://coreui.io/angular)  
-- [CoreUI Angular Demo](https://coreui.io/angular/demo/4.3/free/)
-- [CoreUI Angular Docs](https://coreui.io/angular/docs/)  
+- 🏥 **Historiales Médicos Detallados**: Mantén un control minucioso de diagnósticos, tratamientos y seguimientos en un solo lugar.
 
-## Table of Contents
+- 👩‍⚕️ **Gestión Integral de Clientes y Mascotas**: Organiza toda la información de clientes y sus mascotas, mejorando la experiencia de usuario.
 
-* [Versions](#versions)
-* [CoreUI Pro](#coreui-pro)
-* [Quick Start](#quick-start)
-* [Installation](#installation)
-* [Basic usage](#basic-usage)
-* [What's included](#whats-included)
-* [Documentation](#documentation)
-* [Versioning](#versioning)
-* [Creators](#creators)
-* [Community](#community)
-* [Copyright and License](#copyright-and-license)
+- 📊 **Panel de Control Dinámico**: Obtén estadísticas clave y reportes para tomar decisiones informadas en la gestión de tu clínica.
 
-## Versions
-
-* [CoreUI Free Bootstrap Admin Template](https://github.com/coreui/coreui-free-bootstrap-admin-template)
-* [CoreUI Free Angular Admin Template](https://github.com/coreui/coreui-free-angular-admin-template)
-* [CoreUI Free React.js Admin Template](https://github.com/coreui/coreui-free-react-admin-template)
-* [CoreUI Free Vue.js Admin Template](https://github.com/coreui/coreui-free-vue-admin-template)
-
-## CoreUI Pro
-
-**Only customers with [Enterpise Membership Plan](https://coreui.io/pro/#buy) have access to private GitHub CoreUI Pro repository.**
-
-* 💪  [CoreUI Pro Angular Admin Template](https://coreui.io/product/angular-dashboard-template/)
-* 💪  [CoreUI Pro Bootstrap Admin Template](https://coreui.io/product/bootstrap-dashboard-template/)
-* 💪  [CoreUI Pro React Admin Template](https://coreui.io/product/react-dashboard-template/)
-* 💪  [CoreUI Pro Next.js Admin Template](https://coreui.io/product/next-js-dashboard-template/)
-* 💪  [CoreUI Pro Vue Admin Template](https://coreui.io/product/vue-dashboard-template/)
-
-## Quick Start
-
-- [Download the latest release](https://github.com/coreui/coreui-free-angular-admin-template/)
-- Clone the repo: `git clone https://github.com/coreui/coreui-free-angular-admin-template.git`
-
-#### <i>Prerequisites</i>
-Before you begin, make sure your development environment includes `Node.js®` and an `npm` package manager.
-
-###### Node.js
-[**Angular 17**](https://angular.io/guide/what-is-angular) requires `Node.js` LTS version `^18.13` or `^20.09`.
-
-- To check your version, run `node -v` in a terminal/console window.
-- To get `Node.js`, go to [nodejs.org](https://nodejs.org/).
-
-###### Angular CLI
-Install the Angular CLI globally using a terminal/console window.
-```bash
-npm install -g @angular/cli
-```
-
-### Installation
-
-``` bash
-$ npm install
-$ npm update
-```
-
-### Basic usage
-
-``` bash
-# dev server with hot reload at http://localhost:4200
-$ npm start
-```
-
-Navigate to [http://localhost:4200](http://localhost:4200). The app will automatically reload if you change any of the source files.
-
-#### Build
-
-Run `build` to build the project. The build artifacts will be stored in the `dist/` directory.
-
-```bash
-# build for production with minification
-$ npm run build
-```
-## What's included
-
-Within the download you'll find the following directories and files, logically grouping common assets and providing both compiled and minified variations. You'll see something like this:
-
-```
-coreui-free-angular-admin-template
-├── src/                         # project root
-│   ├── app/                     # main app directory
-|   │   ├── containers/          # layout containers
-|   |   │   └── default-layout/  # layout containers
-|   |   |       └── _nav.js      # sidebar navigation config
-|   │   ├── icons/               # icons set for the app
-|   │   └── views/               # application views
-│   ├── assets/                  # images, icons, etc.
-│   ├── components/              # components for demo only
-│   ├── scss/                    # scss styles
-│   └── index.html               # html template
-│
-├── angular.json
-├── README.md
-└── package.json
-```
-
-## Documentation
-
-The documentation for the CoreUI Admin Template is hosted at our website [CoreUI for Angular](https://coreui.io/angular/)
+Con **VetConnect**, no solo optimizas la eficiencia, sino que también potencias la calidad del servicio veterinario. Todo lo que tu clínica necesita está aquí. 🚀
 
 ---
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.0.0.
+## 🚀Características
 
-## Versioning
+- 🐾 **Gestión de Citas**: Permite a los veterinarios gestionar las citas de los pacientes de forma eficiente.
 
-For transparency into our release cycle and in striving to maintain backward compatibility, CoreUI Free Admin Template is maintained under [the Semantic Versioning guidelines](http://semver.org/).
+- 📋 **Registro de Historiales Médicos**: Registro de diagnósticos y tratamientos para cada paciente.
 
-See [the Releases section of our project](https://github.com/coreui/coreui-free-angular-admin-template/releases) for changelogs for each release version.
+- 🐶 **Administración de Clientes**: Manejo completo de la información de los clientes y sus mascotas.
+- 📊 **Panel de Control**: Estadísticas y reportes para una mejor toma de decisiones.
 
-## Development server
+- 🌟 **Interfaz Intuitiva**: Fácil de usar, lo que mejora la experiencia del usuario.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+---
 
-## Code scaffolding
+## 🛠️ Tecnologías Utilizadas
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+| Tecnología       | Versión |
+| ---------------- | ------- |
+| Angular          | 17.2.1  |
+| Angular Material | 17.3.10 |
+| CoreUI           | 4.2.6   |
+| Bootstrap        | 5.3.3   |
+| FontAwesome      | 6.6.0   |
+| Moment.js        | 2.30.1  |
+| RxJS             | ~7.8.1  |
+| SweetAlert2      | 11.13.3 |
 
-## Build
+---
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+## Instalación
 
-## Running unit tests
+Sigue estos pasos para instalar y ejecutar VetConnect en tu entorno local:
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+**1. Clonar el repositorio:**
 
-## Running end-to-end tests
+> git clone https://github.com/usuario/VetConnect.git
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+**2. Navegar al directorio del proyecto**
 
-## Further help
+> cd VetConnect
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+**3. Instalar las dependencias**
 
-## Creators
+> npm install
 
-**Łukasz Holeczek**
-* <https://twitter.com/lukaszholeczek>
-* <https://github.com/mrholek>
-* <https://github.com/coreui>
+<p>
+	El proyecto estará disponible en http://localhost:4200/
+</p>
 
-**CoreUI team**
-* https://github.com/orgs/coreui/people
+---
 
-## Community
+## Uso
 
-Get updates on CoreUI's development and chat with the project maintainers and community members.
+Una vez que la aplicación esté en funcionamiento, puedes acceder a **VetConnect** en [http://localhost:4200](http://localhost:4200) para comenzar a utilizar sus funcionalidades. Aquí hay algunas acciones comunes que puedes realizar:
 
-- Follow [@core_ui on Twitter](https://twitter.com/core_ui).
-- Read and subscribe to [CoreUI Blog](https://coreui.io/blog/).
+**Gestionar Citas**
 
-## Support CoreUI Development
+- 🗂 Navega a la sección de **“Citas”** desde el menú principal.
+- 🕒 Crea nuevas citas, seleccionando **fecha, hora y veterinario**.
+- ✏️ **Visualiza, edita o cancela** citas desde el panel de control.
 
-CoreUI is an MIT-licensed open source project and is completely free to use. However, the amount of effort needed to maintain and develop new features for the project is not sustainable without proper financial backing. You can support development by buying the [CoreUI PRO](https://coreui.io/pricing/) or by becoming a sponsor via [Open Collective](https://opencollective.com/coreui/).
+  **Administrar Historiales Médicos**
 
-<!--- StartOpenCollectiveBackers -->
+- 📝 Accede al módulo de **“Historial Médico”**.
+- 📄 Registra **diagnósticos, tratamientos, y observaciones**.
+- 🔍 Consulta el historial completo de los pacientes.
 
-### Platinum Sponsors
+  **Gestión de Clientes**
 
-Support this project by [becoming a Platinum Sponsor](https://opencollective.com/coreui/contribute/platinum-sponsor-40959/). A large company logo will be added here with a link to your website.
+- 👥 Añade nuevos **clientes y sus mascotas**.
+- 🔄 Actualiza la **información de contacto** o estado desde el panel de gestión.
 
-<a href="https://opencollective.com/coreui/contribute/platinum-sponsor-40959/checkout"><img src="https://opencollective.com/coreui/tiers/platinum-sponsor/0/avatar.svg?avatarHeight=100"></a>
+**Dashboard**
 
-### Gold Sponsors
+- 📊 Desde el **Dashboard**, visualiza **citas programadas**, cantidad de **clientes activos** y **estadísticas** relevantes.
 
-Support this project by [becoming a Gold Sponsor](https://opencollective.com/coreui/contribute/gold-sponsor-40960/). A big company logo will be added here with a link to your website.
+---
 
-<a href="https://opencollective.com/coreui/contribute/gold-sponsor-40960/checkout"><img src="https://opencollective.com/coreui/tiers/gold-sponsor/0/avatar.svg?avatarHeight=100"></a> 
+##Contribuciones
 
-### Silver Sponsors
+<p>
+¡Las contribuciones son bienvenidas! Si deseas contribuir a VetConnect, sigue estos pasos:
+</p>
 
-Support this project by [becoming a Silver Sponsor](https://opencollective.com/coreui/contribute/silver-sponsor-40967/). A medium company logo will be added here with a link to your website.
+**1. Fork el repositorio**
 
-<a href="https://opencollective.com/coreui/contribute/silver-sponsor-40967/checkout"><img src="https://opencollective.com/coreui/tiers/gold-sponsor/0/avatar.svg?avatarHeight=100"></a>
+- Haz un fork del proyecto en GitHub.
 
-### Bronze Sponsors
+**2. Crea una rama**
 
-Support this project by [becoming a Bronze Sponsor](https://opencollective.com/coreui/contribute/bronze-sponsor-40966/). The company avatar will show up here with a link to your OpenCollective Profile.
+- Crea una nueva rama para tu función o corrección de errores:
 
-<a href="https://opencollective.com/coreui/contribute/bronze-sponsor-40966/checkout"><img src="https://opencollective.com/coreui/tiers/bronze-sponsor/0/avatar.svg?avatarHeight=100"></a> 
+  > _git checkout -b nombre-de-tu-rama_
 
-### Backers
+**3. Realiza tus cambios**
 
-Thanks to all the backers and sponsors! Support this project by [becoming a backer](https://opencollective.com/coreui/contribute/backer-40965/).
+- Haz las modificaciones necesarias y asegúrate de que todo funciona correctamente.
 
-<a href="https://opencollective.com/coreui/contribute/backer-40965/checkout" target="_blank" rel="noopener"><img src="https://opencollective.com/coreui/backers.svg?width=890"></a>
+**4. Envía un pull request**
 
-<!--- EndOpenCollectiveBackers -->
+- Envía un pull request para que podamos revisar tus cambios.
 
-## Copyright and License
+**5. Reportar problemas**
 
-copyright 2017-2024 creativeLabs Łukasz Holeczek.   
+- Si encuentras algún error, no dudes en abrir un issue en el repositorio.
 
- 
-Code released under [the MIT license](https://github.com/coreui/coreui-free-react-admin-template/blob/master/LICENSE).
-There is only one limitation you can't re-distribute the CoreUI as stock. You can’t do this if you modify the CoreUI. In the past, we faced some problems with persons who tried to sell CoreUI based templates.
+---
+
+## 📞 Contacto
+
+Si tienes alguna pregunta o comentario sobre el proyecto, ¡no dudes en contactarnos! Aquí tienes nuestros detalles:
+
+| **Nombre**        | **Correo Electrónico** | **GitHub**                             |
+| ----------------- | ---------------------- | -------------------------------------- |
+| **Brahiam Musse** | tuemail@ejemplo.com    | [GitHub](https://github.com/tuusuario) |
+| **Yeiner Parra**  | tuemail@ejemplo.com    | [GitHub](https://github.com/tuusuario) |
+| **Neider Parra**  | neiderpb24@gmail.com   | [GitHub]https://github.com/neiderp24   |
+
+¡Esperamos tus preguntas!
