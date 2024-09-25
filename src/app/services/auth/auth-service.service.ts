@@ -27,15 +27,7 @@ export class AuthService {
     return this.http.post<any>(`${this.apiUrl}/login`, credentials);
   }
 
-  getUserData(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/user`, this.getHttpOptions());
-  }
-
   logout(): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/logout`, {}, this.getHttpOptions());
-  }
-
-  register(formData: FormData): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/register`, formData);
   }
 }

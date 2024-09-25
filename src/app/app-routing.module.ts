@@ -19,19 +19,17 @@ import { BranchComponent } from './views/companies/branch/branch.component';
 const routes: Routes = [
   {
     path: '',
-    component: LoginComponent,
-    data: {
-      title: 'Login',
-    },
-  },
-  {
-    path: '',
     component: DefaultLayoutComponent,
     data: {
       title: 'Home',
     },
     canActivate: [AuthGuard],
     children: [
+      {
+        path: '',
+        redirectTo: 'dashboard',
+        pathMatch: 'full',
+      },
       {
         path: 'dashboard',
         component: DashboardComponent,
@@ -73,4 +71,4 @@ const routes: Routes = [
   imports: [RouterModule.forRoot(routes, { useHash: false })],
   exports: [RouterModule],
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }

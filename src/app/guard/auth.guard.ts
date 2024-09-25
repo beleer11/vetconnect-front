@@ -16,10 +16,13 @@ export class AuthGuard implements CanActivate {
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): boolean {
+    // Verifica si hay un token de autenticación en localStorage
     if (localStorage.getItem('vet_connect_token')) {
-      return true;
+      return true; // Si hay un token, permite el acceso
     }
+
+    // Si no hay token, redirige a la página de login
     this.router.navigate(['login']);
-    return false;
+    return false; // Deniega el acceso
   }
 }
