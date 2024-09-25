@@ -50,7 +50,8 @@ Sigue estos pasos para instalar y ejecutar VetConnect en tu entorno local:
 
 **1. Clonar el repositorio:**
 ```
- git clone https://github.com/usuario/VetConnect.git
+ git clone direccion-del-repositorio
+ 
 ```
 **2. Navegar al directorio del proyecto**
 ```
@@ -132,8 +133,8 @@ Si tienes alguna pregunta o comentario sobre el proyecto, ¡no dudes en contacta
 
 | **Nombre**        | **Correo Electrónico** | **GitHub**                             |
 | ----------------- | ---------------------- | -------------------------------------- |
-| **Brahiam Musse** | tuemail@ejemplo.com    | [GitHub](https://github.com/tuusuario) |
-| **Yeiner Parra**  | tuemail@ejemplo.com    | [GitHub](https://github.com/tuusuario) |
+| **Brahiam Musse** | mussebrahiam11@gmail.com    | https://github.com/beleer11 |
+| **Yeiner Parra**  | yeinerparrabernal@gmail.com    | https://github.com/yeinerpb |
 | **Neider Parra**  | neiderpb24@gmail.com   | https://github.com/neiderp24   |
 
 ¡Esperamos tus preguntas!
