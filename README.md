@@ -1,4 +1,4 @@
-#**VetConnect**
+# **VetConnect**
 
 ## Tu Asistente Digital para la Gestión Veterinaria
 
@@ -44,7 +44,7 @@ Con **VetConnect**, no solo optimizas la eficiencia, sino que también potencias
 
 ---
 
-## Instalación
+## 🛠️ Instalación
 
 Sigue estos pasos para instalar y ejecutar VetConnect en tu entorno local:
 
@@ -60,7 +60,7 @@ Sigue estos pasos para instalar y ejecutar VetConnect en tu entorno local:
 
 > npm install
 
-	El proyecto estará disponible en
+<p>	El proyecto estará disponible en </p>
   
   (http://localhost:4200/)
 
@@ -93,7 +93,7 @@ Una vez que la aplicación esté en funcionamiento, puedes acceder a **VetConnec
 
 ---
 
-##Contribuciones
+## 🤝 Contribuciones
 
 <p>
 ¡Las contribuciones son bienvenidas! Si deseas contribuir a VetConnect, sigue estos pasos:
