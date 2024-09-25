@@ -82,6 +82,7 @@ import { IconModule, IconSetService } from '@coreui/icons-angular';
 import { iconSubset } from './icons/icon-subset';
 import { RouterModule } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { UserProfilComponent } from './views/user/user-profil/user-profil.component';
 
 const APP_CONTAINERS = [
   DefaultFooterComponent,
@@ -106,6 +107,7 @@ const APP_CONTAINERS = [
     RolComponent,
     GroupButtonGeneralComponent,
     BranchComponent,
+    UserProfilComponent,
   ],
   imports: [
     BrowserModule,
@@ -172,4 +174,4 @@ const APP_CONTAINERS = [
   ],
   bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
