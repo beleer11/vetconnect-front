@@ -62,7 +62,7 @@ Sigue estos pasos para instalar y ejecutar VetConnect en tu entorno local:
 
 <p>	El proyecto estará disponible en </p>
   
-  (http://localhost:4200/)
+  ``` http://localhost:4200/
 
 ---
 
