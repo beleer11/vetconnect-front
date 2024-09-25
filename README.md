@@ -49,22 +49,22 @@ Con **VetConnect**, no solo optimizas la eficiencia, sino que también potencias
 Sigue estos pasos para instalar y ejecutar VetConnect en tu entorno local:
 
 **1. Clonar el repositorio:**
-
-> git clone https://github.com/usuario/VetConnect.git
-
+```
+ git clone https://github.com/usuario/VetConnect.git
+```
 **2. Navegar al directorio del proyecto**
-
-> cd VetConnect
-
+```
+ cd VetConnect
+```
 **3. Instalar las dependencias**
 
-> npm install
-
-<p>	El proyecto estará disponible en </p>
+```
+ npm install
+```
+	El proyecto estará disponible en
   
 ```plaintext
 http://localhost:4200/
-
 ```
 ---
 
@@ -97,9 +97,8 @@ Una vez que la aplicación esté en funcionamiento, puedes acceder a **VetConnec
 
 ## 🤝 Contribuciones
 
-<p>
+
 ¡Las contribuciones son bienvenidas! Si deseas contribuir a VetConnect, sigue estos pasos:
-</p>
 
 **1. Fork el repositorio**
 
@@ -108,9 +107,9 @@ Una vez que la aplicación esté en funcionamiento, puedes acceder a **VetConnec
 **2. Crea una rama**
 
 - Crea una nueva rama para tu función o corrección de errores:
-
-  > _git checkout -b nombre-de-tu-rama_
-
+```
+   git checkout -b nombre-de-tu-rama
+```
 **3. Realiza tus cambios**
 
 - Haz las modificaciones necesarias y asegúrate de que todo funciona correctamente.
