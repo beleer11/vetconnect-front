@@ -40,67 +40,91 @@ export class LoginComponent {
       this.btnLogin = true;
       const datos = this.formLogin.value;
 
-      this.authService.login({ email: datos.correoElectronico, password: datos.contraseña }).subscribe(
-        async (response) => {
-          localStorage.setItem('vet_connect_token', JSON.stringify(response.vet_connect_token));
+      try {
+        const response = await this.authService.login({
+          email: datos.correoElectronico,
+          password: datos.contraseña
+        }).toPromise();
 
-          if (response.permission_module) {
-            localStorage.setItem('permissions', response.permission_module);
-          }
+        this.storeUserData(response);
 
-          if (response.user_information) {
-            localStorage.setItem('user_information', response.user_information);
-          }
+        this.router.navigate(['/dashboard']);
+      } catch (error) {
+        this.btnLogin = false;
+        let errorMessage = this.getErrorMessage(error);
+        const showCancelButton = errorMessage.includes('sesión activa en otro dispositivo');
 
-          this.router.navigate(['/dashboard']);
-        },
-        async (error) => {
-          this.btnLogin = false;
-          let errorMessage = error.error.error;
-          let showCancelButton = false;
+        errorMessage = errorMessage += '<br><br>¿Te gustaría cerrar la sesión activa en este momento?';
 
-          if (errorMessage === 'Ya tienes una sesión activa en otro dispositivo o navegador. Por favor, cierra sesión primero.') {
-            errorMessage += '<br><br>¿Te gustaría cerrar la sesión activa en este momento?';
-            showCancelButton = true;
-          }
+        const result = await this.showAlert(errorMessage, showCancelButton);
 
-          // Utiliza await para manejar la promesa de Swal.fire
-          const result = await Swal.fire({
-            title: 'Advertencia',
-            html: errorMessage,
-            icon: 'warning',
-            showCancelButton: showCancelButton,
-            cancelButtonColor: 'red',
-            confirmButtonColor: 'blue',
-            confirmButtonText: showCancelButton ? 'Sí' : 'OK',
-            cancelButtonText: 'No',
-          });
-
-          if (result.isConfirmed && showCancelButton) {
-            // Esperar a que se cierre el Swal antes de ejecutar el logout
-            await Swal.fire({
-              title: 'Sesión Cerrada',
-              text: 'La sesión activa en otro dispositivo ha sido cerrada exitosamente. ¡Inicia sesión para continuar! 🔒',
-              icon: 'success',
-              confirmButtonText: 'OK',
-            });
-
-            // Luego ejecutar el logout
-            this.authService.logout().subscribe(
-              () => {
-                localStorage.removeItem('vet_connect_token');
-                localStorage.removeItem('permissions');
-                localStorage.removeItem('user_information');
-              },
-              (error) => {
-                console.error(error);
-              }
-            );
-          }
+        if (result.isConfirmed && showCancelButton) {
+          await this.forceLogout(datos.correoElectronico);
+          this.login();
         }
-      );
+      }
     }
   }
 
+  private storeUserData(response: any) {
+    localStorage.setItem('vet_connect_token', JSON.stringify(response.vet_connect_token));
+    if (response.permission_module) {
+      localStorage.setItem('permissions', response.permission_module);
+    }
+    if (response.user_information) {
+      localStorage.setItem('user_information', response.user_information);
+    }
+  }
 
+  private getErrorMessage(error: any): string {
+    return error.error.error || error.error.message;
+  }
+
+  private async showAlert(message: string, showCancelButton: boolean) {
+    return await Swal.fire({
+      title: 'Advertencia',
+      html: message,
+      icon: 'warning',
+      showCancelButton: showCancelButton,
+      cancelButtonColor: 'red',
+      confirmButtonColor: 'blue',
+      confirmButtonText: showCancelButton ? 'Sí' : 'OK',
+      cancelButtonText: 'No',
+    });
+  }
+
+  private async forceLogout(email: string) {
+    Swal.fire({
+      title: 'Cerrando sesión...',
+      text: 'Por favor, espere mientras cerramos la sesión activa en otro dispositivo.',
+      icon: 'info',
+      showConfirmButton: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
+    try {
+      await this.authService.forceLogout(email).toPromise();
+
+      Swal.fire({
+        title: 'Sesión Cerrada',
+        text: 'La sesión activa en otro dispositivo ha sido cerrada exitosamente. Te llevaremos a tu cuenta en unos segundos...',
+        icon: 'success',
+        timer: 3000,
+        timerProgressBar: true,
+        showConfirmButton: false,
+        willClose: () => {
+          this.router.navigate(['/dashboard']);
+        }
+      });
+    } catch (err) {
+      await Swal.fire({
+        title: 'Error',
+        text: 'Hubo un problema al cerrar la sesión. Inténtalo de nuevo más tarde.',
+        icon: 'error',
+        confirmButtonText: 'OK',
+      });
+    }
+  }
 }
