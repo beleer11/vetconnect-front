@@ -1,11 +1,14 @@
 import { Component } from '@angular/core';
 import { Location } from '@angular/common';
-
+import { GridModule, CardModule } from '@coreui/angular';
 
 @Component({
   selector: 'app-terms-and-conditions',
   standalone: true,
-  imports: [],
+  imports: [
+    GridModule,
+    CardModule
+  ],
   templateUrl: './terms-and-conditions.component.html',
   styleUrl: './terms-and-conditions.component.css'
 })
