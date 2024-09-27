@@ -219,7 +219,7 @@ export class PermissionComponent implements OnInit {
           },
           error: (error) => {
             this.loading = false;
-            this.generalService.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.', 'error');
+            this.generalService.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo. Si el problema persiste, comunícate con soporte técnico', 'error');
           }
         });
       }
@@ -251,7 +251,7 @@ export class PermissionComponent implements OnInit {
           },
           error: (error) => {
             this.loading = false;
-            this.generalService.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.', 'error');
+            this.generalService.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo. Si el problema persiste, comunícate con soporte técnico', 'error');
           }
         });
       }

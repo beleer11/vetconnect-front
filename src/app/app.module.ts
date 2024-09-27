@@ -16,9 +16,13 @@ import { WidgetsModule } from './views/widgets/widgets.module';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ModalModule } from '@coreui/angular';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
 
 //Pipe
 import { PipeModule } from './pipes/pipe.module';
+
+//Interceptor
+import { AuthInterceptor } from './interceptors/auth.interceptor';
 
 //Angular material
 import { MatSelectModule } from '@angular/material/select';
@@ -167,6 +171,11 @@ const APP_CONTAINERS = [
         iconSetService.icons = iconSubset as any;
         return iconSetService;
       },
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
     },
     IconSetService,
     Title,

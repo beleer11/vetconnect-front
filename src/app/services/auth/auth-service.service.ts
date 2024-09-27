@@ -30,4 +30,9 @@ export class AuthService {
   logout(): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/logout`, {}, this.getHttpOptions());
   }
+
+  forceLogout(email: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/force-logout`, { email });
+  }
+
 }

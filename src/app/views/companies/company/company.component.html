@@ -70,7 +70,7 @@
                   <div class="col-12 col-md-6 form-group mb-sm-0 mb-4">
                     <label for="logo" class="mb-1 bolder">Logo</label>
                     <input id="logo" formControlName="logo" type="file" class="form-control"
-                      [ngClass]="getValidationClass('logo')" />
+                      [ngClass]="getValidationClass('logo')" (change)="onFileSelected($event)" />
                   </div>
                   <!-- Campo Razón Social -->
                   <div class="col-12 col-md-6 form-group mb-0">
@@ -112,7 +112,7 @@
                   <div class="col-12 col-md-6 form-group mb-0">
                     <label for="tax_id" class="mb-1 bolder">NIT</label>
                     <input id="tax_id" formControlName="tax_id" type="text" class="form-control"
-                      [ngClass]="getValidationClass('tax_id')" (keydown)="validateNumberInput($event)" maxlength="12"/>
+                      [ngClass]="getValidationClass('tax_id')" (keydown)="validateNumberInput($event)" maxlength="12" />
                     <div
                       *ngIf="formCompany.get('tax_id')?.invalid && (formCompany.get('tax_id')?.touched || formCompany.get('tax_id')?.dirty)"
                       class="invalid-feedback">
@@ -168,3 +168,9 @@
     </c-card>
   </c-col>
 </c-row>
+<div id="svg-container" style="display:none;">
+  <img
+    [src]="(dataTemp.logo === null || dataTemp.logo === '') ? '../../../../assets/images/mobile-logo.png' : environment.apiStorage + dataTemp.logo"
+    alt="User Image" width="250" height="250" style="border-radius: 50%;"
+    [ngClass]="{'grayscale': dataTemp.logo === null || dataTemp.logo === ''}">
+</div>

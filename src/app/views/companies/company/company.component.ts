@@ -4,6 +4,7 @@ import { CompanyService } from '../../../services/companies/company/company.serv
 import { GeneralService } from '../../../services/general/general.service';
 import Swal from 'sweetalert2';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-company',
@@ -34,6 +35,7 @@ export class CompanyComponent implements OnInit {
     page: 1,
     pageSize: 10
   };
+  public environment = environment;
 
   constructor(
     private companyService: CompanyService,
@@ -69,14 +71,18 @@ export class CompanyComponent implements OnInit {
   async onFileSelected(event: any) {
     const file = event.target.files[0];
     if (file) {
+      console.log(file)
       this.selectedFile = await this.generalService.convertToBase64Files(file);
+      console.log(this.selectedFile)
     }
   }
 
   handleAction(event: { id: number; action: string }) {
+    this.dataTemp = [];
     const { id, action } = event;
     this.action = action;
     this.dataTemp = this.dataCompany.find((item: any) => item.id === id);
+    console.log(this.dataTemp)
 
     if (action === 'edit') {
       this.setDataForm();
@@ -144,6 +150,7 @@ export class CompanyComponent implements OnInit {
       return {
         id: item.id,
         Nombre: item.name,
+        Logo: (item.logo !== null) ? environment.apiStorage + item.logo : null,
         "Correo electrónico": item.email,
         "Razón social": item.legal_representative,
         is_disabled: item.is_active,
@@ -152,11 +159,11 @@ export class CompanyComponent implements OnInit {
   }
 
   private getFieldsTable() {
-    return ['Nombre', 'Correo electrónico', 'Razón social'];
+    return ['Nombre', 'Correo electrónico', 'Razón social', 'Logo'];
   }
 
   private getColumnAlignments() {
-    return ['left', 'left', 'center'];
+    return ['left', 'left', 'center', 'center'];
   }
 
   validateNumberInput(event: KeyboardEvent) {
@@ -227,16 +234,18 @@ export class CompanyComponent implements OnInit {
   }
 
   disableOrEnableRecord(data: any) {
-    const actionText = data.is_active === 0 ? 'habilitar' : 'inhabilitar';
+    const actionText = (data.is_active === 0) ? 'habilitar' : 'inhabilitar';
+    const actionTextPlural = (data.is_active === 0) ? 'habilitados' : 'inhabilitados';
     const confirmButtonText =
-      data.is_active === 0 ? 'Sí, habilitar' : 'Sí, inhabilitar';
+      (data.is_active === 0) ? 'Sí, habilitar' : 'Sí, inhabilitar';
     const successMessage =
-      data.is_active === 0
+      (data.is_active === 0)
         ? 'El registro ha sido habilitado correctamente.'
         : 'El registro ha sido inhabilitado correctamente.';
 
     Swal.fire({
       title: `¿Deseas ${actionText} este registro?`,
+      html: `<strong>Tenga en cuenta que al ${actionText} esta compañía, todas las sucursales asociadas y los usuarios de dichas sucursales también serán ${actionTextPlural}. Asegúrese de que esto sea lo que desea hacer.</strong>`,
       icon: 'question',
       showCancelButton: true,
       confirmButtonColor: '#f39c12',
@@ -249,19 +258,27 @@ export class CompanyComponent implements OnInit {
         const action = data.is_active === 0 ? 'enable' : 'disable';
         this.actionMap[action](data.id).subscribe({
           next: (response: any) => {
-            this.onFetchData(this.parameterDefect);
+            if (response.success) {
+              this.onFetchData(this.parameterDefect);
+              this.generalService.alertMessage(
+                '¡Éxito!',
+                successMessage,
+                'success'
+              );
+            } else {
+              this.generalService.alertMessage(
+                'Error',
+                'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo. Si el problema persiste, comunícate con soporte técnico',
+                'error'
+              );
+            }
             this.loading = false;
-            this.generalService.alertMessage(
-              '¡Éxito!',
-              successMessage,
-              'success'
-            );
           },
           error: (error: any) => {
             this.loading = false;
             this.generalService.alertMessage(
               'Error',
-              'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.',
+              'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo. Si el problema persiste, comunícate con soporte técnico',
               'error'
             );
           },
@@ -333,19 +350,30 @@ export class CompanyComponent implements OnInit {
         this.loading = true;
         this.companyService.deleteRecordById(id).subscribe({
           next: (response) => {
-            this.onFetchData(this.parameterDefect);
+            if (response.success) {
+              this.onFetchData(this.parameterDefect);
+              this.generalService.alertMessage(
+                '¡Eliminado!',
+                'El registro ha sido eliminado correctamente.',
+                'success'
+              );
+            } else {
+              const branchesMessage = response.branches.join(', ');
+              const fullMessage = `No puedes eliminar la compañía porque tiene sucursales asociadas:<br><br><strong>${branchesMessage}</strong><br><br>Por favor, elimina primero las sucursales antes de intentar eliminar la compañía.`;
+
+              this.generalService.alertMessageHtml(
+                'Error',
+                fullMessage,
+                'error'
+              );
+            }
             this.loading = false;
-            this.generalService.alertMessage(
-              '¡Eliminado!',
-              'El registro ha sido eliminado correctamente.',
-              'success'
-            );
           },
           error: (error) => {
             this.loading = false;
             this.generalService.alertMessage(
               'Error',
-              'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.',
+              'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo. Si el problema persiste, comunícate con soporte técnico',
               'error'
             );
           },
@@ -364,6 +392,7 @@ export class CompanyComponent implements OnInit {
       title: 'Companía',
       html: `
         <div id="custom-icon-container">
+          <p><strong>Logo: </strong><p id="foto-placeholder"></p></p>
           <p><strong>Nombre: </strong> <span>${data.name}</span></p>
           <p><strong>Correo electrónico: </strong> <span>${data.email}</span></p>
           <p><strong>Razón Social: </strong> <span>${data.business_name}</span></p>
@@ -374,6 +403,14 @@ export class CompanyComponent implements OnInit {
       `,
       icon: 'info',
       confirmButtonText: 'Cerrar',
+      didOpen: () => {
+        const fotoPlaceholder = document.getElementById('foto-placeholder');
+        const svgContainer = document.getElementById('svg-container');
+
+        if (fotoPlaceholder && svgContainer) {
+          fotoPlaceholder.innerHTML = svgContainer.innerHTML;
+        }
+      }
     });
   }
 

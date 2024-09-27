@@ -131,4 +131,14 @@ export class GeneralService {
       confirmButtonText: 'OK'
     });
   }
+
+  // Alerta con html  general
+  public alertMessageHtml(title: any, html: any, icon: any) {
+    Swal.fire({
+      title: title,
+      html: html,
+      icon: icon,
+      confirmButtonText: 'OK'
+    });
+  }
 }
