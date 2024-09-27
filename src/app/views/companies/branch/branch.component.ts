@@ -50,7 +50,7 @@ export class BranchComponent {
     private fb: FormBuilder,
     private generalService: GeneralService,
     private companyService: CompanyService
-  ) {}
+  ) { }
 
   async ngOnInit() {
     this.createForm();
@@ -251,6 +251,7 @@ export class BranchComponent {
 
   disableOrEnableRecord(data: any) {
     const actionText = data.is_active === 0 ? 'habilitar' : 'inhabilitar';
+    const actionTextPlural = (data.is_active === 0) ? 'habilitados' : 'inhabilitados';
     const confirmButtonText =
       data.is_active === 0 ? 'Sí, habilitar' : 'Sí, inhabilitar';
     const successMessage =
@@ -260,6 +261,7 @@ export class BranchComponent {
 
     Swal.fire({
       title: `¿Deseas ${actionText} este registro?`,
+      html: `<strong>Tenga en cuenta que al ${actionText} esta sucursal, los usuarios de esta sucursal también serán ${actionTextPlural}. Asegúrese de que esto sea lo que desea hacer.</strong>`,
       icon: 'question',
       showCancelButton: true,
       confirmButtonColor: '#f39c12',
@@ -272,19 +274,27 @@ export class BranchComponent {
         const action = data.is_active === 0 ? 'enable' : 'disable';
         this.actionMap[action](data.id).subscribe({
           next: (response: any) => {
-            this.onFetchData(this.parameterDefect);
+            if (response.success) {
+              this.onFetchData(this.parameterDefect);
+              this.generalService.alertMessage(
+                '¡Éxito!',
+                successMessage,
+                'success'
+              );
+            } else {
+              this.generalService.alertMessage(
+                'Error',
+                'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo. Si el problema persiste, comunícate con soporte técnico',
+                'error'
+              );
+            }
             this.loading = false;
-            this.generalService.alertMessage(
-              '¡Éxito!',
-              successMessage,
-              'success'
-            );
           },
           error: (error: any) => {
             this.loading = false;
             this.generalService.alertMessage(
               'Error',
-              'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.',
+              'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo. Si el problema persiste, comunícate con soporte técnico',
               'error'
             );
           },
@@ -433,19 +443,29 @@ export class BranchComponent {
         this.loading = true;
         this.branchService.deleteRecordById(id).subscribe({
           next: (response) => {
-            this.onFetchData(this.parameterDefect);
+            if (response.success) {
+              this.onFetchData(this.parameterDefect);
+              this.generalService.alertMessage(
+                '¡Eliminado!',
+                'El registro ha sido eliminado correctamente.',
+                'success'
+              );
+            } else {
+              const branchesMessage = response.branches.join(', ');
+              const fullMessage = `No puedes eliminar la sucursal porque tiene usuarios asociados:<br><br><strong>${branchesMessage}</strong><br><br>Por favor, elimina primero los usuarios antes de intentar eliminar la sucursal.`;
+              this.generalService.alertMessageHtml(
+                'Error',
+                fullMessage,
+                'error'
+              );
+            }
             this.loading = false;
-            this.generalService.alertMessage(
-              '¡Eliminado!',
-              'El registro ha sido eliminado correctamente.',
-              'success'
-            );
           },
           error: (error) => {
             this.loading = false;
             this.generalService.alertMessage(
               'Error',
-              'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.',
+              'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo. Si el problema persiste, comunícate con soporte técnico',
               'error'
             );
           },
@@ -460,18 +480,17 @@ export class BranchComponent {
       html: `
         <div id="custom-icon-container">
           <p><strong>Nombre : </strong> <span>${data.name}</span> </p>
-          <p><strong>Descripción : </strong> <span>${
-            data.description
-          }</span> </p>
+          <p><strong>Descripción : </strong> <span>${data.description
+        }</span> </p>
           <p><strong>Compañía : </strong> <span>${data.company_name}</span> </p>
           <p><strong>Dirección : </strong> <span>${data.address}</span> </p>
           <p><strong>Teléfono : </strong> <span>${data.phone}</span> </p
           <p><strong>Fecha de Creación: </strong> <span>${moment(
-            data.created_at
-          ).format('DD/MM/YYYY hh:mm:ss A')}</span></p>
+          data.created_at
+        ).format('DD/MM/YYYY hh:mm:ss A')}</span></p>
           <p><strong>Última actualización: </strong> <span>${moment(
-            data.updated_at
-          ).format('DD/MM/YYYY hh:mm:ss A')}</span></p>
+          data.updated_at
+        ).format('DD/MM/YYYY hh:mm:ss A')}</span></p>
         </div>
       `,
       icon: 'info',

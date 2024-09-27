@@ -58,6 +58,7 @@ export class UserComponent implements OnInit {
   public dataCompany: any = [];
   public dataBranch: any = [];
   public loadingBranch: boolean = false;
+  public environment = environment;
 
   constructor(
     private userService: UserService,
@@ -647,7 +648,6 @@ export class UserComponent implements OnInit {
 
   async handleAction(event: { id: number, action: string }) {
     const { id, action } = event;
-    this.dataTemp.image_profile = '';
     this.action = action;
     this.dataTemp = this.dataUser.find((item: any) => item.id === id);
 
@@ -669,7 +669,6 @@ export class UserComponent implements OnInit {
     }
 
     if (action === "view") {
-      this.dataTemp.image_profile = (this.dataTemp.image_profile === null) ? '../../../../assets/images/veterinario-black-img.png' : environment.apiStorage + this.dataTemp.image_profile;
       this.openModalView(this.dataTemp);
     }
 
@@ -725,7 +724,7 @@ export class UserComponent implements OnInit {
           },
           error: (error: any) => {
             this.loading = false;
-            this.generalService.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.', 'error');
+            this.generalService.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo. Si el problema persiste, comunícate con soporte técnico', 'error');
           }
         });
       }
@@ -758,7 +757,7 @@ export class UserComponent implements OnInit {
           },
           error: (error) => {
             this.loading = false;
-            this.generalService.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.', 'error');
+            this.generalService.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo. Si el problema persiste, comunícate con soporte técnico', 'error');
           }
         });
       }

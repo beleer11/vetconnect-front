@@ -229,7 +229,7 @@ export class GroupModuleComponent implements OnInit {
             this.loading = false;
             this.generalService.alertMessage(
               'Error',
-              'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.',
+              'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo. Si el problema persiste, comunícate con soporte técnico',
               'error'
             );
           },
@@ -269,7 +269,7 @@ export class GroupModuleComponent implements OnInit {
             this.loading = false;
             this.generalService.alertMessage(
               'Error',
-              'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.',
+              'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo. Si el problema persiste, comunícate con soporte técnico',
               'error'
             );
           },
