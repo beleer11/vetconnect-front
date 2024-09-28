@@ -1,7 +1,4 @@
-<!--
 <app-loading-spinner *ngIf="loading"></app-loading-spinner>
--->
-
 <c-row>
   <c-col xs>
     <c-card class="mb-4">
@@ -23,8 +20,7 @@
             </button>
           </li>
           <li class="nav-item" role="presentation">
-            <button class="nav-link tab-custom" id="permissions-tab" [class.disabled]="!formUserProfil.valid"
-              [attr.aria-disabled]="!formUserProfil.valid" data-bs-toggle="tab" data-bs-target="#permissions"
+            <button class="nav-link tab-custom" id="permissions-tab" data-bs-toggle="tab" data-bs-target="#permissions"
               type="button" role="tab" aria-controls="permissions" aria-selected="false">
               <span class="bolder">Permisos</span>
             </button>
@@ -87,20 +83,12 @@
                   <div class="col-md-6">
                     <div class="form-group">
                       <label for="role" class="bolder mb-1">Rol</label>
-                      <mat-select formControlName="rol_id" placeholder="Seleccionar rol"
-                        (selectionChange)="selectRol($event.value)" ultiple="false" class="form-control"
-                        [ngClass]="getValidationClass('rol_id')">
-                        <ngx-mat-select-search [formControl]="searchControl" placeholderLabel="Buscar rol"
-                          noEntriesFoundLabel="No se encontraron resultados">
-                        </ngx-mat-select-search>
-                        <mat-option *ngFor="let rol of dataRol | filterRol : searchControl.value" [value]="rol.id">
+                      <mat-select formControlName="rol_id" placeholder="Seleccionar rol" multiple="false"
+                        class="form-control" [ngClass]="getValidationClass('rol_id')">
+                        <mat-option *ngFor="let rol of dataRol" [value]="rol.id">
                           {{rol.name}}
                         </mat-option>
                       </mat-select>
-                      <button *ngIf="formUserProfil.get('rol_id')?.value" mat-icon-button (click)="clearSelection()"
-                        class="clear-icon">
-                        <mat-icon>close</mat-icon>
-                      </button>
                       <div
                         *ngIf="formUserProfil.get('rol_id')?.invalid && (formUserProfil.get('rol_id')?.touched || formUserProfil.get('rol_id')?.dirty)"
                         class="invalid-feedback">
@@ -117,20 +105,11 @@
                     <div class="form-group">
                       <label for="company" class="bolder mb-1">Compañia</label>
                       <mat-select formControlName="company_id" placeholder="Seleccionar compañia" ultiple="false"
-                        class="form-control" [ngClass]="getValidationClass('company_id')"
-                        (selectionChange)="getBranchByCompany($event.value)">
-                        <ngx-mat-select-search [formControl]="searchControl" placeholderLabel="Buscar compañia"
-                          noEntriesFoundLabel="No se encontraron resultados">
-                        </ngx-mat-select-search>
-                        <mat-option *ngFor="let company of dataCompany | filterCompany : searchControl.value"
-                          [value]="company.id">
+                        class="form-control" [ngClass]="getValidationClass('company_id')">
+                        <mat-option *ngFor="let company of dataCompany" [value]="company.id">
                           {{ company.name }}
                         </mat-option>
                       </mat-select>
-                      <button *ngIf="formUserProfil.get('company_id')?.value" mat-icon-button
-                        (click)="clearSelectionCompany()" class="clear-icon">
-                        <mat-icon>close</mat-icon>
-                      </button>
                       <div
                         *ngIf="formUserProfil.get('company_id')?.invalid && (formUserProfil.get('company_id')?.touched ||formUserProfil.get('company_id')?.dirty)"
                         class="invalid-feedback">
@@ -146,23 +125,10 @@
                       <label for="role" class="bolder mb-1">Sucursal</label>
                       <mat-select formControlName="branch_id" placeholder="Seleccionar sucursal" multiple="false"
                         class="form-control" [ngClass]="getValidationClass('branch_id')">
-                        <ngx-mat-select-search [formControl]="searchControl" placeholderLabel="Buscar sucursar"
-                          noEntriesFoundLabel="No se encontraron resultados">
-                        </ngx-mat-select-search>
-                        <mat-option *ngFor="let branch of dataBranch | filterRol : searchControl.value"
-                          [value]="branch.id">
+                        <mat-option *ngFor="let branch of dataBranch" [value]="branch.id">
                           {{branch.name}}
                         </mat-option>
                       </mat-select>
-                      <ng-container *ngIf="loadingBranch; else closeButton">
-                        <mat-spinner diameter="24" strokeWidth="3" class="spinner"></mat-spinner>
-                      </ng-container>
-                      <ng-template #closeButton>
-                        <button *ngIf="formUserProfil.get('branch_id')?.value" mat-icon-button
-                          (click)="clearSelectionBranch()" class="clear-icon">
-                          <mat-icon>close</mat-icon>
-                        </button>
-                      </ng-template>
                       <div
                         *ngIf="formUserProfil.get('branch_id')?.invalid && (formUserProfil.get('branch_id')?.touched || formUserProfil.get('branch_id')?.dirty)"
                         class="invalid-feedback">
@@ -184,7 +150,7 @@
                           accept="image/png, image/jpeg, image/jpg" [ngClass]="getValidationClass('image_profile')"
                           (change)="onFileSelected($event)" />
                         <span class="input-group-text" data-bs-toggle="tooltip" data-bs-placement="top"
-                          (click)="openInformation(2)" style="cursor: pointer;">?</span>
+                          (click)="openInformation()" style="cursor: pointer;">?</span>
                       </div>
                     </div>
                   </div>
@@ -233,8 +199,7 @@
                     </div>
                   </div>
                   <div class="col-12 col-md-6 d-flex justify-content-end" style="height: 40px;">
-                    <button type="button" class="btn btn-primary" [disabled]="formUserProfil.invalid"
-                      (click)="goToNextTab()">
+                    <button type="button" class="btn btn-primary" (click)="goToNextTab()">
                       Siguiente
                     </button>
                   </div>
@@ -244,73 +209,52 @@
             </form>
           </div>
           <!-- Permisos -->
-
-          <!--
-                  <div class="tab-pane fade" id="permissions" role="tabpanel" aria-labelledby="permissions-tab">
-                      <div class="container pt-3">
-                          <div class="d-flex justify-content-between align-items-center mb-3">
-                              <div class="d-flex align-items-center">
-                                  <button class="btn btn-warning" (click)="suggestedPermission()">Sugerir
-                                      permisos</button>
-                                  <span class="input-group-text" data-bs-toggle="tooltip" data-bs-placement="top"
-                                      (click)="openInformation(3)" style="cursor: pointer;">?</span>
-                              </div>
-                              <button class="btn btn-primary" (click)="selectAllPermissions()">{{ textSelectAll
-                                  }}</button>
+          <div class="tab-pane fade" id="permissions" role="tabpanel" aria-labelledby="permissions-tab">
+            <div class="container pt-3">
+              <mat-accordion class="pt-3 pe-2 ps-2">
+                <mat-expansion-panel *ngFor="let group of dataPermission.groups; let i = index" [expanded]="i === 0"
+                  class="group-panel">
+                  <mat-expansion-panel-header>
+                    <mat-panel-title class="panel-title font-size-16">
+                      <span>{{ group.name }}</span>
+                    </mat-panel-title>
+                  </mat-expansion-panel-header>
+                  <div *ngIf="getModulesByGroup(group.id).length > 0">
+                    <mat-accordion class="pe-2 ps-2">
+                      <mat-expansion-panel *ngFor="let module of getModulesByGroup(group.id); let j = index"
+                        [expanded]="j === 0">
+                        <mat-expansion-panel-header>
+                          <mat-panel-title class="panel-title font-size-16">
+                            {{ module.name }}
+                          </mat-panel-title>
+                        </mat-expansion-panel-header>
+                        <div class="row d-flex justify-content-center">
+                          <div *ngFor="let permission of dataPermission.permissions" class="col-auto mb-2">
+                            <mat-checkbox color="primary" [checked]="checkedPermiso(module.id, permission.id)" disabled>
+                              {{ permission.name }}
+                            </mat-checkbox>
                           </div>
-                          <mat-accordion class="pt-3 pe-2 ps-2">
-                              <mat-expansion-panel *ngFor="let group of dataPermission.groups; let i = index"
-                                  [expanded]="i === 0" class="group-panel">
-                                  <mat-expansion-panel-header>
-                                      <mat-panel-title class="panel-title font-size-16">
-                                          <span>{{ group.name }}</span>
-                                      </mat-panel-title>
-                                  </mat-expansion-panel-header>
-                                  <div *ngIf="getModulesByGroup(group.id).length > 0">
-                                      <mat-accordion class="pe-2 ps-2">
-                                          <mat-expansion-panel
-                                              *ngFor="let module of getModulesByGroup(group.id); let j = index"
-                                              [expanded]="j === 0">
-                                              <mat-expansion-panel-header>
-                                                  <mat-panel-title class="panel-title font-size-16">
-                                                      {{ module.name }}
-                                                  </mat-panel-title>
-                                              </mat-expansion-panel-header>
-                                              <div class="row d-flex justify-content-center">
-                                                  <div *ngFor="let permission of dataPermission.permissions"
-                                                      class="col-auto mb-2">
-                                                      <mat-checkbox
-                                                          [checked]="checkedPermiso(module.id, permission.id)"
-                                                          (change)="togglePermission(module.id, permission.id)"
-                                                          color="primary">
-                                                          {{ permission.name }}
-                                                      </mat-checkbox>
-                                                  </div>
-                                              </div>
-                                          </mat-expansion-panel>
-                                      </mat-accordion>
-                                  </div>
-                                  <div *ngIf="getModulesByGroup(group.id).length <= 0"
-                                      class="d-flex justify-content-center">
-                                      Este grupo no tiene módulos asignados
-                                  </div>
-                              </mat-expansion-panel>
-                          </mat-accordion>
-
-                      </div>
-                      <div class="d-flex justify-content-between pb-2 pt-2">
-                          <button class="btn btn-previous text-white ms-2"
-                              (click)="goToPreviewTab()">Anterior</button>
-                          <button class="btn btn-submit text-white me-2" (click)="onSubmit()">Enviar</button>
-                      </div>
+                        </div>
+                      </mat-expansion-panel>
+                    </mat-accordion>
                   </div>
-                  -->
+                  <div *ngIf="getModulesByGroup(group.id).length <= 0" class="d-flex justify-content-center">
+                    Este grupo no tiene módulos asignados
+                  </div>
+                </mat-expansion-panel>
+              </mat-accordion>
+
+            </div>
+            <div class="d-flex justify-content-between pb-2 pt-2">
+              <button class="btn btn-previous text-white ms-2" (click)="goToPreviewTab()">Anterior</button>
+              <button class="btn btn-submit text-white me-2" (click)="onSubmit()"
+                [disabled]="formUserProfil.invalid">Enviar</button>
+            </div>
+          </div>
         </div>
-        <!--
-              <div class="d-flex justify-content-center mt-3">
-                  <button class="btn btn-back text-white" (click)="backToTable()">Atrás</button>
-              </div>
-              -->
+        <div class="d-flex justify-content-center mt-3">
+          <button class="btn btn-back text-white" (click)="goBack()">Atrás</button>
+        </div>
       </c-card-body>
     </c-card>
   </c-col>
