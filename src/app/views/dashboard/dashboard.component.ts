@@ -2,7 +2,7 @@ import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 
 import { DashboardChartsData, IChartProps } from './dashboard-charts-data';
-import { GeneralService } from 'src/app/services/general/general.service';
+import { GeneralService } from '../../services/general/general.service';
 interface IUser {
   name: string;
   state: string;

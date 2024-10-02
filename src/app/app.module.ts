@@ -36,6 +36,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { MatSpinner } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 //pages
 import { LoginComponent } from './pages/login/login.component';
@@ -52,6 +53,7 @@ import { CompanyComponent } from './views/companies/company/company.component';
 import { RolComponent } from './views/user/rol/rol.component';
 import { GroupButtonGeneralComponent } from './shared/group-button-general/group-button-general.component';
 import { BranchComponent } from './views/companies/branch/branch.component';
+import { FilterHeaderComponent } from './shared/filter-header/filter-header.component';
 
 // Import containers
 import {
@@ -110,6 +112,7 @@ const APP_CONTAINERS = [
     RolComponent,
     GroupButtonGeneralComponent,
     BranchComponent,
+    FilterHeaderComponent
   ],
   imports: [
     BrowserModule,
@@ -155,6 +158,7 @@ const APP_CONTAINERS = [
     NgxMatSelectSearchModule,
     ModalModule,
     MatSpinner,
+    MatTooltipModule,
     RouterModule.forRoot([], { useHash: false }),
   ],
   providers: [

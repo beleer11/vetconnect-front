@@ -8,9 +8,9 @@ import {
 } from '@angular/forms';
 import moment from 'moment';
 import * as bootstrap from 'bootstrap';
-import { GeneralService } from 'src/app/services/general/general.service';
-import { UserService } from 'src/app/services/user/user/user.service';
-import { CompanyService } from 'src/app/services/companies/company/company.service';
+import { GeneralService } from '../../../services/general/general.service';
+import { UserService } from '../../../services/user/user/user.service';
+import { CompanyService } from '../../../services/companies/company/company.service';
 import Swal from 'sweetalert2';
 import { Observable } from 'rxjs';
 

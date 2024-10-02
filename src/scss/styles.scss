@@ -42,13 +42,6 @@ body {
   font-size: 16px !important;
 }
 
-/* Para pantallas de 1920px o más */
-@media (min-width: 1920px) {
-  body {
-    zoom: 1.1; /* Zoom del 110% */
-  }
-}
-
 @media (max-width: 576px) {
   body {
     font-size: 14px !important;

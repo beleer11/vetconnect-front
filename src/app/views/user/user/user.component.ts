@@ -631,6 +631,7 @@ export class UserComponent implements OnInit {
     this.formUser.get('company_id')?.reset();
     this.formUser.get('company_id')?.markAsTouched();
     this.formUser.controls['branch_id'].disable();
+    this.clearSelectionBranch();
     this.dataBranch = [];
   }
 

@@ -4,7 +4,7 @@ import { CompanyService } from '../../../services/companies/company/company.serv
 import { GeneralService } from '../../../services/general/general.service';
 import Swal from 'sweetalert2';
 import { Observable } from 'rxjs';
-import { environment } from 'src/environments/environment';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-company',
@@ -28,14 +28,9 @@ export class CompanyComponent implements OnInit {
   public totalRecord: number = 0;
   public loadingTable: boolean = false;
   public acciones: boolean = true;
-  public parameterDefect = {
-    search: '',
-    sortColumn: 'name',
-    sortOrder: 'desc',
-    page: 1,
-    pageSize: 10
-  };
+  public parameterDefect = {};
   public environment = environment;
+  public viewTable: boolean = false;
 
   constructor(
     private companyService: CompanyService,
@@ -45,9 +40,6 @@ export class CompanyComponent implements OnInit {
 
   async ngOnInit() {
     this.createForm();
-    this.dataCompanyTrasnform = await this.getData();
-    this.fieldsTable = this.getFieldsTable();
-    this.columnAlignments = this.getColumnAlignments();
     this.loading = false;
   }
 
@@ -127,17 +119,16 @@ export class CompanyComponent implements OnInit {
     this.formCompany.reset();
   }
 
-  private async getData(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.companyService.getDataCompanies(this.parameterDefect).subscribe(
-        response => {
-          this.dataCompany = response.data;
-          this.totalRecord = response.total;
-          resolve(this.formatedData(response.data));
-        },
-        error => reject(error)
-      );
-    });
+  private async getData() {
+    this.companyService.getDataCompanies(this.parameterDefect).subscribe(
+      response => {
+        this.dataCompany = response.data;
+        this.totalRecord = response.total;
+        this.dataCompanyTrasnform = this.formatedData(response.data);
+        this.viewTable = true;
+        this.loading = false;
+      },
+    );
   }
 
   public formatedData(response: any, fecth = false) {
@@ -158,11 +149,11 @@ export class CompanyComponent implements OnInit {
     });
   }
 
-  private getFieldsTable() {
+  public getFieldsTable() {
     return ['Nombre', 'Correo electrónico', 'Razón social', 'Logo'];
   }
 
-  private getColumnAlignments() {
+  public getColumnAlignments() {
     return ['left', 'left', 'center', 'center'];
   }
 
@@ -442,5 +433,24 @@ export class CompanyComponent implements OnInit {
       this.loadingTable = false;
       console.error('Error fetching data', error);
     });
+  }
+
+  setFilter(event: any) {
+    this.loading = true;
+    this.parameterDefect = {
+      dateInit: event.dateInit,
+      dateFinish: event.dateFinish,
+      company_id: event.company_id,
+      branch_id: event.branch_id,
+      state: event.state,
+      name: event.name,
+      email: event.email,
+      search: '',
+      sortColumn: 'name',
+      sortOrder: 'desc',
+      page: 1,
+      pageSize: 10
+    }
+    this.dataCompanyTrasnform = this.getData();
   }
 }
