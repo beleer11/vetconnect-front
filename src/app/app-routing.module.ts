@@ -15,6 +15,7 @@ import { CompanyComponent } from './views/companies/company/company.component';
 import { RolComponent } from './views/user/rol/rol.component';
 import { BranchComponent } from './views/companies/branch/branch.component';
 import { TermsAndConditionsComponent } from './shared/terms-and-conditions/terms-and-conditions.component';
+import { UserProfilComponent } from './views/user/user-profil/user-profil.component';
 
 // Define las rutas directamente aquí
 const routes: Routes = [
@@ -67,6 +68,9 @@ const routes: Routes = [
         path: 'terms-and-conditions',
         component: TermsAndConditionsComponent
       },
+      { path: 'branch', component: BranchComponent },
+
+      { path: 'user-profil', component: UserProfilComponent },
     ],
   },
   { path: 'login', component: LoginComponent },

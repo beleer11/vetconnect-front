@@ -1,25 +1,25 @@
 .tab-custom.disabled {
-    pointer-events: none;
-    opacity: 0.5;
+  pointer-events: none;
+  opacity: 0.5;
 }
 
 .border-tab {
-    border-left: 1px solid #e4e0e0;
-    border-bottom: 1px solid #e4e0e0;
-    border-right: 1px solid #e4e0e0;
+  border-left: 1px solid #e4e0e0;
+  border-bottom: 1px solid #e4e0e0;
+  border-right: 1px solid #e4e0e0;
 }
 
 .btn-back {
-    background-color: #6c757d;
-    border-color: #6c757d;
+  background-color: #6c757d;
+  border-color: #6c757d;
 }
 
 .btn-previous {
-    background-color: #dc3545;
-    border-color: #dc3545;
+  background-color: #dc3545;
+  border-color: #dc3545;
 }
 
 .btn-submit {
-    background-color: #28a745;
-    border-color: #28a745;
+  background-color: #28a745;
+  border-color: #28a745;
 }

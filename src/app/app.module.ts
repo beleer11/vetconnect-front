@@ -54,6 +54,7 @@ import { RolComponent } from './views/user/rol/rol.component';
 import { GroupButtonGeneralComponent } from './shared/group-button-general/group-button-general.component';
 import { BranchComponent } from './views/companies/branch/branch.component';
 import { FilterHeaderComponent } from './shared/filter-header/filter-header.component';
+import { UserProfilComponent } from './views/user/user-profil/user-profil.component';
 
 // Import containers
 import {
@@ -112,7 +113,8 @@ const APP_CONTAINERS = [
     RolComponent,
     GroupButtonGeneralComponent,
     BranchComponent,
-    FilterHeaderComponent
+    FilterHeaderComponent,
+    UserProfilComponent,
   ],
   imports: [
     BrowserModule,
