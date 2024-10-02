@@ -3,12 +3,12 @@ import { environment } from '../../../../environments/environment';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { UserService } from '../../../services/user/user/user.service';
 import { GeneralService } from '../../../services/general/general.service';
-import { BranchService } from 'src/app/services/companies/branch/branch.service';
-import { RolService } from 'src/app/services/user/rol/rol.service';
+import { BranchService } from '../../../services/companies/branch/branch.service';
+import { RolService } from '../../../services/user/rol/rol.service';
 import moment from 'moment';
 import Swal from 'sweetalert2';
 import * as bootstrap from 'bootstrap';
-import { PermissionService } from 'src/app/services/user/permission/permission.service';
+import { PermissionService } from '../../../services/user/permission/permission.service';
 import { Location } from '@angular/common';
 
 @Component({
