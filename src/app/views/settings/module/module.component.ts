@@ -73,6 +73,14 @@ export class ModuleComponent implements AfterViewInit {
         this.dataModuleTrasnform = this.formatedData(response.data);
         this.loading = false;
         this.viewTable = true;
+      }, error => {
+        this.generalService.alertMessage(
+          '¡Ups! Algo salió mal',
+          'Tuvimos un problema al procesar tu solicitud. Por favor, inténtalo de nuevo o contacta a nuestro equipo de soporte si el problema persiste. ¡Estamos aquí para ayudarte!',
+          'warning'
+        );
+        this.loading = false;
+        this.viewTable = false;
       });
   }
 
@@ -160,11 +168,10 @@ export class ModuleComponent implements AfterViewInit {
     this.selectedIcon = null;
   }
 
-  public formatedData(response: any, fecth = false) {
-    if (response.length === 0 && fecth) {
-      // Devuelve un mensaje personalizado cuando no hay datos
+  public formatedData(response: any) {
+    if (response.length === 0) {
       return [{
-        "No se encontraron resultados": "No se encontraron registros que coincidan con los criterios de búsqueda. Intente con otros términos.",
+        "No se encontraron resultados": "No se encontraron registros que coincidan con los criterios de búsqueda. Intente con otros términos."
       }];
     }
     return response.map((item: any) => {
@@ -415,7 +422,7 @@ export class ModuleComponent implements AfterViewInit {
   onFetchData(params: any): void {
     this.loadingTable = true;
     this.moduleService.getDataModule(params).subscribe((response) => {
-      this.dataModuleTrasnform = this.formatedData(response.data, true);
+      this.dataModuleTrasnform = this.formatedData(response.data);
       this.dataModule = response.data;
       this.totalRecord = response.total;
       this.acciones = true;
