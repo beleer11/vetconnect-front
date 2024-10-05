@@ -5,6 +5,7 @@ import Swal from 'sweetalert2';
 import moment from 'moment';
 import { Observable } from 'rxjs';
 import { GeneralService } from '../../../services/general/general.service';
+import { IconSetService } from '@coreui/icons-angular';
 
 @Component({
   selector: 'app-group-module',
@@ -28,47 +29,58 @@ export class GroupModuleComponent implements OnInit {
   public loadingTable: boolean = false;
   public acciones: boolean = true;
   public viewTable: boolean = false;
+  public icons: any;
   public parameterDefect = {};
 
   constructor(
     private moduleService: ModuleService,
     private fb: FormBuilder,
+    public iconSet: IconSetService,
     private generalService: GeneralService
   ) { }
 
   async ngOnInit(): Promise<void> {
+    this.icons = this.getIconsView('cil');
     this.createForm();
-    this.dataModuleTrasnform = await this.getData();
-    this.fieldsTable = this.getFieldsTable();
-    this.columnAlignments = this.getColumnAlignments();
     this.loading = false;
   }
 
-  private async getData(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.moduleService.getDataGroupModule(this.parameterDefect).subscribe(
-        (response) => {
-          this.dataModule = response.data;
-          this.totalRecord = response.total;
-          resolve(this.formatedData(response.data));
-          this.loadingTable = false;
-        },
-        (error) => reject(error)
-      );
-    });
+  private getData() {
+    this.moduleService.getDataGroupModule(this.parameterDefect).subscribe(
+      response => {
+        this.dataModule = response.data;
+        this.totalRecord = response.total;
+        this.dataModuleTrasnform = this.formatedData(response.data);
+        this.loading = false;
+        this.viewTable = true;
+      }, error => {
+        this.generalService.alertMessage(
+          '¡Ups! Algo salió mal',
+          'Tuvimos un problema al procesar tu solicitud. Por favor, inténtalo de nuevo o contacta a nuestro equipo de soporte si el problema persiste. ¡Estamos aquí para ayudarte!',
+          'warning'
+        );
+        this.loading = false;
+        this.viewTable = false;
+      });
   }
 
-  private getFieldsTable() {
+  getFieldsTable() {
     return ['Nombre', 'Fecha creación', 'Ultima actualización'];
   }
 
-  private getColumnAlignments() {
+  getColumnAlignments() {
     return ['left', 'center', 'center'];
   }
 
   public createForm() {
     this.formGroupModule = this.fb.group({
       nombre: ['', [Validators.required, Validators.minLength(3)]],
+    });
+  }
+
+  getIconsView(prefix: string) {
+    return Object.entries(this.iconSet.icons).filter((icon) => {
+      return icon[0].startsWith(prefix);
     });
   }
 
@@ -172,13 +184,11 @@ export class GroupModuleComponent implements OnInit {
     });
   }
 
-  public formatedData(response: any, fecth = false) {
-    if (response.length === 0 && fecth) {
-      // Devuelve un mensaje personalizado cuando no hay datos
+  public formatedData(response: any) {
+    if (response.length === 0) {
       return [
         {
-          'No se encontraron resultados':
-            'No se encontraron registros que coincidan con los criterios de búsqueda. Intente con otros términos.',
+          'No se encontraron resultados': 'No se encontraron registros que coincidan con los criterios de búsqueda. Intente con otros términos.',
         },
       ];
     }
@@ -332,18 +342,10 @@ export class GroupModuleComponent implements OnInit {
     this.loadingTable = true;
     this.moduleService.getDataGroupModule(params).subscribe(
       (response) => {
-        this.dataModuleTrasnform = this.formatedData(response.data, true);
+        this.dataModuleTrasnform = this.formatedData(response.data);
         this.dataModule = response.data;
         this.totalRecord = response.total;
-        if (response.data.length === 0) {
-          this.fieldsTable = ['No se encontraron resultados'];
-          this.columnAlignments = ['center'];
-          this.acciones = false;
-        } else {
-          this.fieldsTable = this.getFieldsTable();
-          this.columnAlignments = this.getColumnAlignments();
-          this.acciones = true;
-        }
+        this.acciones = true;
         this.loadingTable = false;
       },
       (error) => {
@@ -359,11 +361,8 @@ export class GroupModuleComponent implements OnInit {
     this.parameterDefect = {
       dateInit: event.dateInit,
       dateFinish: event.dateFinish,
-      company_id: event.company_id,
-      branch_id: event.branch_id,
       state: event.state,
       name: event.name,
-      email: event.email,
       search: '',
       sortColumn: 'name',
       sortOrder: 'desc',

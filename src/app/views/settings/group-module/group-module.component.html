@@ -5,8 +5,8 @@
   <app-filter-header [date]="true" [state]="true" [name]="true" [title]="'Grupo de módulos'"
     (filterDataEvent)="setFilter($event)" (changeFilter)="viewTable = $event">
   </app-filter-header>
-  <app-general-table [columns]="fieldsTable" [transformedData]="dataModuleTrasnform" [data]="dataModule"
-    [acciones]="acciones" [columnAlignments]="columnAlignments" [title]="'Grupo de módulo'"
+  <app-general-table [columns]="getFieldsTable()" [transformedData]="dataModuleTrasnform" [data]="dataModule"
+    [acciones]="acciones" [columnAlignments]="getColumnAlignments()" [title]="'Grupo de módulo'"
     (fetchDataEvent)="onFetchData($event)" [totalRecords]="totalRecord" [loadingTable]="loadingTable"
     (actionEvent)="handleAction($event)" *ngIf="viewTable">
   </app-general-table>
