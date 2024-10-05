@@ -1,12 +1,14 @@
 <app-loading-spinner *ngIf="loading"></app-loading-spinner>
 <div [hidden]="showForm">
-
   <app-group-button-general [component]="'Permisos'" (buttonClick)="handleButtonClick($event)">
   </app-group-button-general>
-  <app-general-table [columns]="fieldsTable" [transformedData]="dataPermissionTrasnform" [data]="dataPermission"
-    [acciones]="acciones" [columnAlignments]="columnAlignments" [title]="'Permisos'"
+  <app-filter-header [date]="true" [state]="true" [name]="true" [title]="'Permisos'"
+    (filterDataEvent)="setFilter($event)" (changeFilter)="viewTable = $event">
+  </app-filter-header>
+  <app-general-table [columns]="getFieldsTable()" [transformedData]="dataPermissionTrasnform" [data]="dataPermission"
+    [acciones]="acciones" [columnAlignments]="getColumnAlignments()" [title]="'Permisos'"
     (fetchDataEvent)="onFetchData($event)" [totalRecords]="totalRecord" [loadingTable]="loadingTable"
-    (actionEvent)="handleAction($event)">
+    (actionEvent)="handleAction($event)" *ngIf="viewTable">
   </app-general-table>
 </div>
 <c-row [hidden]="!showForm">
