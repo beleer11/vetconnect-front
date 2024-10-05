@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { BranchService } from '../../services/companies/branch/branch.service';
 import { trigger, state, style, transition, animate } from '@angular/animations';
+import { RolService } from '../../services/user/rol/rol.service';
 
 @Component({
   selector: 'app-filter-header',
@@ -50,12 +51,14 @@ export class FilterHeaderComponent {
   public loadingBranch: boolean = false;
   public dataCompany: any = [];
   public dataBranch: any = [];
+  public dataRol: any = [];
   public searchControl = new FormControl('');
   public isAccordionOpen = true;
 
   constructor(
     private fb: FormBuilder,
-    private branchService: BranchService
+    private branchService: BranchService,
+    private rolService: RolService
   ) { }
 
   async ngOnInit() {
@@ -83,6 +86,7 @@ export class FilterHeaderComponent {
 
     if (this.rol) {
       this.formFilter.addControl('rol_id', this.fb.control(''));
+      this.getRol();
     }
 
     if (this.companyAndBranch) {
@@ -181,6 +185,18 @@ export class FilterHeaderComponent {
 
   toggleAccordion() {
     this.isAccordionOpen = !this.isAccordionOpen;
+  }
+
+
+  async getRol(): Promise<void> {
+    this.rolService.listRol().subscribe(
+      async response => {
+        this.dataRol = response;
+      },
+      error => {
+        console.log(error.message);
+      }
+    );
   }
 
 }

@@ -28,7 +28,6 @@ export class AuthInterceptor implements HttpInterceptor {
 
     return next.handle(req).pipe(
       catchError((error: HttpErrorResponse) => {
-        console.log(error.status);
         if (error.status === 401) {
           localStorage.removeItem('vet_connect_token');
           localStorage.removeItem('permissions');

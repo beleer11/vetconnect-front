@@ -81,6 +81,14 @@ export class BranchComponent {
         this.dataBranchTrasnform = this.formatedData(response.data);
         this.viewTable = true;
         this.loading = false;
+      }, error => {
+        this.generalService.alertMessage(
+          '¡Ups! Algo salió mal',
+          'Tuvimos un problema al procesar tu solicitud. Por favor, inténtalo de nuevo o contacta a nuestro equipo de soporte si el problema persiste. ¡Estamos aquí para ayudarte!',
+          'warning'
+        );
+        this.loading = false;
+        this.viewTable = false;
       });
   }
 
