@@ -826,6 +826,8 @@ export class UserComponent implements OnInit {
       branch_id: event.branch_id,
       state: event.state,
       name: event.name,
+      rol_id: event.rol_id,
+      email: event.email,
       search: '',
       sortColumn: 'name',
       sortOrder: 'desc',

@@ -33,7 +33,6 @@
                   </div>
                 </div>
               </div>
-
               <!-- Fecha final -->
               <div class="col-12 col-md-6 col-lg-3 mb-4" *ngIf="date">
                 <div class="form-group">
@@ -47,7 +46,6 @@
                   </div>
                 </div>
               </div>
-
               <!-- Compañía -->
               <div class="col-12 col-md-6 col-lg-3 mb-4" *ngIf="companyAndBranch">
                 <div class="form-group position-relative">
@@ -71,7 +69,6 @@
                   </div>
                 </div>
               </div>
-
               <!-- Sucursal -->
               <div class="col-12 col-md-6 col-lg-3 mb-4" *ngIf="companyAndBranch">
                 <div class="form-group position-relative">
@@ -99,7 +96,6 @@
                   </div>
                 </div>
               </div>
-
               <!-- Nombre -->
               <div class="col-12 col-md-6 col-lg-3 mb-4" *ngIf="name">
                 <div class="form-group">
@@ -115,7 +111,6 @@
                   </div>
                 </div>
               </div>
-
               <!-- Email -->
               <div class="col-12 col-md-6 col-lg-3 mb-4" *ngIf="email">
                 <div class="form-group">
@@ -130,7 +125,31 @@
                   </div>
                 </div>
               </div>
-
+              <!-- Rol -->
+              <div class="col-12 col-md-6 col-lg-3 mb-4" *ngIf="rol">
+                <div class="form-group position-relative">
+                  <label for="role" class="bolder mb-1">Rol</label>
+                  <mat-select formControlName="rol_id" placeholder="Seleccionar rol" multiple="false"
+                    class="form-control" [ngClass]="getValidationClass('rol_id')">
+                    <ngx-mat-select-search [formControl]="searchControl" placeholderLabel="Buscar rol"
+                      noEntriesFoundLabel="No se encontraron resultados">
+                    </ngx-mat-select-search>
+                    <mat-option *ngFor="let rol of dataRol.data | filterRol : searchControl.value" [value]="rol.id">
+                      {{rol.name}}
+                    </mat-option>
+                  </mat-select>
+                  <button *ngIf="formFilter.get('rol_id')?.value" mat-icon-button (click)="clearSelectionRol()"
+                    class="clear-icon">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                  <div
+                    *ngIf="formFilter.get('rol_id')?.invalid && (formFilter.get('rol_id')?.touched || formFilter.get('rol_id')?.dirty)"
+                    class="invalid-feedback position-absolute">
+                    <div *ngIf="formFilter.get('rol_id')?.errors?.['required']">Rol es
+                      requerido.</div>
+                  </div>
+                </div>
+              </div>
               <!-- Estado -->
               <div class="col-12 col-md-6 col-lg-3 mb-4" *ngIf="state">
                 <div class="form-group">
@@ -143,7 +162,6 @@
                 </div>
               </div>
             </div>
-
             <!-- Botón de Guardar -->
             <div class="d-flex mt-1 justify-content-center justify-content-md-end">
               <button type="button" class="btn btn-warning me-2 text-black" matTooltip="Limpiar filtros"

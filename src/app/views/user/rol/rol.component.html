@@ -2,9 +2,13 @@
 <div [hidden]="showForm">
   <app-group-button-general [component]="'Roles'" (buttonClick)="handleButtonClick($event)">
   </app-group-button-general>
-  <app-general-table [columns]="fieldsTable" [transformedData]="dataRolTrasnform" [data]="dataRol" [acciones]="acciones"
-    [columnAlignments]="columnAlignments" [title]="'Roles'" (fetchDataEvent)="onFetchData($event)"
-    [totalRecords]="totalRecord" [loadingTable]="loadingTable" (actionEvent)="handleAction($event)">
+  <app-filter-header [date]="true" [state]="true" [name]="true" [title]="'Roles'" (filterDataEvent)="setFilter($event)"
+    (changeFilter)="viewTable = $event">
+  </app-filter-header>
+  <app-general-table [columns]="getFieldsTable()" [transformedData]="dataRolTrasnform" [data]="dataRol"
+    [acciones]="acciones" [columnAlignments]="getColumnAlignments()" [title]="'Roles'"
+    (fetchDataEvent)="onFetchData($event)" [totalRecords]="totalRecord" [loadingTable]="loadingTable"
+    (actionEvent)="handleAction($event)" *ngIf="viewTable">
   </app-general-table>
 </div>
 <c-row [hidden]="!showForm">

@@ -100,7 +100,7 @@
                     <div class="form-group">
                       <label for="role" class="bolder mb-1">Rol</label>
                       <mat-select formControlName="rol_id" placeholder="Seleccionar rol"
-                        (selectionChange)="selectRol($event.value)" ultiple="false" class="form-control"
+                        (selectionChange)="selectRol($event.value)" multiple="false" class="form-control"
                         [ngClass]="getValidationClass('rol_id')">
                         <ngx-mat-select-search [formControl]="searchControl" placeholderLabel="Buscar rol"
                           noEntriesFoundLabel="No se encontraron resultados">

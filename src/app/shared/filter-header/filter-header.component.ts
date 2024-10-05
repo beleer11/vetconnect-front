@@ -134,6 +134,7 @@ export class FilterHeaderComponent {
       state: (this.formFilter.controls['state']?.value === undefined || this.formFilter.controls['state']?.value === null) ? '' : this.formFilter.controls['state'].value,
       name: (this.formFilter.controls['name']?.value === undefined || this.formFilter.controls['name']?.value === null) ? '' : this.formFilter.controls['name'].value,
       email: (this.formFilter.controls['email']?.value === undefined || this.formFilter.controls['email']?.value === null) ? '' : this.formFilter.controls['email'].value,
+      rol_id: (this.formFilter.controls['rol_id']?.value === undefined || this.formFilter.controls['rol_id']?.value === null) ? '' : this.formFilter.controls['rol_id'].value,
     }
     this.filterDataEvent.emit(data);
   }
@@ -166,6 +167,11 @@ export class FilterHeaderComponent {
     this.formFilter.get('branch_id')?.markAsTouched();
   }
 
+  clearSelectionRol(): void {
+    this.formFilter.get('rol_id')?.reset();
+    this.formFilter.get('rol_id')?.markAsTouched();
+  }
+
   clearForm() {
     this.formFilter.reset();
     this.formFilter.controls['state'].setValue(true);
@@ -188,9 +194,9 @@ export class FilterHeaderComponent {
   }
 
 
-  async getRol(): Promise<void> {
+  getRol() {
     this.rolService.listRol().subscribe(
-      async response => {
+      response => {
         this.dataRol = response;
       },
       error => {
