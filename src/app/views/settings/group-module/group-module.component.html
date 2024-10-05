@@ -1,11 +1,14 @@
 <app-loading-spinner *ngIf="loading"></app-loading-spinner>
-  <div [hidden]="showForm">
-    <app-group-button-general [component]="'Grupo de módulo'" (buttonClick)="handleButtonClick($event)">
-    </app-group-button-general>
+<div [hidden]="showForm">
+  <app-group-button-general [component]="'Grupo de módulo'" (buttonClick)="handleButtonClick($event)">
+  </app-group-button-general>
+  <app-filter-header [date]="true" [state]="true" [name]="true" [title]="'Grupo de módulos'"
+    (filterDataEvent)="setFilter($event)" (changeFilter)="viewTable = $event">
+  </app-filter-header>
   <app-general-table [columns]="fieldsTable" [transformedData]="dataModuleTrasnform" [data]="dataModule"
     [acciones]="acciones" [columnAlignments]="columnAlignments" [title]="'Grupo de módulo'"
     (fetchDataEvent)="onFetchData($event)" [totalRecords]="totalRecord" [loadingTable]="loadingTable"
-    (actionEvent)="handleAction($event)">
+    (actionEvent)="handleAction($event)" *ngIf="viewTable">
   </app-general-table>
 </div>
 <c-row [hidden]="!showForm">

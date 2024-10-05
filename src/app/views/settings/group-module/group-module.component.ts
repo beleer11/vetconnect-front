@@ -27,13 +27,8 @@ export class GroupModuleComponent implements OnInit {
   public totalRecord: number = 0;
   public loadingTable: boolean = false;
   public acciones: boolean = true;
-  public parameterDefect = {
-    search: '',
-    sortColumn: 'name',
-    sortOrder: 'desc',
-    page: 1,
-    pageSize: 10,
-  };
+  public viewTable: boolean = false;
+  public parameterDefect = {};
 
   constructor(
     private moduleService: ModuleService,
@@ -357,4 +352,26 @@ export class GroupModuleComponent implements OnInit {
       }
     );
   }
+
+  setFilter(event: any) {
+    this.loading = true;
+    this.viewTable = false;
+    this.parameterDefect = {
+      dateInit: event.dateInit,
+      dateFinish: event.dateFinish,
+      company_id: event.company_id,
+      branch_id: event.branch_id,
+      state: event.state,
+      name: event.name,
+      email: event.email,
+      search: '',
+      sortColumn: 'name',
+      sortOrder: 'desc',
+      page: 1,
+      pageSize: 10
+    }
+    this.getData();
+  }
+
 }
+
