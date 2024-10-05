@@ -23,8 +23,6 @@ interface Icon {
 export class ModuleComponent implements AfterViewInit {
   public dataModule: any = [];
   public dataModuleTrasnform: any = [];
-  public fieldsTable: any = [];
-  public columnAlignments: any = [];
   public showForm: boolean = false;
   public formModule!: FormGroup;
   public selectedIcon: string | null = null;
@@ -40,13 +38,8 @@ export class ModuleComponent implements AfterViewInit {
   public totalRecord: number = 0;
   public loadingTable: boolean = false;
   public acciones: boolean = true;
-  public parameterDefect = {
-    search: '',
-    sortColumn: 'name',
-    sortOrder: 'desc',
-    page: 1,
-    pageSize: 10
-  };
+  public parameterDefect = {};
+  public viewTable: boolean = false;
 
   constructor(
     private moduleService: ModuleService,
@@ -61,7 +54,7 @@ export class ModuleComponent implements AfterViewInit {
   async ngOnInit(): Promise<void> {
     this.icons = this.getIconsView('cil');
     this.createForm();
-    this.dataModuleTrasnform = await this.getData();
+    this.loading = false;
   }
 
   ngAfterViewInit(): void {
@@ -72,29 +65,22 @@ export class ModuleComponent implements AfterViewInit {
     });
   }
 
-  private async getData(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.moduleService.getDataModule(this.parameterDefect).subscribe(
-        response => {
-          this.dataModule = response.data;
-          this.totalRecord = response.total;
-          this.listGroupModule();
-          this.fieldsTable = this.getFieldsTable();
-          this.columnAlignments = this.getColumnAlignments();
-          resolve(this.formatedData(response.data));
-          this.loading = false;
-          this.loadingTable = false;
-        },
-        error => reject(error)
-      );
-    });
+  private getData() {
+    this.moduleService.getDataModule(this.parameterDefect).subscribe(
+      response => {
+        this.dataModule = response.data;
+        this.totalRecord = response.total;
+        this.dataModuleTrasnform = this.formatedData(response.data);
+        this.loading = false;
+        this.viewTable = true;
+      });
   }
 
-  private getFieldsTable() {
+  public getFieldsTable() {
     return ['Nombre', 'Grupo', 'Icono', 'Ruta'];
   }
 
-  private getColumnAlignments() {
+  public getColumnAlignments() {
     return ['left', 'left', 'left', 'left'];
   }
 
@@ -105,6 +91,7 @@ export class ModuleComponent implements AfterViewInit {
       url: ['', Validators.required],
       group: ['', Validators.required],
     });
+    this.listGroupModule();
   }
 
   onSubmit() {
@@ -354,7 +341,7 @@ export class ModuleComponent implements AfterViewInit {
         <div id="custom-icon-container">
           <p><strong>Icono : </strong><p id="icon-placeholder"></p></p>
           <p><strong>Nombre : </strong> <span>${data.name}</span> </p>
-          <p><strong>Grupo : </strong> <span>${data.group.name}</span> </p>
+          <p><strong>Grupo : </strong> <span>${data.group_name}</span> </p>
           <p><strong>Ruta : </strong> <span>${data.url}</span> </p>
           <p><strong>Fecha de Creación: </strong> <span>${moment(data.created_at).format('DD/MM/YYYY hh:mm:ss A')}</span></p>
           <p><strong>Última actualización: </strong> <span>${moment(data.updated_at).format('DD/MM/YYYY hh:mm:ss A')}</span></p>
@@ -431,20 +418,29 @@ export class ModuleComponent implements AfterViewInit {
       this.dataModuleTrasnform = this.formatedData(response.data, true);
       this.dataModule = response.data;
       this.totalRecord = response.total;
-      if (response.data.length === 0) {
-        this.fieldsTable = ["No se encontraron resultados"];
-        this.columnAlignments = ["center"];
-        this.acciones = false;
-      } else {
-        this.fieldsTable = this.getFieldsTable();
-        this.columnAlignments = this.getColumnAlignments();
-        this.acciones = true;
-      }
+      this.acciones = true;
       this.loadingTable = false;
     }, (error) => {
       this.loadingTable = false;
       console.error('Error fetching data', error);
     });
+  }
+
+  setFilter(event: any) {
+    this.loading = true;
+    this.viewTable = false;
+    this.parameterDefect = {
+      dateInit: event.dateInit,
+      dateFinish: event.dateFinish,
+      state: event.state,
+      name: event.name,
+      search: '',
+      sortColumn: 'name',
+      sortOrder: 'desc',
+      page: 1,
+      pageSize: 10
+    }
+    this.dataModuleTrasnform = this.getData();
   }
 
 }

@@ -1,171 +1,171 @@
 <c-row>
-    <c-col xs>
-        <c-card class="mb-3">
-            <c-card-header (click)="toggleAccordion()" style="cursor: pointer;">
-                <div class="container">
-                    <div class="row justify-content-between align-items-center mb-1">
-                        <div class="col-12 col-md-auto text-center text-md-start pt-1">
-                            <h2 class="mb-0">{{ title }}</h2>
-                        </div>
-                        <div class="col-auto">
-                            <mat-icon>{{ isAccordionOpen ? 'expand_less' : 'expand_more' }}</mat-icon>
-                        </div>
-                    </div>
+  <c-col xs>
+    <c-card class="mb-3">
+      <c-card-header (click)="toggleAccordion()" style="cursor: pointer;">
+        <div class="container">
+          <div class="row justify-content-between align-items-center mb-1">
+            <div class="col-12 col-md-auto text-center text-md-start pt-1">
+              <h2 class="mb-0">{{ title }}</h2>
+            </div>
+            <div class="col-auto">
+              <mat-icon [matTooltip]="isAccordionOpen ? 'Ocultar filtros' : 'Ver filtros'" matTooltipPosition="below">
+                {{ isAccordionOpen ? 'expand_less' : 'expand_more'}}
+              </mat-icon>
+            </div>
+          </div>
+        </div>
+      </c-card-header>
+      <c-card-body *ngIf="isAccordionOpen" [@accordionAnimation]="isAccordionOpen ? 'open' : 'closed'">
+        <form [formGroup]="formFilter" (ngSubmit)="onSubmit()" class="pt-1 pb-1">
+          <div class="container">
+            <div class="row">
+              <!-- Fecha inicial -->
+              <div class="col mb-4" *ngIf="date">
+                <div class="form-group">
+                  <label for="dateInit" class="mb-1 bolder">Fecha inicial</label>
+                  <input id="dateInit" formControlName="dateInit" type="date" class="form-control"
+                    [ngClass]="getValidationClass('dateInit')" spellcheck="false"
+                    [max]="formFilter.controls['dateFinish'].value" />
+                  <div
+                    *ngIf="formFilter.get('dateInit')?.invalid && (formFilter.get('dateInit')?.touched || formFilter.get('dateInit')?.dirty)"
+                    class="invalid-feedback">
+                    <div *ngIf="formFilter.get('dateInit')?.errors?.['required']">Fecha inicial
+                      es
+                      requerida.</div>
+                  </div>
                 </div>
-            </c-card-header>
-            <c-card-body *ngIf="isAccordionOpen" [@accordionAnimation]="isAccordionOpen ? 'open' : 'closed'">
-                <form [formGroup]="formFilter" (ngSubmit)="onSubmit()" class="pt-1 pb-1">
-                    <div class="container">
-                        <div class="row">
-                            <!-- Fecha inicial -->
-                            <div class="col mb-4" *ngIf="date">
-                                <div class="form-group">
-                                    <label for="dateInit" class="mb-1 bolder">Fecha inicial</label>
-                                    <input id="dateInit" formControlName="dateInit" type="date" class="form-control"
-                                        [ngClass]="getValidationClass('dateInit')" spellcheck="false"
-                                        [max]="formFilter.controls['dateFinish'].value" />
-                                    <div *ngIf="formFilter.get('dateInit')?.invalid && (formFilter.get('dateInit')?.touched || formFilter.get('dateInit')?.dirty)"
-                                        class="invalid-feedback">
-                                        <div *ngIf="formFilter.get('dateInit')?.errors?.['required']">Fecha inicial
-                                            es
-                                            requerida.</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Fecha final -->
-                            <div class="col mb-4" *ngIf="date">
-                                <div class="form-group">
-                                    <label for="dateFinish" class="mb-1 bolder">Fecha final</label>
-                                    <input id="dateFinish" formControlName="dateFinish" type="date" class="form-control"
-                                        [ngClass]="getValidationClass('dateFinish')"
-                                        [min]="formFilter.controls['dateInit'].value" />
-                                    <div *ngIf="formFilter.get('dateFinish')?.invalid && (formFilter.get('dateFinish')?.touched || formFilter.get('dateFinish')?.dirty)"
-                                        class="invalid-feedback">
-                                        <div *ngIf="formFilter.get('dateFinish')?.errors?.['required']">Fecha final
-                                            es
-                                            requerida.</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Compañía -->
-                            <div class="col mb-4" *ngIf="companyAndRol">
-                                <div class="form-group position-relative">
-                                    <label for="company" class="bolder mb-1">Compañía</label>
-                                    <mat-select formControlName="company_id" placeholder="Seleccionar compañia"
-                                        multiple="false" class="form-control"
-                                        [ngClass]="getValidationClass('company_id')"
-                                        (selectionChange)="getBranchByCompany($event.value)">
-                                        <ngx-mat-select-search [formControl]="searchControl"
-                                            placeholderLabel="Buscar compañia"
-                                            noEntriesFoundLabel="No se encontraron resultados"></ngx-mat-select-search>
-                                        <mat-option
-                                            *ngFor="let company of dataCompany | filterCompany : searchControl.value"
-                                            [value]="company.id">{{ company.name }}</mat-option>
-                                    </mat-select>
-                                    <button *ngIf="formFilter.get('company_id')?.value" mat-icon-button
-                                        (click)="clearSelectionCompany()" class="clear-icon">
-                                        <mat-icon>close</mat-icon>
-                                    </button>
-                                    <div *ngIf="formFilter.get('company_id')?.invalid && (formFilter.get('company_id')?.touched || formFilter.get('company_id')?.dirty)"
-                                        class="invalid-feedback position-absolute" style="bottom: -20px; left: 0;">
-                                        <div *ngIf="formFilter.get('company_id')?.errors?.['required']">Compañía es
-                                            requerida.</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Sucursal -->
-                            <div class="col mb-4" *ngIf="companyAndRol">
-                                <div class="form-group position-relative">
-                                    <label for="branch" class="bolder mb-1">Sucursal</label>
-                                    <mat-select formControlName="branch_id" placeholder="Seleccionar sucursal"
-                                        multiple="false" class="form-control"
-                                        [ngClass]="getValidationClass('branch_id')">
-                                        <ngx-mat-select-search [formControl]="searchControl"
-                                            placeholderLabel="Buscar sucursal"
-                                            noEntriesFoundLabel="No se encontraron resultados"></ngx-mat-select-search>
-                                        <mat-option *ngFor="let branch of dataBranch | filterRol : searchControl.value"
-                                            [value]="branch.id">{{branch.name}}</mat-option>
-                                    </mat-select>
-                                    <ng-container *ngIf="loadingBranch; else closeButton">
-                                        <mat-spinner diameter="24" strokeWidth="3" class="spinner"></mat-spinner>
-                                    </ng-container>
-                                    <ng-template #closeButton>
-                                        <button *ngIf="formFilter.get('branch_id')?.value" mat-icon-button
-                                            (click)="clearSelectionBranch()" class="clear-icon">
-                                            <mat-icon>close</mat-icon>
-                                        </button>
-                                    </ng-template>
-                                    <div *ngIf="formFilter.get('branch_id')?.invalid && (formFilter.get('branch_id')?.touched || formFilter.get('branch_id')?.dirty)"
-                                        class="invalid-feedback position-absolute" style="bottom: -20px; left: 0;">
-                                        <div *ngIf="formFilter.get('branch_id')?.errors?.['required']">Sucursal es
-                                            requerida.</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <!-- Estado -->
-                            <div class="col mb-4" *ngIf="state">
-                                <div class="form-group">
-                                    <label for="dateFinish" class="mb-2 bolder">Estado</label>
-                                    <div class="d-flex align-items-center">
-                                        <input class="form-control switch-custom" type="checkbox" id="state"
-                                            formControlName="state" />
-                                        <label class="form-check-label ms-2 bolder mb-0" for="state"
-                                            [ngClass]="getTextClass()">
-                                            {{ formFilter.get('state')?.value ? 'Activo' : 'Inactivo' }}
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Nombre -->
-                            <div class="col mb-4" *ngIf="name">
-                                <div class="form-group">
-                                    <label for="name" class="mb-1 bolder">Nombre</label>
-                                    <input id="name" formControlName="name" type="text" class="form-control"
-                                        [ngClass]="getValidationClass('name')" placeholder="Nombre" />
-                                    <div *ngIf="formFilter.get('name')?.invalid && (formFilter.get('name')?.touched || formFilter.get('name')?.dirty)"
-                                        class="invalid-feedback position-absolute" style="bottom: -20px; left: 0;">
-                                        <div *ngIf="formFilter.get('name')?.errors?.['required']">Nombre es
-                                            requerido.
-                                        </div>
-                                        <div *ngIf="formFilter.get('name')?.errors?.['minlength']">Nombre debe tener
-                                            al
-                                            menos 3 caracteres.</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Email -->
-                            <div class="col mb-4" *ngIf="email">
-                                <div class="form-group">
-                                    <label for="email" class="mb-1 bolder">Email</label>
-                                    <input id="email" formControlName="email" type="email" class="form-control"
-                                        [ngClass]="getValidationClass('email')" placeholder="Email" />
-                                    <div *ngIf="formFilter.get('email')?.invalid && (formFilter.get('email')?.touched || formFilter.get('email')?.dirty)"
-                                        class="invalid-feedback position-absolute" style="bottom: -20px; left: 0;">
-                                        <div *ngIf="formFilter.get('email')?.errors?.['required']">Email es
-                                            requerido.
-                                        </div>
-                                        <div *ngIf="formFilter.get('email')?.errors?.['email']">Formato de email
-                                            inválido.</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+              </div>
+              <!-- Fecha final -->
+              <div class="col mb-4" *ngIf="date">
+                <div class="form-group">
+                  <label for="dateFinish" class="mb-1 bolder">Fecha final</label>
+                  <input id="dateFinish" formControlName="dateFinish" type="date" class="form-control"
+                    [ngClass]="getValidationClass('dateFinish')" [min]="formFilter.controls['dateInit'].value" />
+                  <div
+                    *ngIf="formFilter.get('dateFinish')?.invalid && (formFilter.get('dateFinish')?.touched || formFilter.get('dateFinish')?.dirty)"
+                    class="invalid-feedback">
+                    <div *ngIf="formFilter.get('dateFinish')?.errors?.['required']">Fecha final
+                      es
+                      requerida.</div>
+                  </div>
+                </div>
+              </div>
+              <!-- Compañía -->
+              <div class="col mb-4" *ngIf="companyAndBranch">
+                <div class="form-group position-relative">
+                  <label for="company" class="bolder mb-1">Compañía</label>
+                  <mat-select formControlName="company_id" placeholder="Seleccionar compañia" multiple="false"
+                    class="form-control" [ngClass]="getValidationClass('company_id')"
+                    (selectionChange)="getBranchByCompany($event.value)">
+                    <ngx-mat-select-search [formControl]="searchControl" placeholderLabel="Buscar compañia"
+                      noEntriesFoundLabel="No se encontraron resultados"></ngx-mat-select-search>
+                    <mat-option *ngFor="let company of dataCompany | filterCompany : searchControl.value"
+                      [value]="company.id">{{ company.name }}</mat-option>
+                  </mat-select>
+                  <button *ngIf="formFilter.get('company_id')?.value" mat-icon-button (click)="clearSelectionCompany()"
+                    class="clear-icon">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                  <div
+                    *ngIf="formFilter.get('company_id')?.invalid && (formFilter.get('company_id')?.touched || formFilter.get('company_id')?.dirty)"
+                    class="invalid-feedback position-absolute" style="bottom: -20px; left: 0;">
+                    <div *ngIf="formFilter.get('company_id')?.errors?.['required']">Compañía es
+                      requerida.</div>
+                  </div>
+                </div>
+              </div>
+              <!-- Sucursal -->
+              <div class="col mb-4" *ngIf="companyAndBranch">
+                <div class="form-group position-relative">
+                  <label for="branch" class="bolder mb-1">Sucursal</label>
+                  <mat-select formControlName="branch_id" placeholder="Seleccionar sucursal" multiple="false"
+                    class="form-control" [ngClass]="getValidationClass('branch_id')">
+                    <ngx-mat-select-search [formControl]="searchControl" placeholderLabel="Buscar sucursal"
+                      noEntriesFoundLabel="No se encontraron resultados"></ngx-mat-select-search>
+                    <mat-option *ngFor="let branch of dataBranch | filterRol : searchControl.value"
+                      [value]="branch.id">{{branch.name}}</mat-option>
+                  </mat-select>
+                  <ng-container *ngIf="loadingBranch; else closeButton">
+                    <mat-spinner diameter="24" strokeWidth="3" class="spinner"></mat-spinner>
+                  </ng-container>
+                  <ng-template #closeButton>
+                    <button *ngIf="formFilter.get('branch_id')?.value" mat-icon-button (click)="clearSelectionBranch()"
+                      class="clear-icon">
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  </ng-template>
+                  <div
+                    *ngIf="formFilter.get('branch_id')?.invalid && (formFilter.get('branch_id')?.touched || formFilter.get('branch_id')?.dirty)"
+                    class="invalid-feedback position-absolute" style="bottom: -20px; left: 0;">
+                    <div *ngIf="formFilter.get('branch_id')?.errors?.['required']">Sucursal es
+                      requerida.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <!-- Nombre -->
+              <div class="col mb-4" *ngIf="name">
+                <div class="form-group">
+                  <label for="name" class="mb-1 bolder">Nombre</label>
+                  <input id="name" formControlName="name" type="text" class="form-control"
+                    [ngClass]="getValidationClass('name')" placeholder="Nombre" />
+                  <div
+                    *ngIf="formFilter.get('name')?.invalid && (formFilter.get('name')?.touched || formFilter.get('name')?.dirty)"
+                    class="invalid-feedback position-absolute" style="bottom: -20px; left: 0;">
+                    <div *ngIf="formFilter.get('name')?.errors?.['required']">Nombre es
+                      requerido.
                     </div>
-                    <!-- Botón de Guardar -->
-                    <div class="d-flex mt-1 justify-content-center justify-content-md-end">
-                        <button type="button" class="btn btn-warning me-2 text-black" matTooltip="Limpiar filtros"
-                            matTooltipPosition="below" (click)="clearForm()">
-                            <i class="fa-solid fa-brush"></i>
-                        </button>
-                        <button type="submit" class="btn btn-primary" matTooltip="Buscar" matTooltipPosition="below"
-                            [disabled]="formFilter.invalid">
-                            <i class="fa-solid fa-magnifying-glass"></i>
-                        </button>
+                    <div *ngIf="formFilter.get('name')?.errors?.['minlength']">Nombre debe tener
+                      al
+                      menos 3 caracteres.</div>
+                  </div>
+                </div>
+              </div>
+              <!-- Email -->
+              <div class="col mb-4" *ngIf="email">
+                <div class="form-group">
+                  <label for="email" class="mb-1 bolder">Email</label>
+                  <input id="email" formControlName="email" type="email" class="form-control"
+                    [ngClass]="getValidationClass('email')" placeholder="Email" />
+                  <div
+                    *ngIf="formFilter.get('email')?.invalid && (formFilter.get('email')?.touched || formFilter.get('email')?.dirty)"
+                    class="invalid-feedback position-absolute" style="bottom: -20px; left: 0;">
+                    <div *ngIf="formFilter.get('email')?.errors?.['required']">Email es
+                      requerido.
                     </div>
-                </form>
-            </c-card-body>
-        </c-card>
-    </c-col>
+                    <div *ngIf="formFilter.get('email')?.errors?.['email']">Formato de email
+                      inválido.</div>
+                  </div>
+                </div>
+              </div>
+              <!-- Estado -->
+              <div class="col mb-4" *ngIf="state">
+                <div class="form-group">
+                  <label for="dateFinish" class="mb-2 bolder">Estado</label>
+                  <div class="d-flex align-items-center">
+                    <input class="form-control switch-custom" type="checkbox" id="state" formControlName="state" />
+                    <label class="form-check-label ms-2 bolder mb-0" for="state" [ngClass]="getTextClass()">
+                      {{ formFilter.get('state')?.value ? 'Activo' : 'Inactivo' }}
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Botón de Guardar -->
+          <div class="d-flex mt-1 justify-content-center justify-content-md-end">
+            <button type="button" class="btn btn-warning me-2 text-black" matTooltip="Limpiar filtros"
+              matTooltipPosition="below" (click)="clearForm()">
+              <i class="fa-solid fa-brush"></i>
+            </button>
+            <button type="submit" class="btn btn-primary" matTooltip="Buscar" matTooltipPosition="below"
+              [disabled]="formFilter.invalid">
+              <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+          </div>
+        </form>
+      </c-card-body>
+    </c-card>
+  </c-col>
 </c-row>

@@ -14,8 +14,6 @@ import { environment } from '../../../../environments/environment';
 export class CompanyComponent implements OnInit {
   public dataCompany: any = [];
   public dataCompanyTrasnform: any = [];
-  public fieldsTable: any = [];
-  public columnAlignments: any = [];
   public showForm: boolean = false;
   public formCompany!: FormGroup;
   public action: string = 'save';
@@ -419,16 +417,7 @@ export class CompanyComponent implements OnInit {
       this.dataCompanyTrasnform = this.formatedData(response.data, true);
       this.dataCompany = response.data;
       this.totalRecord = response.total;
-      if (response.data.length === 0) {
-        this.fieldsTable = ["No se encontraron resultados"];
-        this.columnAlignments = ["center"];
-        this.acciones = false;
-      } else {
-        this.fieldsTable = this.getFieldsTable();
-        this.columnAlignments = this.getColumnAlignments();
-        this.acciones = true;
-      }
-      this.loadingTable = false;
+      this.acciones = true;
     }, (error) => {
       this.loadingTable = false;
       console.error('Error fetching data', error);
@@ -437,6 +426,7 @@ export class CompanyComponent implements OnInit {
 
   setFilter(event: any) {
     this.loading = true;
+    this.viewTable = false;
     this.parameterDefect = {
       dateInit: event.dateInit,
       dateFinish: event.dateFinish,
@@ -451,6 +441,6 @@ export class CompanyComponent implements OnInit {
       page: 1,
       pageSize: 10
     }
-    this.dataCompanyTrasnform = this.getData();
+    this.getData();
   }
 }

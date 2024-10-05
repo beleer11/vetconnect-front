@@ -32,7 +32,7 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
 export class FilterHeaderComponent {
   @Input() date: boolean = false;
   @Input() rol: boolean = false;
-  @Input() companyAndRol: boolean = false;
+  @Input() companyAndBranch: boolean = false;
   @Input() state: boolean = false;
   @Input() name: boolean = false;
   @Input() email: boolean = false;
@@ -85,7 +85,7 @@ export class FilterHeaderComponent {
       this.formFilter.addControl('rol_id', this.fb.control(''));
     }
 
-    if (this.companyAndRol) {
+    if (this.companyAndBranch) {
       this.formFilter.addControl('company_id', this.fb.control(''));
       this.formFilter.addControl('branch_id', this.fb.control({ value: '', disabled: true }));
       this.getDataCompany();

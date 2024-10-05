@@ -3,10 +3,13 @@
 <div [hidden]="showForm">
   <app-group-button-general [component]="'Sucursales'"
     (buttonClick)="handleButtonClick($event)"></app-group-button-general>
-  <app-general-table [columns]="fieldsTable" [transformedData]="dataBranchTrasnform" [data]="dataBranch"
-    [acciones]="acciones" [columnAlignments]="columnAlignments" [title]="'Sucursales'"
+  <app-filter-header [date]="true" [state]="true" [companyAndBranch]="true" [name]="true" [title]="'Sucursales'"
+    (filterDataEvent)="setFilter($event)" (changeFilter)="viewTable = $event">
+  </app-filter-header>
+  <app-general-table [columns]="getFieldsTable()" [transformedData]="dataBranchTrasnform" [data]="dataBranch"
+    [acciones]="acciones" [columnAlignments]="getColumnAlignments()" [title]="'Sucursales'"
     (fetchDataEvent)="onFetchData($event)" [totalRecords]="totalRecord" [loadingTable]="loadingTable"
-    (actionEvent)="handleAction($event)">
+    (actionEvent)="handleAction($event)" *ngIf="viewTable">
   </app-general-table>
 </div>
 <c-row [hidden]="!showForm">

@@ -27,23 +27,16 @@ export class BranchComponent {
   public showImportButton: boolean = false;
   public showExportButton: boolean = false;
   public action: string = 'save';
-  public fieldsTable: any = [];
   public dataBranchTrasnform: any = [];
   public acciones: boolean = true;
-  public columnAlignments: any = [];
   public loadingTable: boolean = false;
   public totalRecord: number = 0;
   public dataTemp: any = [];
   public dataCompany: any = [];
   public formBranch!: FormGroup;
   public searchControl = new FormControl('');
-  public parameterDefect = {
-    search: '',
-    sortColumn: 'name',
-    sortOrder: 'desc',
-    page: 1,
-    pageSize: 10,
-  };
+  public parameterDefect = {};
+  public viewTable: boolean = false;
 
   constructor(
     private branchService: BranchService,
@@ -65,8 +58,7 @@ export class BranchComponent {
       phone: ['', [Validators.required, Validators.minLength(10)]],
       is_active: [false],
     });
-    this.fieldsTable = this.getFieldsTable();
-    this.columnAlignments = this.getColumnAlignments();
+    this.loading = false;
     this.listCompany();
   }
 
@@ -74,7 +66,6 @@ export class BranchComponent {
     this.branchService.getListCompany().subscribe(
       (response) => {
         this.dataCompany = response;
-        this.getData();
       },
       (err) => {
         console.log(err);
@@ -82,26 +73,22 @@ export class BranchComponent {
     );
   }
 
-  private async getData(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.branchService.getDataBranch(this.parameterDefect).subscribe(
-        (response) => {
-          this.dataBranch = response.data;
-          this.totalRecord = response.total;
-          this.dataBranchTrasnform = this.formatedData(response.data);
-          resolve(this.dataBranchTrasnform);
-          this.loading = false;
-        },
-        (error) => reject(error)
-      );
-    });
+  private getData() {
+    this.branchService.getDataBranch(this.parameterDefect).subscribe(
+      (response) => {
+        this.dataBranch = response.data;
+        this.totalRecord = response.total;
+        this.dataBranchTrasnform = this.formatedData(response.data);
+        this.viewTable = true;
+        this.loading = false;
+      });
   }
 
-  private getFieldsTable() {
+  public getFieldsTable() {
     return ['Nombre', 'Compañía', 'Dirección', 'Descripción', 'Teléfono'];
   }
 
-  private getColumnAlignments() {
+  public getColumnAlignments() {
     return ['left', 'left', 'center', 'center'];
   }
 
@@ -144,6 +131,7 @@ export class BranchComponent {
   }
 
   public formatedData(response: any, fecth = false) {
+    console.log(response.length);
     if (response.length === 0 && fecth) {
       // Devuelve un mensaje personalizado cuando no hay datos
       return [
@@ -349,15 +337,7 @@ export class BranchComponent {
         this.dataBranchTrasnform = this.formatedData(response.data, true);
         this.dataBranch = response.data;
         this.totalRecord = response.total;
-        if (response.data.length === 0) {
-          this.fieldsTable = ['No se encontraron resultados'];
-          this.columnAlignments = ['center'];
-          this.acciones = false;
-        } else {
-          this.fieldsTable = this.getFieldsTable();
-          this.columnAlignments = this.getColumnAlignments();
-          this.acciones = true;
-        }
+        this.acciones = true;
         this.loadingTable = false;
       },
       (error) => {
@@ -496,5 +476,24 @@ export class BranchComponent {
       icon: 'info',
       confirmButtonText: 'Cerrar',
     });
+  }
+
+  setFilter(event: any) {
+    this.loading = true;
+    this.viewTable = false;
+    this.parameterDefect = {
+      dateInit: event.dateInit,
+      dateFinish: event.dateFinish,
+      company_id: event.company_id,
+      branch_id: event.branch_id,
+      state: event.state,
+      name: event.name,
+      search: '',
+      sortColumn: 'name',
+      sortOrder: 'desc',
+      page: 1,
+      pageSize: 10
+    }
+    this.getData();
   }
 }
