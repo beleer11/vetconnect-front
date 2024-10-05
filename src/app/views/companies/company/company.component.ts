@@ -129,10 +129,10 @@ export class CompanyComponent implements OnInit {
     );
   }
 
-  public formatedData(response: any, fecth = false) {
-    if (response.length === 0 && fecth) {
+  public formatedData(response: any) {
+    if (response.length === 0) {
       return [{
-        "No se encontraron resultados": "No se encontraron registros que coincidan con los criterios de búsqueda. Intente con otros términos.",
+        "No se encontraron resultados": "No se encontraron registros que coincidan con los criterios de búsqueda. Intente con otros términos."
       }];
     }
     return response.map((item: any) => {
@@ -414,10 +414,11 @@ export class CompanyComponent implements OnInit {
   onFetchData(params: any): void {
     this.loadingTable = true;
     this.companyService.getDataCompanies(params).subscribe((response) => {
-      this.dataCompanyTrasnform = this.formatedData(response.data, true);
+      this.dataCompanyTrasnform = this.formatedData(response.data);
       this.dataCompany = response.data;
       this.totalRecord = response.total;
       this.acciones = true;
+      this.loadingTable = false;
     }, (error) => {
       this.loadingTable = false;
       console.error('Error fetching data', error);

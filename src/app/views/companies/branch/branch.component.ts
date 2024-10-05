@@ -130,17 +130,15 @@ export class BranchComponent {
     this.resetForms();
   }
 
-  public formatedData(response: any, fecth = false) {
-    console.log(response.length);
-    if (response.length === 0 && fecth) {
-      // Devuelve un mensaje personalizado cuando no hay datos
+  public formatedData(response: any) {
+    if (response.length === 0) {
       return [
         {
-          'No se encontraron resultados':
-            'No se encontraron registros que coincidan con los criterios de búsqueda. Intente con otros términos.',
-        },
+          'No se encontraron resultados': 'No se encontraron registros que coincidan con los criterios de búsqueda. Intente con otros términos.',
+        }
       ];
     }
+
     return response.map((item: any) => {
       return {
         id: item.id,
@@ -334,7 +332,7 @@ export class BranchComponent {
     this.loadingTable = true;
     this.branchService.getDataBranch(params).subscribe(
       (response) => {
-        this.dataBranchTrasnform = this.formatedData(response.data, true);
+        this.dataBranchTrasnform = this.formatedData(response.data);
         this.dataBranch = response.data;
         this.totalRecord = response.total;
         this.acciones = true;

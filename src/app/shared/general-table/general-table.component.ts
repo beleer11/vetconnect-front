@@ -28,7 +28,7 @@ export class GeneralTableComponent implements OnInit, OnChanges {
 
   public searchValue: string = '';
   public currentSortColumn: string = '';
-  public sortOrder: 'asc' | 'desc' = 'asc';
+  public sortOrder: 'asc' | 'desc' = 'desc';
   public viewAcciones: boolean = false;
   public isLoading: boolean = false;
 
@@ -63,6 +63,15 @@ export class GeneralTableComponent implements OnInit, OnChanges {
 
     if (changes['transformedData']) {
       this.transformedData = changes['transformedData'].currentValue;
+      this.acciones = true;
+    }
+
+    if (changes['columns']) {
+      if (this.transformedData[0].hasOwnProperty('No se encontraron resultados')) {
+        this.columns = ['No se encontraron resultados'];
+        this.columnAlignments = ['center'];
+        this.acciones = false;
+      }
     }
 
     this.totalPages = Math.ceil(this.totalRecords / this.pageSize);

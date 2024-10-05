@@ -1,143 +1,131 @@
 <c-row>
-    <c-col xs>
-        <c-card class="mb-3">
+  <c-col xs>
+    <c-card class="mb-3">
+      <c-card-body>
+        <!-- Buscador -->
+        <div class="container mb-2 p-0">
+          <div class="row">
+            <div class="col-12 col-md-6 offset-md-6 d-flex justify-content-end align-items-center">
+              <!-- Campo de búsqueda (input) -->
+              <input type="text" class="form-control" placeholder="Buscar..." [(ngModel)]="searchValue" />
+              <button type="button" class="btn btn-outline-secondary ms-2" (click)="onSearch()" matTooltip="Buscar"
+                matTooltipPosition="above">
+                <i class="fa-solid fa-magnifying-glass"></i>
+              </button>
+              <button *ngIf="searchValue" type="button" class="btn btn-outline-secondary ms-2" style="width: 3rem;"
+                (click)="clearSearch()" matTooltip="Limpiar" matTooltipPosition="above">
+                <svg cIcon name="cil-x"></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        <ng-container *ngIf="transformedData.length > 0; else noData">
+          <div class="position-relative">
+            <!-- Contenedor del spinner -->
+            <div *ngIf="isLoading" class="spinner-overlay">
+              <div class="spinner-border" role="status">
+                <span class="visually-hidden">Cargando...</span>
+              </div>
+            </div>
+            <!-- Contenido de la tabla -->
+            <div class="table-responsive">
+              <table [hover]="true" [responsive]="true" [striped]="true" align="middle" cTable
+                class="mb-0 border table">
+                <thead cTableColor="light">
+                  <tr>
+                    <th *ngFor="let column of columns; let i = index"
+                      [ngStyle]="{'text-align': columnAlignments[i] || 'left'}" (click)="sortColumn(column)">
+                      {{ column }}
+                      <i class="fa-solid fa-arrows-up-down ms-1"
+                        *ngIf="(currentSortColumn !== column || !sortOrder) && (column !== 'Foto' && column !== 'Logo' && column !== 'Icono' && column !== 'No se encontraron resultados')"></i>
+                      <i class="fa-solid fa-arrow-up ms-1"
+                        *ngIf="currentSortColumn === column && sortOrder === 'desc'"></i>
+                      <i class="fa-solid fa-arrow-down ms-1"
+                        *ngIf="currentSortColumn === column && sortOrder === 'asc'"></i>
+                    </th>
+                    <th *ngIf="acciones" [ngStyle]="{'text-align': 'center'}">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let row of transformedData; let i = index">
+                    <td *ngFor="let column of columns; let i = index"
+                      [ngStyle]="{'text-align': columnAlignments[i] || 'left'}">
+                      <ng-container *ngIf="column === 'Foto'; else logo">
+                        <img *ngIf="row['Foto'] !== null" [src]="row['Foto']" alt="User Image" width="50" height="50"
+                          style="border-radius: 50%;" matTooltip="{{row['Usuario']}}-foto" matTooltipPosition="right">
+                        <img *ngIf="row['Foto'] === null" src="../../../assets/images/veterinario-black-img.png"
+                          alt="User Image" width="60" height="45" style="border-radius: 50%;">
+                      </ng-container>
+                      <ng-template #logo>
+                        <ng-container *ngIf="column === 'Logo'; else iconOrDefault">
+                          <img *ngIf="row['Logo'] !== null" [src]="row['Logo']" alt="User Image" width="50" height="50"
+                            style="border-radius: 50%;" matTooltip="{{row['Nombre']}}-logo" matTooltipPosition="right">
+                          <img *ngIf="row['Logo'] === null" src="../../../../assets/images/mobile-logo.png"
+                            alt="User Image" width="50" height="50"
+                            style="border-radius: 50%; filter: grayscale(100%) brightness(0%);">
+                        </ng-container>
+                      </ng-template>
+                      <ng-template #iconOrDefault>
+                        <ng-container *ngIf="column === 'Icono'; else defaultCell">
+                          <svg cIcon [name]="row['Icono']" size="lg" class="icon-svg"></svg>
+                        </ng-container>
+                      </ng-template>
+                      <ng-template #defaultCell>{{ row[column] || 'N/A' }}</ng-template>
+                    </td>
+                    <td *ngIf="acciones" class="text-center">
+                      <div class="d-flex justify-content-center align-items-center">
+                        <button *ngIf="hasPermission('Editar')" class="btn btn-primary btn-sm me-2"
+                          (click)="onAction(row.id, 'edit')" matTooltip="Editar" matTooltipPosition="below">
+                          <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                        <button *ngIf="hasPermission('Eliminar')" class="btn btn-danger btn-sm me-2"
+                          (click)="onAction(row.id, 'delete')" matTooltip="Eliminar" matTooltipPosition="below">
+                          <i class="fa-solid fa-trash"></i>
+                        </button>
+                        <button class="btn btn-info btn-sm me-2" (click)="onAction(row.id, 'view')" matTooltip="Ver"
+                          matTooltipPosition="below">
+                          <i class="fa-solid fa-eye"></i>
+                        </button>
+                        <button *ngIf="hasPermission('Editar')" class="btn btn-sm"
+                          [ngClass]="{ 'btn-success': !row.is_disabled, 'btn-warning': row.is_disabled}"
+                          (click)="onAction(row.id, 'ban')"
+                          [matTooltip]="!row.is_disabled ? 'Habilitar' : 'Inhabilitar'">
+                          <i *ngIf="!row.is_disabled" class="fa-solid fa-thumbs-up"></i>
+                          <i *ngIf="row.is_disabled" class="fa-solid fa-thumbs-down"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="pagination mt-3 d-flex flex-column flex-md-row align-items-center">
+              <div class="d-flex align-items-center mb-2 mb-md-0">
+                <button class="btn btn-outline-secondary btn-sm me-2" (click)="prevPage()">
+                  <svg cIcon name="cil-chevron-left"></svg>
+                </button>
+                <span class="mx-2">Página {{ currentPage }} de {{ totalPages }}</span>
+                <button class="btn btn-outline-secondary btn-sm me-2" (click)="nextPage()">
+                  <svg cIcon name="cil-chevron-right"></svg>
+                </button>
+              </div>
+              <select (change)="onPageSizeChange($event)" class="form-select d-inline w-auto ms-2">
+                <option *ngFor="let size of [10, 25, 50]" [value]="size">{{ size }} por página</option>
+              </select>
+              <span class="mx-2 mt-1 mt-md-0">Total de registros: {{ totalRecords }}</span>
+            </div>
+          </div>
+        </ng-container>
+        <ng-template #noData>
+          <c-card class="text-center p-4 no-data-card">
             <c-card-body>
-                <!-- Buscador -->
-                <div class="container mb-2 p-0">
-                    <div class="row">
-                        <div class="col-12 col-md-6 offset-md-6 d-flex justify-content-end align-items-center">
-                            <!-- Campo de búsqueda (input) -->
-                            <input type="text" class="form-control" placeholder="Buscar..." [(ngModel)]="searchValue" />
-                            <button type="button" class="btn btn-outline-secondary ms-2" (click)="onSearch()"
-                                matTooltip="Buscar" matTooltipPosition="above">
-                                <i class="fa-solid fa-magnifying-glass"></i>
-                            </button>
-                            <button *ngIf="searchValue" type="button" class="btn btn-outline-secondary ms-2"
-                                style="width: 3rem;" (click)="clearSearch()" matTooltip="Limpiar"
-                                matTooltipPosition="above">
-                                <svg cIcon name="cil-x"></svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <ng-container *ngIf="transformedData.length > 0; else noData">
-                    <div class="position-relative">
-                        <!-- Contenedor del spinner -->
-                        <div *ngIf="isLoading" class="spinner-overlay">
-                            <div class="spinner-border" role="status">
-                                <span class="visually-hidden">Cargando...</span>
-                            </div>
-                        </div>
-                        <!-- Contenido de la tabla -->
-                        <div class="table-responsive">
-                            <table [hover]="true" [responsive]="true" [striped]="true" align="middle" cTable
-                                class="mb-0 border table">
-                                <thead cTableColor="light">
-                                    <tr>
-                                        <th *ngFor="let column of columns; let i = index"
-                                            [ngStyle]="{'text-align': columnAlignments[i] || 'left'}"
-                                            (click)="sortColumn(column)">
-                                            {{ column }}
-                                            <i class="fa-solid fa-arrows-up-down ms-1"
-                                                *ngIf="(currentSortColumn !== column || !sortOrder) && (column !== 'Foto' && column !== 'Logo' && column !== 'Icono' && column !== 'No se encontraron resultados')"></i>
-                                            <i class="fa-solid fa-arrow-up ms-1"
-                                                *ngIf="currentSortColumn === column && sortOrder === 'desc'"></i>
-                                            <i class="fa-solid fa-arrow-down ms-1"
-                                                *ngIf="currentSortColumn === column && sortOrder === 'asc'"></i>
-                                        </th>
-                                        <th *ngIf="acciones" [ngStyle]="{'text-align': 'center'}">Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr *ngFor="let row of transformedData; let i = index">
-                                        <td *ngFor="let column of columns; let i = index"
-                                            [ngStyle]="{'text-align': columnAlignments[i] || 'left'}">
-                                            <ng-container *ngIf="column === 'Foto'; else logo">
-                                                <img *ngIf="row['Foto'] !== null" [src]="row['Foto']" alt="User Image"
-                                                    width="50" height="50" style="border-radius: 50%;"
-                                                    matTooltip="{{row['Usuario']}}-foto" matTooltipPosition="right">
-                                                <img *ngIf="row['Foto'] === null"
-                                                    src="../../../assets/images/veterinario-black-img.png"
-                                                    alt="User Image" width="60" height="45" style="border-radius: 50%;">
-                                            </ng-container>
-                                            <ng-template #logo>
-                                                <ng-container *ngIf="column === 'Logo'; else iconOrDefault">
-                                                    <img *ngIf="row['Logo'] !== null" [src]="row['Logo']"
-                                                        alt="User Image" width="50" height="50"
-                                                        style="border-radius: 50%;" matTooltip="{{row['Nombre']}}-logo"
-                                                        matTooltipPosition="right">
-                                                    <img *ngIf="row['Logo'] === null"
-                                                        src="../../../../assets/images/mobile-logo.png" alt="User Image"
-                                                        width="50" height="50"
-                                                        style="border-radius: 50%; filter: grayscale(100%) brightness(0%);">
-                                                </ng-container>
-                                            </ng-template>
-                                            <ng-template #iconOrDefault>
-                                                <ng-container *ngIf="column === 'Icono'; else defaultCell">
-                                                    <svg cIcon [name]="row['Icono']" size="lg" class="icon-svg"></svg>
-                                                </ng-container>
-                                            </ng-template>
-                                            <ng-template #defaultCell>{{ row[column] || 'N/A' }}</ng-template>
-                                        </td>
-                                        <td *ngIf="acciones" class="text-center">
-                                            <div class="d-flex justify-content-center align-items-center">
-                                                <button *ngIf="hasPermission('Editar')"
-                                                    class="btn btn-primary btn-sm me-2"
-                                                    (click)="onAction(row.id, 'edit')" matTooltip="Editar"
-                                                    matTooltipPosition="below">
-                                                    <i class="fa-solid fa-pen-to-square"></i>
-                                                </button>
-                                                <button *ngIf="hasPermission('Eliminar')"
-                                                    class="btn btn-danger btn-sm me-2"
-                                                    (click)="onAction(row.id, 'delete')" matTooltip="Eliminar"
-                                                    matTooltipPosition="below">
-                                                    <i class="fa-solid fa-trash"></i>
-                                                </button>
-                                                <button class="btn btn-info btn-sm me-2"
-                                                    (click)="onAction(row.id, 'view')" matTooltip="Ver"
-                                                    matTooltipPosition="below">
-                                                    <i class="fa-solid fa-eye"></i>
-                                                </button>
-                                                <button *ngIf="hasPermission('Editar')" class="btn btn-sm"
-                                                    [ngClass]="{ 'btn-success': !row.is_disabled, 'btn-warning': row.is_disabled}"
-                                                    (click)="onAction(row.id, 'ban')"
-                                                    [matTooltip]="!row.is_disabled ? 'Habilitar' : 'Inhabilitar'">
-                                                    <i *ngIf="!row.is_disabled" class="fa-solid fa-thumbs-up"></i>
-                                                    <i *ngIf="row.is_disabled" class="fa-solid fa-thumbs-down"></i>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="pagination mt-3 d-flex flex-column flex-md-row align-items-center">
-                            <div class="d-flex align-items-center mb-2 mb-md-0">
-                                <button class="btn btn-outline-secondary btn-sm me-2" (click)="prevPage()">
-                                    <svg cIcon name="cil-chevron-left"></svg>
-                                </button>
-                                <span class="mx-2">Página {{ currentPage }} de {{ totalPages }}</span>
-                                <button class="btn btn-outline-secondary btn-sm me-2" (click)="nextPage()">
-                                    <svg cIcon name="cil-chevron-right"></svg>
-                                </button>
-                            </div>
-                            <select (change)="onPageSizeChange($event)" class="form-select d-inline w-auto ms-2">
-                                <option *ngFor="let size of [10, 25, 50]" [value]="size">{{ size }} por página</option>
-                            </select>
-                            <span class="mx-2 mt-1 mt-md-0">Total de registros: {{ totalRecords }}</span>
-                        </div>
-                    </div>
-                </ng-container>
-                <ng-template #noData>
-                    <c-card class="text-center p-4 no-data-card">
-                        <c-card-body>
-                            <img src="../../../assets/images/no-data-img.gif" alt="No hay datos">
-                            <p>No hay datos disponibles</p>
-                            <p class="mb-3">¡Parece que no tienes ningún registro! Puedes agregar uno nuevo.</p>
-                        </c-card-body>
-                    </c-card>
-                </ng-template>
+              <img src="../../../assets/images/no-data-img.gif" alt="No hay datos">
+              <p>No hay datos disponibles</p>
+              <p class="mb-3">¡Parece que no tienes ningún registro! Puedes agregar uno nuevo.</p>
             </c-card-body>
-        </c-card>
-    </c-col>
+          </c-card>
+        </ng-template>
+      </c-card-body>
+    </c-card>
+  </c-col>
 </c-row>
