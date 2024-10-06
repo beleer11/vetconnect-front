@@ -423,31 +423,23 @@ export class UserComponent implements OnInit {
     );
   }
 
-  async getRol(): Promise<void> {
-    try {
-      let response: any;
-      response = await this.rolService.listRol().toPromise();
-      this.dataRol = response?.data;
-      this.filteredRoles = this.dataRol;
-      this.dataCompany = await this.getCompanyData();
-    } catch (error: any) {
-      console.error('Error al obtener roles:', error.message);
-    }
+  getRol() {
+    let response: any;
+    response = this.rolService.listRol().toPromise();
+    this.dataRol = response?.data;
+    this.filteredRoles = this.dataRol;
+    this.getCompanyData();
   }
 
-  async getCompanyData(): Promise<void> {
-    try {
-      this.branchService.getListCompany().subscribe(
-        async response => {
-          this.dataCompany = response;
-        },
-        error => {
-          console.log(error.message);
-        }
-      );
-    } catch (error: any) {
-      console.error('Error al obtener roles:', error.message);
-    }
+  getCompanyData() {
+    this.branchService.getListCompany().subscribe(
+      response => {
+        this.dataCompany = response;
+      },
+      error => {
+        console.log(error.message);
+      }
+    );
   }
 
   getModulesByGroup(groupId: number) {

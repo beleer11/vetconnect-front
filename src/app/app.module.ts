@@ -37,6 +37,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { MatSpinner } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatProgressBar } from '@angular/material/progress-bar';
 
 //pages
 import { LoginComponent } from './pages/login/login.component';
@@ -161,6 +162,7 @@ const APP_CONTAINERS = [
     ModalModule,
     MatSpinner,
     MatTooltipModule,
+    MatProgressBar,
     RouterModule.forRoot([], { useHash: false }),
   ],
   providers: [

@@ -108,7 +108,7 @@ export class FilterHeaderComponent {
 
   getDataCompany() {
     this.branchService.getListCompany().subscribe(
-      async response => {
+      response => {
         this.dataCompany = response;
       },
       error => {
@@ -192,7 +192,6 @@ export class FilterHeaderComponent {
   toggleAccordion() {
     this.isAccordionOpen = !this.isAccordionOpen;
   }
-
 
   getRol() {
     this.rolService.listRol().subscribe(

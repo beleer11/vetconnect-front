@@ -58,10 +58,15 @@
                     <mat-option *ngFor="let company of dataCompany | filterCompany : searchControl.value"
                       [value]="company.id">{{ company.name }}</mat-option>
                   </mat-select>
-                  <button *ngIf="formFilter.get('company_id')?.value" mat-icon-button (click)="clearSelectionCompany()"
-                    class="clear-icon">
-                    <mat-icon>close</mat-icon>
-                  </button>
+                  <ng-container *ngIf="dataCompany.length <= 0; else closeButton">
+                    <mat-spinner diameter="24" strokeWidth="3" class="spinner me-3"></mat-spinner>
+                  </ng-container>
+                  <ng-template #closeButton>
+                    <button *ngIf="formFilter.get('company_id')?.value" mat-icon-button
+                      (click)="clearSelectionCompany()" class="clear-icon">
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  </ng-template>
                   <div
                     *ngIf="formFilter.get('company_id')?.invalid && (formFilter.get('company_id')?.touched || formFilter.get('company_id')?.dirty)"
                     class="invalid-feedback position-absolute" style="bottom: -20px; left: 0;">
@@ -98,13 +103,13 @@
               </div>
               <!-- Nombre -->
               <div class="col-12 col-md-6 col-lg-3 mb-4" *ngIf="name">
-                <div class="form-group">
+                <div class="form-group position-relative">
                   <label for="name" class="mb-1 bolder">Nombre</label>
                   <input id="name" formControlName="name" type="text" class="form-control"
                     [ngClass]="getValidationClass('name')" placeholder="Nombre" />
                   <div
                     *ngIf="formFilter.get('name')?.invalid && (formFilter.get('name')?.touched || formFilter.get('name')?.dirty)"
-                    class="invalid-feedback position-absolute" style="bottom: -20px; left: 0;">
+                    class="invalid-feedback position-absolute">
                     <div *ngIf="formFilter.get('name')?.errors?.['required']">Nombre es requerido.</div>
                     <div *ngIf="formFilter.get('name')?.errors?.['minlength']">Nombre debe tener al menos 3 caracteres.
                     </div>
@@ -138,10 +143,15 @@
                       {{rol.name}}
                     </mat-option>
                   </mat-select>
-                  <button *ngIf="formFilter.get('rol_id')?.value" mat-icon-button (click)="clearSelectionRol()"
-                    class="clear-icon">
-                    <mat-icon>close</mat-icon>
-                  </button>
+                  <ng-container *ngIf="dataRol.length <= 0; else closeButton">
+                    <mat-spinner diameter="24" strokeWidth="3" class="spinner me-3"></mat-spinner>
+                  </ng-container>
+                  <ng-template #closeButton>
+                    <button *ngIf="formFilter.get('rol_id')?.value" mat-icon-button (click)="clearSelectionRol()"
+                      class="clear-icon">
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  </ng-template>
                   <div
                     *ngIf="formFilter.get('rol_id')?.invalid && (formFilter.get('rol_id')?.touched || formFilter.get('rol_id')?.dirty)"
                     class="invalid-feedback position-absolute">
