@@ -51,8 +51,8 @@ export class BranchComponent {
 
   public createForm() {
     this.formBranch = this.fb.group({
-      name: ['', [Validators.required, Validators.minLength(3)]],
-      description: ['', [Validators.required, Validators.minLength(10)]],
+      name: ['', [Validators.required, Validators.minLength(3), Validators.pattern('^[a-zA-ZáéíóúÁÉÍÓÚÑñ]+(\\s[a-zA-ZáéíóúÁÉÍÓÚÑñ]+)*$')]],
+      description: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(500)]],
       address: ['', [Validators.required, Validators.minLength(10)]],
       company_id: [{}, Validators.required],
       phone: ['', [Validators.required, Validators.minLength(10)]],

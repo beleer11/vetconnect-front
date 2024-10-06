@@ -37,13 +37,13 @@
           <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab">
             <form [formGroup]="formBranch" class="pt-3 pb-md-3 ">
               <div class="container">
-                <!--Nombre y compañia -->
+                <!--Nombre y compañía -->
                 <div class="row mb-4">
                   <div class="col-md-6 mb-4 mb-md-0">
                     <div class="form-group">
                       <label for="name" class="bolder mb-1">Nombre</label>
                       <input id="name" formControlName="name" type="text" class="form-control"
-                        [ngClass]="getValidationClass('name')" />
+                        [ngClass]="getValidationClass('name')" maxlength="100"/>
                       <div *ngIf="
                           formBranch.get('name')?.invalid &&
                           (formBranch.get('name')?.touched ||
@@ -55,15 +55,18 @@
                         <div *ngIf="formBranch.get('name')?.errors?.['minlength']">
                           Nombre debe tener al menos 3 caracteres.
                         </div>
+                        <div *ngIf="formBranch.get('name')?.errors?.['pattern']">
+                          El nombre solo puede contener letras y un solo espacio entre palabras.
+                        </div>
                       </div>
                     </div>
                   </div>
                   <div class="col-md-6">
                     <div class="form-group">
-                      <label for="company" class="bolder mb-1">Compañia</label>
-                      <mat-select formControlName="company_id" placeholder="Seleccionar compañia" ultiple="false"
+                      <label for="company" class="bolder mb-1">Compañía</label>
+                      <mat-select formControlName="company_id" placeholder="Seleccionar compañía" multiple="false"
                         class="form-control" [ngClass]="getValidationClass('company_id')">
-                        <ngx-mat-select-search [formControl]="searchControl" placeholderLabel="Buscar compañia"
+                        <ngx-mat-select-search [formControl]="searchControl" placeholderLabel="Buscar compañía"
                           noEntriesFoundLabel="No se encontraron resultados">
                         </ngx-mat-select-search>
                         <mat-option *ngFor="
@@ -83,7 +86,7 @@
                             formBranch.get('company_id')?.dirty)
                         " class="invalid-feedback">
                         <div *ngIf="formBranch.get('company_id')?.errors?.['required']">
-                          Compañia es requerida.
+                          Compañía es requerida.
                         </div>
                       </div>
                     </div>
