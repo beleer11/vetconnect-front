@@ -23,3 +23,31 @@
   background-color: #28a745;
   border-color: #28a745;
 }
+
+.panel-title {
+  color: #343a40;
+  /* Color oscuro para el título */
+  font-weight: 600;
+}
+
+/* Estilos para los grupos */
+.mat-expansion-panel:nth-of-type(odd) .mat-expansion-panel-header {
+  background-color: #f0f2f5;
+  /* Color claro para el fondo de los grupos impares */
+}
+
+.mat-expansion-panel:nth-of-type(even) .mat-expansion-panel-header {
+  background-color: #e9ecef;
+  /* Color ligeramente diferente para el fondo de los grupos pares */
+}
+
+/* Estilos para el acordeón de módulos */
+.mat-accordion.mat-expansion-panel {
+  background-color: #ffffff;
+  /* Fondo blanco para los módulos */
+}
+
+.mat-expansion-panel-header {
+  border: 1px solid #ced4da;
+  /* Línea de borde más visible */
+}

@@ -49,7 +49,7 @@
                       <div class="col-md-6 mb-3">
                         <label for="nombre" class="bolder">Nombre</label>
                         <input id="nombre" formControlName="nombre" type="text" class="form-control"
-                          [ngClass]="getValidationClass('nombre')" />
+                          [ngClass]="getValidationClass('nombre')" maxlength="100" />
                         <div
                           *ngIf="formRol.get('nombre')?.invalid && (formRol.get('nombre')?.touched || formRol.get('nombre')?.dirty)"
                           class="invalid-feedback">
@@ -59,13 +59,23 @@
                           <div *ngIf="formRol.get('nombre')?.errors?.['minlength']">
                             Nombre debe tener al menos 3 caracteres.
                           </div>
+                          <div *ngIf="formRol.get('nombre')?.errors?.['pattern']">
+                            El nombre solo puede contener letras y un solo espacio entre palabras.
+                          </div>
                         </div>
                       </div>
                       <div class="col-md-6 mb-3">
-                        <label for="descripcion" class="bolder">Descripción</label>
-                        <textarea id="descripcion" formControlName="description" rows="3" class="form-control"
-                          [ngClass]="getValidationClass('description')">
-                                                </textarea>
+                        <label for="description" class="bolder">Descripción</label>
+                        <textarea id="description" formControlName="description" rows="3" class="form-control"
+                          minlength="10" maxlength="500" [ngClass]="getValidationClass('description')">
+                        </textarea>
+                        <div
+                          *ngIf="formRol.get('description')?.invalid && (formRol.get('description')?.touched || formRol.get('description')?.dirty)"
+                          class="invalid-feedback">
+                          <div *ngIf="formRol.get('description')?.errors?.['minlength']">
+                            Descripción debe tener al menos 10 caracteres.
+                          </div>
+                        </div>
                       </div>
                     </div>
                     <div class="d-flex justify-content-end mb-2">
@@ -88,7 +98,7 @@
               <mat-accordion class="pt-3 pe-2 ps-2">
                 <mat-expansion-panel *ngFor="let group of dataPermission.groups; let i = index" [expanded]="i === 0">
                   <mat-expansion-panel-header>
-                    <mat-panel-title class="panel-title font-size-16 bolder">
+                    <mat-panel-title class="panel-title font-size-16">
                       <span>{{ group.name }}</span>
                     </mat-panel-title>
                   </mat-expansion-panel-header>
@@ -97,7 +107,7 @@
                       <mat-expansion-panel *ngFor="let module of getModulesByGroup(group.id); let j = index"
                         [expanded]="j === 0">
                         <mat-expansion-panel-header>
-                          <mat-panel-title class="panel-title font-size-16 bolder">
+                          <mat-panel-title class="panel-title font-size-16">
                             {{ module.name }}
                           </mat-panel-title>
                         </mat-expansion-panel-header>

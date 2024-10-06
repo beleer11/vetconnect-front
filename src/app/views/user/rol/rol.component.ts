@@ -145,8 +145,8 @@ export class RolComponent implements OnInit {
 
   public createForm() {
     this.formRol = this.fb.group({
-      nombre: ['', [Validators.required, Validators.minLength(3)]],
-      description: [''],
+      nombre: ['', [Validators.required, Validators.minLength(3), Validators.pattern('^[a-zA-ZáéíóúÁÉÍÓÚÑñ]+(\\s[a-zA-ZáéíóúÁÉÍÓÚÑñ]+)*$')]],
+      description: ['', [Validators.minLength(10), Validators.maxLength(500)]],
     });
     this.loading = false;
     this.listPermission();
