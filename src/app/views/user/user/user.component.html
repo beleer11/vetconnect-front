@@ -50,7 +50,7 @@
                     <div class="form-group">
                       <label for="name" class="bolder mb-1">Nombre</label>
                       <input id="name" formControlName="name" type="text" class="form-control"
-                        [ngClass]="getValidationClass('name')" />
+                        [ngClass]="getValidationClass('name')" maxlength="100" />
                       <div
                         *ngIf="formUser.get('name')?.invalid && (formUser.get('name')?.touched || formUser.get('name')?.dirty)"
                         class="invalid-feedback">
@@ -58,6 +58,9 @@
                           requerido.</div>
                         <div *ngIf="formUser.get('name')?.errors?.['minlength']">Nombre debe
                           tener al menos 3 caracteres.</div>
+                        <div *ngIf="formUser.get('name')?.errors?.['pattern']">
+                          El nombre solo puede contener letras y un solo espacio entre palabras.
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -205,8 +208,7 @@
                           (input)="checkPasswordStrength()" />
                         <span class="input-group-text" data-bs-toggle="tooltip" data-bs-placement="top"
                           (click)="togglePasswordVisibility()">
-                          <svg cIcon size="lg" [name]="passwordVisible ? 'cilLockLocked' : 'cilLockUnlocked'"
-                            class="icon-svg"></svg>
+                          <i [class]="passwordVisible ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
                         </span>
                         <div
                           *ngIf="formUser.get('password')?.invalid && (formUser.get('password')?.touched || formUser.get('password')?.dirty)"

@@ -72,7 +72,7 @@ export class UserComponent implements OnInit {
 
   public createForm() {
     this.formUser = this.fb.group({
-      name: ['', [Validators.required, Validators.minLength(3)]],
+      name: ['', [Validators.required, Validators.minLength(3), Validators.pattern('^[a-zA-ZáéíóúÁÉÍÓÚÑñ]+(\\s[a-zA-ZáéíóúÁÉÍÓÚÑñ]+)*$')]],
       username: [{ value: '', disabled: true }, [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(20)]],
@@ -173,6 +173,7 @@ export class UserComponent implements OnInit {
     this.permissionSuggested = [];
     this.selectAllCheck = true;
     this.selectedFile = '';
+    this.passwordVisible = false;
     this.goToPreviewTab();
   }
 
@@ -288,7 +289,7 @@ export class UserComponent implements OnInit {
     if (text === 1) {
       html = `
         <div id="custom-icon-container">
-          <p>Debe dar clic en Generar para generar un nombre de usuario válido</p>
+          <p>Debe dar clic en <b>Generar</b> para generar un nombre de usuario válido</p>
         </div>`;
     } else if (text === 2) {
       html = `
@@ -424,11 +425,16 @@ export class UserComponent implements OnInit {
   }
 
   getRol() {
-    let response: any;
-    response = this.rolService.listRol().toPromise();
-    this.dataRol = response?.data;
-    this.filteredRoles = this.dataRol;
-    this.getCompanyData();
+    this.rolService.listRol().subscribe(
+      (response: any) => {
+        this.dataRol = response?.data;
+        this.filteredRoles = this.dataRol;
+        this.getCompanyData();
+      },
+      error => {
+        console.log(error.message);
+      }
+    );
   }
 
   getCompanyData() {
