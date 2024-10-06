@@ -16,6 +16,7 @@ import { RolComponent } from './views/user/rol/rol.component';
 import { BranchComponent } from './views/companies/branch/branch.component';
 import { TermsAndConditionsComponent } from './shared/terms-and-conditions/terms-and-conditions.component';
 import { UserProfilComponent } from './views/user/user-profil/user-profil.component';
+import { TypePetComponent } from './views/parameter/type-pet/type-pet.component';
 
 // Define las rutas directamente aquí
 const routes: Routes = [
@@ -71,6 +72,11 @@ const routes: Routes = [
       { path: 'branch', component: BranchComponent },
 
       { path: 'user-profil', component: UserProfilComponent },
+      {
+        path: 'type-pet',
+        component: TypePetComponent
+      },
+
     ],
   },
   { path: 'login', component: LoginComponent },
