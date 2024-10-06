@@ -86,7 +86,7 @@ export class PermissionComponent implements OnInit {
 
   public createForm() {
     this.formPermission = this.fb.group({
-      nombre: ['', [Validators.required, Validators.minLength(3)]],
+      nombre: ['', [Validators.required, Validators.minLength(3), Validators.pattern('^[a-zA-ZáéíóúÁÉÍÓÚÑñ]+(\\s[a-zA-ZáéíóúÁÉÍÓÚÑñ]+)*$')]],
     });
     this.loading = false;
   }
