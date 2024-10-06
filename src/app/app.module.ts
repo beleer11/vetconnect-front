@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, Component } from '@angular/core';
 import {
   HashLocationStrategy,
   LocationStrategy,
@@ -57,6 +57,7 @@ import { BranchComponent } from './views/companies/branch/branch.component';
 import { FilterHeaderComponent } from './shared/filter-header/filter-header.component';
 import { UserProfilComponent } from './views/user/user-profil/user-profil.component';
 import { TypesBreedsComponent } from './views/parameter/types-breeds/types-breeds.component';
+import { TypePetComponent } from './views/parameter/type-pet/type-pet.component';
 
 // Import containers
 import {
@@ -117,7 +118,8 @@ const APP_CONTAINERS = [
     BranchComponent,
     FilterHeaderComponent,
     UserProfilComponent,
-    TypesBreedsComponent
+    TypesBreedsComponent,
+    TypePetComponent,
   ],
   imports: [
     BrowserModule,
