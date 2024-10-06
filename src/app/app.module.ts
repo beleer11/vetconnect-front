@@ -56,6 +56,7 @@ import { GroupButtonGeneralComponent } from './shared/group-button-general/group
 import { BranchComponent } from './views/companies/branch/branch.component';
 import { FilterHeaderComponent } from './shared/filter-header/filter-header.component';
 import { UserProfilComponent } from './views/user/user-profil/user-profil.component';
+import { TypesBreedsComponent } from './views/parameter/types-breeds/types-breeds.component';
 
 // Import containers
 import {
@@ -116,6 +117,7 @@ const APP_CONTAINERS = [
     BranchComponent,
     FilterHeaderComponent,
     UserProfilComponent,
+    TypesBreedsComponent
   ],
   imports: [
     BrowserModule,
