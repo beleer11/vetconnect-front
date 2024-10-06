@@ -74,7 +74,7 @@ export class GroupModuleComponent implements OnInit {
 
   public createForm() {
     this.formGroupModule = this.fb.group({
-      nombre: ['', [Validators.required, Validators.minLength(3)]],
+      nombre: ['', [Validators.required, Validators.minLength(3), Validators.pattern('^[a-zA-ZáéíóúÁÉÍÓÚÑñ]+(\\s[a-zA-ZáéíóúÁÉÍÓÚÑñ]+)*$')]],
     });
   }
 
