@@ -29,24 +29,35 @@
             <!-- Campos en la misma fila -->
             <div class="mb-3 col-12 col-md-4">
               <label for="name" class="form-label bolder">Nombre</label>
-              <input id="name" formControlName="name" class="form-control" [ngClass]="getValidationClass('name')" />
-              <div *ngIf="formModule.controls['name'].invalid && formModule.controls['name'].touched"
+              <input id="name" formControlName="name" class="form-control" [ngClass]="getValidationClass('name')"
+                maxlength="100" />
+              <div
+                *ngIf="formModule.get('name')?.invalid && (formModule.get('name')?.touched || formModule.get('name')?.dirty)"
                 class="invalid-feedback">
-                El nombre es requerido.
+                <div *ngIf="formModule.get('name')?.errors?.['required']">Nombre es requerido.
+                </div>
+                <div *ngIf="formModule.get('name')?.errors?.['minlength']">Nombre debe tener
+                  al
+                  menos 3 caracteres.</div>
+                <div *ngIf="formModule.get('name')?.errors?.['pattern']">
+                  El nombre solo puede contener letras y un solo espacio entre palabras.
+                </div>
               </div>
+
             </div>
             <div class="mb-3 col-12 col-md-4">
               <label for="url" class="form-label bolder">URL</label>
               <div class="input-group">
                 <input id="url" formControlName="url" type="url" class="form-control"
-                  [ngClass]="getValidationClass('url')" />
+                  [ngClass]="getValidationClass('url')" maxlength="100" />
                 <span class="input-group-text" data-bs-toggle="tooltip" data-bs-placement="top"
                   (click)="openInformation()" style="cursor: pointer;">?</span>
               </div>
-              <div *ngIf=" formModule.controls['url'].invalid && formModule.controls['url'].touched"
-                class="invalid-feedback">
+              <div *ngIf=" formModule.controls['url'].invalid && formModule.controls['url'].touched">
                 La URL es requerida y debe ser válida.
               </div>
+              <div *ngIf="formModule.get('url')?.errors?.['minlength']">URL debe tener al menos
+                3 caracteres.</div>
             </div>
             <div class="mb-3 col-12 col-md-4">
               <label for="group" class="form-label bolder">Grupo</label>

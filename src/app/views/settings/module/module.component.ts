@@ -94,9 +94,9 @@ export class ModuleComponent implements AfterViewInit {
 
   public createForm() {
     this.formModule = this.fb.group({
-      name: ['', Validators.required],
+      name: ['', [Validators.required, Validators.minLength(3), Validators.pattern('^[a-zA-ZáéíóúÁÉÍÓÚÑñ]+(\\s[a-zA-ZáéíóúÁÉÍÓÚÑñ]+)*$')]],
       icon: ['', Validators.required],
-      url: ['', Validators.required],
+      url: ['', [Validators.required, Validators.minLength(3)]],
       group: ['', Validators.required],
     });
     this.listGroupModule();
