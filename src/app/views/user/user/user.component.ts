@@ -83,7 +83,7 @@ export class UserComponent implements OnInit {
       branch_id: [{ value: {}, disabled: true }, Validators.required],
     });
     this.loading = false;
-    this.listPermission();
+    this.getRol();
   }
 
   private getDataUser() {
@@ -416,7 +416,6 @@ export class UserComponent implements OnInit {
     this.userService.listPermission().subscribe(
       response => {
         this.dataPermission = response;
-        this.getRol();
       },
       error => {
         console.log(error.message);
@@ -441,6 +440,7 @@ export class UserComponent implements OnInit {
     this.branchService.getListCompany().subscribe(
       response => {
         this.dataCompany = response;
+        this.listPermission();
       },
       error => {
         console.log(error.message);
