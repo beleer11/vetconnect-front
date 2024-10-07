@@ -52,17 +52,19 @@
                       [ngStyle]="{'text-align': columnAlignments[i] || 'left'}">
                       <ng-container *ngIf="column === 'Foto'; else logo">
                         <img *ngIf="row['Foto'] !== null" [src]="row['Foto']" alt="User Image" width="50" height="50"
-                          style="border-radius: 50%;" matTooltip="{{row['Usuario']}}-foto" matTooltipPosition="right">
+                          style="border-radius: 50%;" matTooltip="{{row['Usuario']}}-foto" matTooltipPosition="right"
+                          loading="lazy">
                         <img *ngIf="row['Foto'] === null" src="../../../assets/images/veterinario-black-img.png"
-                          alt="User Image" width="60" height="45" style="border-radius: 50%;">
+                          alt="User Image" width="60" height="45" style="border-radius: 50%;" loading="lazy">
                       </ng-container>
                       <ng-template #logo>
                         <ng-container *ngIf="column === 'Logo'; else iconOrDefault">
                           <img *ngIf="row['Logo'] !== null" [src]="row['Logo']" alt="User Image" width="50" height="50"
-                            style="border-radius: 50%;" matTooltip="{{row['Nombre']}}-logo" matTooltipPosition="right">
+                            style="border-radius: 50%;" matTooltip="{{row['Nombre']}}-logo" matTooltipPosition="right"
+                            loading="lazy">
                           <img *ngIf="row['Logo'] === null" src="../../../../assets/images/mobile-logo.png"
                             alt="User Image" width="50" height="50"
-                            style="border-radius: 50%; filter: grayscale(100%) brightness(0%);">
+                            style="border-radius: 50%; filter: grayscale(100%) brightness(0%);" loading="lazy">
                         </ng-container>
                       </ng-template>
                       <ng-template #iconOrDefault>
@@ -101,11 +103,13 @@
             </div>
             <div class="pagination mt-3 d-flex flex-column flex-md-row align-items-center">
               <div class="d-flex align-items-center mb-2 mb-md-0">
-                <button class="btn btn-outline-secondary btn-sm me-2" [disabled]="totalPages === 1" (click)="prevPage()">
+                <button class="btn btn-outline-secondary btn-sm me-2" [disabled]="totalPages === 1"
+                  (click)="prevPage()">
                   <svg cIcon name="cil-chevron-left"></svg>
                 </button>
                 <span class="mx-2">Página {{ currentPage }} de {{ totalPages }}</span>
-                <button class="btn btn-outline-secondary btn-sm me-2" [disabled]="totalPages === 1" (click)="nextPage()">
+                <button class="btn btn-outline-secondary btn-sm me-2" [disabled]="totalPages === 1"
+                  (click)="nextPage()">
                   <svg cIcon name="cil-chevron-right"></svg>
                 </button>
               </div>

@@ -173,7 +173,7 @@ export class CompanyComponent implements OnInit {
 
   public createForm() {
     this.formCompany = this.fb.group({
-      name: ['', [Validators.required, Validators.minLength(3)]],
+      name: ['', [Validators.required, Validators.minLength(3), Validators.pattern('^[a-zA-ZáéíóúÁÉÍÓÚÑñ]+(\\s[a-zA-ZáéíóúÁÉÍÓÚÑñ]+)*$')]],
       email: ['', [Validators.required, Validators.email]],
       logo: [''],
       business_name: ['', [Validators.required, Validators.minLength(3)]],

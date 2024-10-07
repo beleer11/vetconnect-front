@@ -18,11 +18,11 @@
     <button cButton color="" [caret]="false" cDropdownToggle class="py-0">
       <c-avatar *ngIf="user_information.image_profile === null && user_information.image_profile === ''"
         cTextColor="primary" shape="rounded-1" style="width: 60px; height: 45px;"
-        src="../../../../assets/images/veterinario-black-img.png" status="success">
+        src="../../../../assets/images/veterinario-black-img.png" status="success" loading="lazy">
       </c-avatar>
       <c-avatar *ngIf="user_information.image_profile !== null || user_information.image_profile !== ''"
         cTextColor="primary" shape="rounded-1" size="md" [src]="environment.apiStorage + user_information.image_profile"
-        status="success">
+        status="success" loading="lazy">
       </c-avatar>
     </button>
     <ul cDropdownMenu class="pt-0 pr-5 w-auto">
