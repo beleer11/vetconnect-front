@@ -40,16 +40,6 @@ export class GeneralService {
     });
   }
 
-  private getHttpOptions() {
-    const accessToken = localStorage.getItem('vet_connect_token')?.replace(/['"]+/g, '');
-    return {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`,
-      }),
-    };
-  }
-
   // Monitoreo de inactividad y cierre de sesión
   startInactivityMonitoring() {
     this.userActivitySubscription = this.userActivityObservable$
@@ -57,7 +47,6 @@ export class GeneralService {
         switchMap(() => this.inactivityTimer$) // Reinicia el temporizador al detectar actividad
       )
       .subscribe(() => {
-        // Verifica si hay un token antes de manejar el cierre de sesión
         if (!this.router.url.includes('/login')) {
           this.handleInactivityLogout();
         }
@@ -73,7 +62,6 @@ export class GeneralService {
 
   // Cierra sesión cuando hay inactividad
   private handleInactivityLogout() {
-    this.stopInactivityMonitoring(); // Detén el monitoreo antes de cerrar sesión
     this.authService.logout().subscribe(
       (response) => {
         localStorage.removeItem('vet_connect_token');
@@ -85,15 +73,6 @@ export class GeneralService {
           'Por tu protección, hemos cerrado tu sesión debido a inactividad prolongada. Si deseas continuar, inicia sesión nuevamente para seguir disfrutando de nuestros servicios.',
           'info'
         );
-      },
-      (error) => {
-        // Manejo de error en logout
-        if (error.status === 401) {
-          // Si ya estás desconectado, no hacer nada
-          console.error('Usuario ya desconectado, no se puede cerrar sesión nuevamente.');
-        } else {
-          console.error(error);
-        }
       }
     );
   }
