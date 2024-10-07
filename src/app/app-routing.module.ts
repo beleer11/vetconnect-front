@@ -14,16 +14,13 @@ import { PermissionComponent } from './views/user/permission/permission.componen
 import { CompanyComponent } from './views/companies/company/company.component';
 import { RolComponent } from './views/user/rol/rol.component';
 import { BranchComponent } from './views/companies/branch/branch.component';
+import { TermsAndConditionsComponent } from './shared/terms-and-conditions/terms-and-conditions.component';
+import { UserProfilComponent } from './views/user/user-profil/user-profil.component';
+import { TypesBreedsComponent } from './views/parameter/types-breeds/types-breeds.component';
+import { TypePetComponent } from './views/parameter/type-pet/type-pet.component';
 
 // Define las rutas directamente aquí
 const routes: Routes = [
-  {
-    path: '',
-    component: LoginComponent,
-    data: {
-      title: 'Login',
-    },
-  },
   {
     path: '',
     component: DefaultLayoutComponent,
@@ -32,6 +29,11 @@ const routes: Routes = [
     },
     canActivate: [AuthGuard],
     children: [
+      {
+        path: '',
+        redirectTo: 'dashboard',
+        pathMatch: 'full',
+      },
       {
         path: 'dashboard',
         component: DashboardComponent,
@@ -60,7 +62,31 @@ const routes: Routes = [
         path: 'company',
         component: CompanyComponent,
       },
-      { path: 'branch', component: BranchComponent },
+      {
+        path: 'branch',
+        component: BranchComponent
+      },
+      {
+        path: 'terms-and-conditions',
+        component: TermsAndConditionsComponent
+      },
+      {
+        path: 'branch',
+        component: BranchComponent
+      },
+      {
+        path: 'user-profil',
+        component: UserProfilComponent
+      },
+      {
+        path: 'type-breeds',
+        component: TypesBreedsComponent
+      },
+      {
+        path: 'type-pet',
+        component: TypePetComponent
+      },
+
     ],
   },
   { path: 'login', component: LoginComponent },
@@ -73,4 +99,4 @@ const routes: Routes = [
   imports: [RouterModule.forRoot(routes, { useHash: false })],
   exports: [RouterModule],
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }

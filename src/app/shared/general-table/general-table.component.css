@@ -96,7 +96,9 @@ th .sort-icon ng-container {
     border-radius: 50%;
 }
 
-
+.form-select{
+  cursor: pointer;
+}
 
 /* Estilos para pantallas pequeñas */
 @media (max-width: 576px) {

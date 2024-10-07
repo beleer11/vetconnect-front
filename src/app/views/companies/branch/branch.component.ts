@@ -8,9 +8,9 @@ import {
 } from '@angular/forms';
 import moment from 'moment';
 import * as bootstrap from 'bootstrap';
-import { GeneralService } from 'src/app/services/general/general.service';
-import { UserService } from 'src/app/services/user/user/user.service';
-import { CompanyService } from 'src/app/services/companies/company/company.service';
+import { GeneralService } from '../../../services/general/general.service';
+import { UserService } from '../../../services/user/user/user.service';
+import { CompanyService } from '../../../services/companies/company/company.service';
 import Swal from 'sweetalert2';
 import { Observable } from 'rxjs';
 
@@ -27,32 +27,23 @@ export class BranchComponent {
   public showImportButton: boolean = false;
   public showExportButton: boolean = false;
   public action: string = 'save';
-  public fieldsTable: any = [];
   public dataBranchTrasnform: any = [];
   public acciones: boolean = true;
-  public columnAlignments: any = [];
   public loadingTable: boolean = false;
   public totalRecord: number = 0;
   public dataTemp: any = [];
   public dataCompany: any = [];
-  public dataPermissionSelected: any = [];
-  public permissionSuggested: any = [];
   public formBranch!: FormGroup;
   public searchControl = new FormControl('');
-  public parameterDefect = {
-    search: '',
-    sortColumn: 'name',
-    sortOrder: 'desc',
-    page: 1,
-    pageSize: 10,
-  };
+  public parameterDefect = {};
+  public viewTable: boolean = false;
 
   constructor(
     private branchService: BranchService,
     private fb: FormBuilder,
     private generalService: GeneralService,
     private companyService: CompanyService
-  ) {}
+  ) { }
 
   async ngOnInit() {
     this.createForm();
@@ -60,15 +51,14 @@ export class BranchComponent {
 
   public createForm() {
     this.formBranch = this.fb.group({
-      name: ['', [Validators.required, Validators.minLength(3)]],
-      description: ['', [Validators.required, Validators.minLength(10)]],
+      name: ['', [Validators.required, Validators.minLength(3), Validators.pattern('^[a-zA-ZáéíóúÁÉÍÓÚÑñ]+(\\s[a-zA-ZáéíóúÁÉÍÓÚÑñ]+)*$')]],
+      description: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(500)]],
       address: ['', [Validators.required, Validators.minLength(10)]],
       company_id: [{}, Validators.required],
       phone: ['', [Validators.required, Validators.minLength(10)]],
-      is_active: [false, Validators.required],
+      is_active: [false],
     });
-    this.fieldsTable = this.getFieldsTable();
-    this.columnAlignments = this.getColumnAlignments();
+    this.loading = false;
     this.listCompany();
   }
 
@@ -76,7 +66,6 @@ export class BranchComponent {
     this.branchService.getListCompany().subscribe(
       (response) => {
         this.dataCompany = response;
-        this.getData();
       },
       (err) => {
         console.log(err);
@@ -84,26 +73,30 @@ export class BranchComponent {
     );
   }
 
-  private async getData(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.branchService.getDataBranch(this.parameterDefect).subscribe(
-        (response) => {
-          this.dataBranch = response.data;
-          this.totalRecord = response.total;
-          this.dataBranchTrasnform = this.formatedData(response.data);
-          resolve(this.dataBranchTrasnform);
-          this.loading = false;
-        },
-        (error) => reject(error)
-      );
-    });
+  private getData() {
+    this.branchService.getDataBranch(this.parameterDefect).subscribe(
+      (response) => {
+        this.dataBranch = response.data;
+        this.totalRecord = response.total;
+        this.dataBranchTrasnform = this.formatedData(response.data);
+        this.viewTable = true;
+        this.loading = false;
+      }, error => {
+        this.generalService.alertMessage(
+          '¡Ups! Algo salió mal',
+          'Tuvimos un problema al procesar tu solicitud. Por favor, inténtalo de nuevo o contacta a nuestro equipo de soporte si el problema persiste. ¡Estamos aquí para ayudarte!',
+          'warning'
+        );
+        this.loading = false;
+        this.viewTable = false;
+      });
   }
 
-  private getFieldsTable() {
+  public getFieldsTable() {
     return ['Nombre', 'Compañía', 'Dirección', 'Descripción', 'Teléfono'];
   }
 
-  private getColumnAlignments() {
+  public getColumnAlignments() {
     return ['left', 'left', 'center', 'center'];
   }
 
@@ -145,16 +138,15 @@ export class BranchComponent {
     this.resetForms();
   }
 
-  public formatedData(response: any, fecth = false) {
-    if (response.length === 0 && fecth) {
-      // Devuelve un mensaje personalizado cuando no hay datos
+  public formatedData(response: any) {
+    if (response.length === 0) {
       return [
         {
-          'No se encontraron resultados':
-            'No se encontraron registros que coincidan con los criterios de búsqueda. Intente con otros términos.',
-        },
+          'No se encontraron resultados': 'No se encontraron registros que coincidan con los criterios de búsqueda. Intente con otros términos.',
+        }
       ];
     }
+
     return response.map((item: any) => {
       return {
         id: item.id,
@@ -191,7 +183,7 @@ export class BranchComponent {
     }
   }
 
-  public saveNewBranch(data: {}) {
+  public saveNewBranch(data: any) {
     this.loading = true;
     this.branchService.sendBranch(data).subscribe({
       next: (response) => {
@@ -253,6 +245,7 @@ export class BranchComponent {
 
   disableOrEnableRecord(data: any) {
     const actionText = data.is_active === 0 ? 'habilitar' : 'inhabilitar';
+    const actionTextPlural = (data.is_active === 0) ? 'habilitados' : 'inhabilitados';
     const confirmButtonText =
       data.is_active === 0 ? 'Sí, habilitar' : 'Sí, inhabilitar';
     const successMessage =
@@ -262,6 +255,7 @@ export class BranchComponent {
 
     Swal.fire({
       title: `¿Deseas ${actionText} este registro?`,
+      html: `<strong>Tenga en cuenta que al ${actionText} esta sucursal, los usuarios de esta sucursal también serán ${actionTextPlural}. Asegúrese de que esto sea lo que desea hacer.</strong>`,
       icon: 'question',
       showCancelButton: true,
       confirmButtonColor: '#f39c12',
@@ -274,19 +268,27 @@ export class BranchComponent {
         const action = data.is_active === 0 ? 'enable' : 'disable';
         this.actionMap[action](data.id).subscribe({
           next: (response: any) => {
-            this.onFetchData(this.parameterDefect);
+            if (response.success) {
+              this.onFetchData(this.parameterDefect);
+              this.generalService.alertMessage(
+                '¡Éxito!',
+                successMessage,
+                'success'
+              );
+            } else {
+              this.generalService.alertMessage(
+                'Error',
+                'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo. Si el problema persiste, comunícate con soporte técnico',
+                'error'
+              );
+            }
             this.loading = false;
-            this.generalService.alertMessage(
-              '¡Éxito!',
-              successMessage,
-              'success'
-            );
           },
           error: (error: any) => {
             this.loading = false;
             this.generalService.alertMessage(
               'Error',
-              'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.',
+              'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo. Si el problema persiste, comunícate con soporte técnico',
               'error'
             );
           },
@@ -338,18 +340,10 @@ export class BranchComponent {
     this.loadingTable = true;
     this.branchService.getDataBranch(params).subscribe(
       (response) => {
-        this.dataBranchTrasnform = this.formatedData(response.data, true);
+        this.dataBranchTrasnform = this.formatedData(response.data);
         this.dataBranch = response.data;
         this.totalRecord = response.total;
-        if (response.data.length === 0) {
-          this.fieldsTable = ['No se encontraron resultados'];
-          this.columnAlignments = ['center'];
-          this.acciones = false;
-        } else {
-          this.fieldsTable = this.getFieldsTable();
-          this.columnAlignments = this.getColumnAlignments();
-          this.acciones = true;
-        }
+        this.acciones = true;
         this.loadingTable = false;
       },
       (error) => {
@@ -435,19 +429,29 @@ export class BranchComponent {
         this.loading = true;
         this.branchService.deleteRecordById(id).subscribe({
           next: (response) => {
-            this.onFetchData(this.parameterDefect);
+            if (response.success) {
+              this.onFetchData(this.parameterDefect);
+              this.generalService.alertMessage(
+                '¡Eliminado!',
+                'El registro ha sido eliminado correctamente.',
+                'success'
+              );
+            } else {
+              const branchesMessage = response.branches.join(', ');
+              const fullMessage = `No puedes eliminar la sucursal porque tiene usuarios asociados:<br><br><strong>${branchesMessage}</strong><br><br>Por favor, elimina primero los usuarios antes de intentar eliminar la sucursal.`;
+              this.generalService.alertMessageHtml(
+                'Error',
+                fullMessage,
+                'error'
+              );
+            }
             this.loading = false;
-            this.generalService.alertMessage(
-              '¡Eliminado!',
-              'El registro ha sido eliminado correctamente.',
-              'success'
-            );
           },
           error: (error) => {
             this.loading = false;
             this.generalService.alertMessage(
               'Error',
-              'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.',
+              'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo. Si el problema persiste, comunícate con soporte técnico',
               'error'
             );
           },
@@ -462,22 +466,40 @@ export class BranchComponent {
       html: `
         <div id="custom-icon-container">
           <p><strong>Nombre : </strong> <span>${data.name}</span> </p>
-          <p><strong>Descripción : </strong> <span>${
-            data.description
-          }</span> </p>
+          <p><strong>Descripción : </strong> <span>${data.description
+        }</span> </p>
           <p><strong>Compañía : </strong> <span>${data.company_name}</span> </p>
           <p><strong>Dirección : </strong> <span>${data.address}</span> </p>
           <p><strong>Teléfono : </strong> <span>${data.phone}</span> </p
           <p><strong>Fecha de Creación: </strong> <span>${moment(
-            data.created_at
-          ).format('DD/MM/YYYY hh:mm:ss A')}</span></p>
+          data.created_at
+        ).format('DD/MM/YYYY hh:mm:ss A')}</span></p>
           <p><strong>Última actualización: </strong> <span>${moment(
-            data.updated_at
-          ).format('DD/MM/YYYY hh:mm:ss A')}</span></p>
+          data.updated_at
+        ).format('DD/MM/YYYY hh:mm:ss A')}</span></p>
         </div>
       `,
       icon: 'info',
       confirmButtonText: 'Cerrar',
     });
+  }
+
+  setFilter(event: any) {
+    this.loading = true;
+    this.viewTable = false;
+    this.parameterDefect = {
+      dateInit: event.dateInit,
+      dateFinish: event.dateFinish,
+      company_id: event.company_id,
+      branch_id: event.branch_id,
+      state: event.state,
+      name: event.name,
+      search: '',
+      sortColumn: 'name',
+      sortOrder: 'desc',
+      page: 1,
+      pageSize: 10
+    }
+    this.getData();
   }
 }

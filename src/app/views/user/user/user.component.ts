@@ -48,16 +48,12 @@ export class UserComponent implements OnInit {
   public totalRecord: number = 0;
   public loadingTable: boolean = false;
   public acciones: boolean = true;
-  public parameterDefect = {
-    search: '',
-    sortColumn: 'name',
-    sortOrder: 'desc',
-    page: 1,
-    pageSize: 10
-  };
+  public parameterDefect = {};
   public dataCompany: any = [];
   public dataBranch: any = [];
   public loadingBranch: boolean = false;
+  public environment = environment;
+  public viewTable: boolean = false;
 
   constructor(
     private userService: UserService,
@@ -76,7 +72,7 @@ export class UserComponent implements OnInit {
 
   public createForm() {
     this.formUser = this.fb.group({
-      name: ['', [Validators.required, Validators.minLength(3)]],
+      name: ['', [Validators.required, Validators.minLength(3), Validators.pattern('^[a-zA-ZáéíóúÁÉÍÓÚÑñ]+(\\s[a-zA-ZáéíóúÁÉÍÓÚÑñ]+)*$')]],
       username: [{ value: '', disabled: true }, [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(20)]],
@@ -86,29 +82,31 @@ export class UserComponent implements OnInit {
       company_id: [{}, Validators.required],
       branch_id: [{ value: {}, disabled: true }, Validators.required],
     });
+    this.loading = false;
     this.listPermission();
   }
 
-  private async getDataUser(params: any): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.userService.getDataUser(params).subscribe(
-        response => {
-          this.totalRecord = response.total;
-          this.dataUser = response.data;
-          this.dataTransformada = this.formatedData(response.data);
-          resolve(this.dataTransformada)
-          this.loading = false;
-        },
-        error => {
-          reject(error);
-        }
-      );
-    });
+  private getDataUser() {
+    this.userService.getDataUser(this.parameterDefect).subscribe(
+      response => {
+        this.totalRecord = response.total;
+        this.dataUser = response.data;
+        this.dataTransformada = this.formatedData(response.data);
+        this.viewTable = true;
+        this.loading = false;
+      }, error => {
+        this.generalService.alertMessage(
+          '¡Ups! Algo salió mal',
+          'Tuvimos un problema al procesar tu solicitud. Por favor, inténtalo de nuevo o contacta a nuestro equipo de soporte si el problema persiste. ¡Estamos aquí para ayudarte!',
+          'warning'
+        );
+        this.loading = false;
+        this.viewTable = false;
+      });
   }
 
-  public formatedData(response: any, fecth = false) {
-    if (response.length === 0 && fecth) {
-      // Devuelve un mensaje personalizado cuando no hay datos
+  public formatedData(response: any) {
+    if (response.length === 0) {
       return [{
         "No se encontraron resultados": "No se encontraron registros que coincidan con los criterios de búsqueda. Intente con otros términos.",
       }];
@@ -175,6 +173,7 @@ export class UserComponent implements OnInit {
     this.permissionSuggested = [];
     this.selectAllCheck = true;
     this.selectedFile = '';
+    this.passwordVisible = false;
     this.goToPreviewTab();
   }
 
@@ -290,7 +289,7 @@ export class UserComponent implements OnInit {
     if (text === 1) {
       html = `
         <div id="custom-icon-container">
-          <p>Debe dar clic en Generar para generar un nombre de usuario válido</p>
+          <p>Debe dar clic en <b>Generar</b> para generar un nombre de usuario válido</p>
         </div>`;
     } else if (text === 2) {
       html = `
@@ -425,32 +424,28 @@ export class UserComponent implements OnInit {
     );
   }
 
-  async getRol(): Promise<void> {
-    try {
-      let response: any;
-      response = await this.rolService.listRol().toPromise();
-      this.dataRol = response?.data;
-      this.filteredRoles = this.dataRol;
-      this.dataCompany = await this.getCompanyData();
-    } catch (error: any) {
-      console.error('Error al obtener roles:', error.message);
-    }
+  getRol() {
+    this.rolService.listRol().subscribe(
+      (response: any) => {
+        this.dataRol = response?.data;
+        this.filteredRoles = this.dataRol;
+        this.getCompanyData();
+      },
+      error => {
+        console.log(error.message);
+      }
+    );
   }
 
-  async getCompanyData(): Promise<void> {
-    try {
-      this.branchService.getListCompany().subscribe(
-        async response => {
-          this.dataCompany = response;
-          this.dataTransformada = await this.getDataUser(this.parameterDefect);
-        },
-        error => {
-          console.log(error.message);
-        }
-      );
-    } catch (error: any) {
-      console.error('Error al obtener roles:', error.message);
-    }
+  getCompanyData() {
+    this.branchService.getListCompany().subscribe(
+      response => {
+        this.dataCompany = response;
+      },
+      error => {
+        console.log(error.message);
+      }
+    );
   }
 
   getModulesByGroup(groupId: number) {
@@ -630,6 +625,7 @@ export class UserComponent implements OnInit {
     this.formUser.get('company_id')?.reset();
     this.formUser.get('company_id')?.markAsTouched();
     this.formUser.controls['branch_id'].disable();
+    this.clearSelectionBranch();
     this.dataBranch = [];
   }
 
@@ -647,7 +643,6 @@ export class UserComponent implements OnInit {
 
   async handleAction(event: { id: number, action: string }) {
     const { id, action } = event;
-    this.dataTemp.image_profile = '';
     this.action = action;
     this.dataTemp = this.dataUser.find((item: any) => item.id === id);
 
@@ -669,7 +664,6 @@ export class UserComponent implements OnInit {
     }
 
     if (action === "view") {
-      this.dataTemp.image_profile = (this.dataTemp.image_profile === null) ? '../../../../assets/images/veterinario-black-img.png' : environment.apiStorage + this.dataTemp.image_profile;
       this.openModalView(this.dataTemp);
     }
 
@@ -725,7 +719,7 @@ export class UserComponent implements OnInit {
           },
           error: (error: any) => {
             this.loading = false;
-            this.generalService.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.', 'error');
+            this.generalService.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo. Si el problema persiste, comunícate con soporte técnico', 'error');
           }
         });
       }
@@ -758,7 +752,7 @@ export class UserComponent implements OnInit {
           },
           error: (error) => {
             this.loading = false;
-            this.generalService.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.', 'error');
+            this.generalService.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo. Si el problema persiste, comunícate con soporte técnico', 'error');
           }
         });
       }
@@ -795,7 +789,7 @@ export class UserComponent implements OnInit {
   onFetchData(params: any): void {
     this.loadingTable = true;
     this.userService.getDataUser(params).subscribe((response) => {
-      this.dataTransformada = this.formatedData(response.data, true);
+      this.dataTransformada = this.formatedData(response.data);
       this.dataUser = response.data;
       this.totalRecord = response.total;
       this.loadingTable = false;
@@ -818,6 +812,27 @@ export class UserComponent implements OnInit {
         this.loadingBranch = true;
       }
     );
+  }
+
+  setFilter(event: any) {
+    this.loading = true;
+    this.viewTable = false;
+    this.parameterDefect = {
+      dateInit: event.dateInit,
+      dateFinish: event.dateFinish,
+      company_id: event.company_id,
+      branch_id: event.branch_id,
+      state: event.state,
+      name: event.name,
+      rol_id: event.rol_id,
+      email: event.email,
+      search: '',
+      sortColumn: 'name',
+      sortOrder: 'desc',
+      page: 1,
+      pageSize: 10
+    }
+    this.getDataUser();
   }
 
 }

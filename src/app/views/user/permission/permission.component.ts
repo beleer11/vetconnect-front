@@ -16,8 +16,6 @@ export class PermissionComponent implements OnInit {
   public loading: boolean = true;
   public dataPermissionTrasnform: any = [];
   public dataPermission: any = [];
-  public fieldsTable: any = [];
-  public columnAlignments: any = [];
   public showForm: boolean = false;
   public formPermission!: FormGroup;
   public action: string = 'save';
@@ -28,13 +26,8 @@ export class PermissionComponent implements OnInit {
   public totalRecord: number = 0;
   public loadingTable: boolean = false;
   public acciones: boolean = true;
-  public parameterDefect = {
-    search: '',
-    sortColumn: 'name',
-    sortOrder: 'desc',
-    page: 1,
-    pageSize: 10
-  };
+  public parameterDefect = {};
+  public viewTable: boolean = false;
 
   constructor(
     private userService: UserService,
@@ -45,29 +38,29 @@ export class PermissionComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this.createForm();
-    this.dataPermissionTrasnform = await this.getData();
-    this.fieldsTable = this.getFieldsTable();
-    this.columnAlignments = this.getColumnAlignments();
-    this.loading = false;
   }
 
-  private async getData(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.permissionService.getDataPermission(this.parameterDefect).subscribe(
-        response => {
-          this.dataPermission = response.data;
-          this.totalRecord = response.total;
-          resolve(this.formatedData(response.data));
-          this.loadingTable = false;
-        },
-        error => reject(error)
-      );
-    });
+  private getData() {
+    this.permissionService.getDataPermission(this.parameterDefect).subscribe(
+      response => {
+        this.dataPermission = response.data;
+        this.totalRecord = response.total;
+        this.dataPermissionTrasnform = this.formatedData(response.data);
+        this.viewTable = true;
+        this.loading = false;
+      }, error => {
+        this.generalService.alertMessage(
+          '¡Ups! Algo salió mal',
+          'Tuvimos un problema al procesar tu solicitud. Por favor, inténtalo de nuevo o contacta a nuestro equipo de soporte si el problema persiste. ¡Estamos aquí para ayudarte!',
+          'warning'
+        );
+        this.loading = false;
+        this.viewTable = false;
+      });
   }
 
-  public formatedData(response: any, fetch = false) {
-    if (response.length === 0 && fetch) {
-      // Devuelve un mensaje personalizado cuando no hay datos
+  public formatedData(response: any) {
+    if (response.length === 0) {
       return [{
         "No se encontraron resultados": "No se encontraron registros que coincidan con los criterios de búsqueda. Intente con otros términos.",
       }];
@@ -83,18 +76,19 @@ export class PermissionComponent implements OnInit {
     });
   }
 
-  private getFieldsTable() {
+  public getFieldsTable() {
     return ['Nombre', 'Fecha creación', 'Ultima actualización'];
   }
 
-  private getColumnAlignments() {
+  public getColumnAlignments() {
     return ['left', 'center', 'center'];
   }
 
   public createForm() {
     this.formPermission = this.fb.group({
-      nombre: ['', [Validators.required, Validators.minLength(3)]],
+      nombre: ['', [Validators.required, Validators.minLength(3), Validators.pattern('^[a-zA-ZáéíóúÁÉÍÓÚÑñ]+(\\s[a-zA-ZáéíóúÁÉÍÓÚÑñ]+)*$')]],
     });
+    this.loading = false;
   }
 
   public addNewPermission() {
@@ -219,7 +213,7 @@ export class PermissionComponent implements OnInit {
           },
           error: (error) => {
             this.loading = false;
-            this.generalService.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.', 'error');
+            this.generalService.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo. Si el problema persiste, comunícate con soporte técnico', 'error');
           }
         });
       }
@@ -251,7 +245,7 @@ export class PermissionComponent implements OnInit {
           },
           error: (error) => {
             this.loading = false;
-            this.generalService.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.', 'error');
+            this.generalService.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo. Si el problema persiste, comunícate con soporte técnico', 'error');
           }
         });
       }
@@ -311,22 +305,31 @@ export class PermissionComponent implements OnInit {
   onFetchData(params: any): void {
     this.loadingTable = true;
     this.permissionService.getDataPermission(params).subscribe((response) => {
-      this.dataPermissionTrasnform = this.formatedData(response.data, true);
+      this.dataPermissionTrasnform = this.formatedData(response.data);
       this.dataPermission = response.data;
       this.totalRecord = response.total;
-      if (response.data.length === 0) {
-        this.fieldsTable = ["No se encontraron resultados"];
-        this.columnAlignments = ["center"];
-        this.acciones = false;
-      } else {
-        this.fieldsTable = this.getFieldsTable();
-        this.columnAlignments = this.getColumnAlignments();
-        this.acciones = true;
-      }
+      this.acciones = true;
       this.loadingTable = false;
     }, (error) => {
       this.loadingTable = false;
       console.error('Error fetching data', error);
     });
+  }
+
+  setFilter(event: any) {
+    this.loading = true;
+    this.viewTable = false;
+    this.parameterDefect = {
+      dateInit: event.dateInit,
+      dateFinish: event.dateFinish,
+      state: event.state,
+      name: event.name,
+      search: '',
+      sortColumn: 'name',
+      sortOrder: 'desc',
+      page: 1,
+      pageSize: 10
+    }
+    this.getData();
   }
 }

@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, Component } from '@angular/core';
 import {
   HashLocationStrategy,
   LocationStrategy,
@@ -16,9 +16,13 @@ import { WidgetsModule } from './views/widgets/widgets.module';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ModalModule } from '@coreui/angular';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
 
 //Pipe
 import { PipeModule } from './pipes/pipe.module';
+
+//Interceptor
+import { AuthInterceptor } from './interceptors/auth.interceptor';
 
 //Angular material
 import { MatSelectModule } from '@angular/material/select';
@@ -32,6 +36,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { MatSpinner } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatProgressBar } from '@angular/material/progress-bar';
 
 //pages
 import { LoginComponent } from './pages/login/login.component';
@@ -48,6 +54,10 @@ import { CompanyComponent } from './views/companies/company/company.component';
 import { RolComponent } from './views/user/rol/rol.component';
 import { GroupButtonGeneralComponent } from './shared/group-button-general/group-button-general.component';
 import { BranchComponent } from './views/companies/branch/branch.component';
+import { FilterHeaderComponent } from './shared/filter-header/filter-header.component';
+import { UserProfilComponent } from './views/user/user-profil/user-profil.component';
+import { TypesBreedsComponent } from './views/parameter/types-breeds/types-breeds.component';
+import { TypePetComponent } from './views/parameter/type-pet/type-pet.component';
 
 // Import containers
 import {
@@ -106,6 +116,10 @@ const APP_CONTAINERS = [
     RolComponent,
     GroupButtonGeneralComponent,
     BranchComponent,
+    FilterHeaderComponent,
+    UserProfilComponent,
+    TypesBreedsComponent,
+    TypePetComponent,
   ],
   imports: [
     BrowserModule,
@@ -151,6 +165,8 @@ const APP_CONTAINERS = [
     NgxMatSelectSearchModule,
     ModalModule,
     MatSpinner,
+    MatTooltipModule,
+    MatProgressBar,
     RouterModule.forRoot([], { useHash: false }),
   ],
   providers: [
@@ -165,6 +181,11 @@ const APP_CONTAINERS = [
         iconSetService.icons = iconSubset as any;
         return iconSetService;
       },
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
     },
     IconSetService,
     Title,

@@ -4,6 +4,7 @@ import { CompanyService } from '../../../services/companies/company/company.serv
 import { GeneralService } from '../../../services/general/general.service';
 import Swal from 'sweetalert2';
 import { Observable } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-company',
@@ -13,8 +14,6 @@ import { Observable } from 'rxjs';
 export class CompanyComponent implements OnInit {
   public dataCompany: any = [];
   public dataCompanyTrasnform: any = [];
-  public fieldsTable: any = [];
-  public columnAlignments: any = [];
   public showForm: boolean = false;
   public formCompany!: FormGroup;
   public action: string = 'save';
@@ -27,13 +26,9 @@ export class CompanyComponent implements OnInit {
   public totalRecord: number = 0;
   public loadingTable: boolean = false;
   public acciones: boolean = true;
-  public parameterDefect = {
-    search: '',
-    sortColumn: 'name',
-    sortOrder: 'desc',
-    page: 1,
-    pageSize: 10
-  };
+  public parameterDefect = {};
+  public environment = environment;
+  public viewTable: boolean = false;
 
   constructor(
     private companyService: CompanyService,
@@ -43,9 +38,6 @@ export class CompanyComponent implements OnInit {
 
   async ngOnInit() {
     this.createForm();
-    this.dataCompanyTrasnform = await this.getData();
-    this.fieldsTable = this.getFieldsTable();
-    this.columnAlignments = this.getColumnAlignments();
     this.loading = false;
   }
 
@@ -69,14 +61,18 @@ export class CompanyComponent implements OnInit {
   async onFileSelected(event: any) {
     const file = event.target.files[0];
     if (file) {
+      console.log(file)
       this.selectedFile = await this.generalService.convertToBase64Files(file);
+      console.log(this.selectedFile)
     }
   }
 
   handleAction(event: { id: number; action: string }) {
+    this.dataTemp = [];
     const { id, action } = event;
     this.action = action;
     this.dataTemp = this.dataCompany.find((item: any) => item.id === id);
+    console.log(this.dataTemp)
 
     if (action === 'edit') {
       this.setDataForm();
@@ -121,29 +117,36 @@ export class CompanyComponent implements OnInit {
     this.formCompany.reset();
   }
 
-  private async getData(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.companyService.getDataCompanies(this.parameterDefect).subscribe(
-        response => {
-          this.dataCompany = response.data;
-          this.totalRecord = response.total;
-          resolve(this.formatedData(response.data));
-        },
-        error => reject(error)
-      );
-    });
+  private async getData() {
+    this.companyService.getDataCompanies(this.parameterDefect).subscribe(
+      response => {
+        this.dataCompany = response.data;
+        this.totalRecord = response.total;
+        this.dataCompanyTrasnform = this.formatedData(response.data);
+        this.viewTable = true;
+        this.loading = false;
+      }, error => {
+        this.generalService.alertMessage(
+          '¡Ups! Algo salió mal',
+          'Tuvimos un problema al procesar tu solicitud. Por favor, inténtalo de nuevo o contacta a nuestro equipo de soporte si el problema persiste. ¡Estamos aquí para ayudarte!',
+          'warning'
+        );
+        this.loading = false;
+        this.viewTable = false;
+      });
   }
 
-  public formatedData(response: any, fecth = false) {
-    if (response.length === 0 && fecth) {
+  public formatedData(response: any) {
+    if (response.length === 0) {
       return [{
-        "No se encontraron resultados": "No se encontraron registros que coincidan con los criterios de búsqueda. Intente con otros términos.",
+        "No se encontraron resultados": "No se encontraron registros que coincidan con los criterios de búsqueda. Intente con otros términos."
       }];
     }
     return response.map((item: any) => {
       return {
         id: item.id,
         Nombre: item.name,
+        Logo: (item.logo !== null) ? environment.apiStorage + item.logo : null,
         "Correo electrónico": item.email,
         "Razón social": item.legal_representative,
         is_disabled: item.is_active,
@@ -151,12 +154,12 @@ export class CompanyComponent implements OnInit {
     });
   }
 
-  private getFieldsTable() {
-    return ['Nombre', 'Correo electrónico', 'Razón social'];
+  public getFieldsTable() {
+    return ['Nombre', 'Correo electrónico', 'Razón social', 'Logo'];
   }
 
-  private getColumnAlignments() {
-    return ['left', 'left', 'center'];
+  public getColumnAlignments() {
+    return ['left', 'left', 'center', 'center'];
   }
 
   validateNumberInput(event: KeyboardEvent) {
@@ -227,16 +230,18 @@ export class CompanyComponent implements OnInit {
   }
 
   disableOrEnableRecord(data: any) {
-    const actionText = data.is_active === 0 ? 'habilitar' : 'inhabilitar';
+    const actionText = (data.is_active === 0) ? 'habilitar' : 'inhabilitar';
+    const actionTextPlural = (data.is_active === 0) ? 'habilitados' : 'inhabilitados';
     const confirmButtonText =
-      data.is_active === 0 ? 'Sí, habilitar' : 'Sí, inhabilitar';
+      (data.is_active === 0) ? 'Sí, habilitar' : 'Sí, inhabilitar';
     const successMessage =
-      data.is_active === 0
+      (data.is_active === 0)
         ? 'El registro ha sido habilitado correctamente.'
         : 'El registro ha sido inhabilitado correctamente.';
 
     Swal.fire({
       title: `¿Deseas ${actionText} este registro?`,
+      html: `<strong>Tenga en cuenta que al ${actionText} esta compañía, todas las sucursales asociadas y los usuarios de dichas sucursales también serán ${actionTextPlural}. Asegúrese de que esto sea lo que desea hacer.</strong>`,
       icon: 'question',
       showCancelButton: true,
       confirmButtonColor: '#f39c12',
@@ -249,19 +254,27 @@ export class CompanyComponent implements OnInit {
         const action = data.is_active === 0 ? 'enable' : 'disable';
         this.actionMap[action](data.id).subscribe({
           next: (response: any) => {
-            this.onFetchData(this.parameterDefect);
+            if (response.success) {
+              this.onFetchData(this.parameterDefect);
+              this.generalService.alertMessage(
+                '¡Éxito!',
+                successMessage,
+                'success'
+              );
+            } else {
+              this.generalService.alertMessage(
+                'Error',
+                'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo. Si el problema persiste, comunícate con soporte técnico',
+                'error'
+              );
+            }
             this.loading = false;
-            this.generalService.alertMessage(
-              '¡Éxito!',
-              successMessage,
-              'success'
-            );
           },
           error: (error: any) => {
             this.loading = false;
             this.generalService.alertMessage(
               'Error',
-              'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.',
+              'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo. Si el problema persiste, comunícate con soporte técnico',
               'error'
             );
           },
@@ -333,19 +346,30 @@ export class CompanyComponent implements OnInit {
         this.loading = true;
         this.companyService.deleteRecordById(id).subscribe({
           next: (response) => {
-            this.onFetchData(this.parameterDefect);
+            if (response.success) {
+              this.onFetchData(this.parameterDefect);
+              this.generalService.alertMessage(
+                '¡Eliminado!',
+                'El registro ha sido eliminado correctamente.',
+                'success'
+              );
+            } else {
+              const branchesMessage = response.branches.join(', ');
+              const fullMessage = `No puedes eliminar la compañía porque tiene sucursales asociadas:<br><br><strong>${branchesMessage}</strong><br><br>Por favor, elimina primero las sucursales antes de intentar eliminar la compañía.`;
+
+              this.generalService.alertMessageHtml(
+                'Error',
+                fullMessage,
+                'error'
+              );
+            }
             this.loading = false;
-            this.generalService.alertMessage(
-              '¡Eliminado!',
-              'El registro ha sido eliminado correctamente.',
-              'success'
-            );
           },
           error: (error) => {
             this.loading = false;
             this.generalService.alertMessage(
               'Error',
-              'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.',
+              'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo. Si el problema persiste, comunícate con soporte técnico',
               'error'
             );
           },
@@ -364,6 +388,7 @@ export class CompanyComponent implements OnInit {
       title: 'Companía',
       html: `
         <div id="custom-icon-container">
+          <p><strong>Logo: </strong><p id="foto-placeholder"></p></p>
           <p><strong>Nombre: </strong> <span>${data.name}</span></p>
           <p><strong>Correo electrónico: </strong> <span>${data.email}</span></p>
           <p><strong>Razón Social: </strong> <span>${data.business_name}</span></p>
@@ -374,6 +399,14 @@ export class CompanyComponent implements OnInit {
       `,
       icon: 'info',
       confirmButtonText: 'Cerrar',
+      didOpen: () => {
+        const fotoPlaceholder = document.getElementById('foto-placeholder');
+        const svgContainer = document.getElementById('svg-container');
+
+        if (fotoPlaceholder && svgContainer) {
+          fotoPlaceholder.innerHTML = svgContainer.innerHTML;
+        }
+      }
     });
   }
 
@@ -388,22 +421,34 @@ export class CompanyComponent implements OnInit {
   onFetchData(params: any): void {
     this.loadingTable = true;
     this.companyService.getDataCompanies(params).subscribe((response) => {
-      this.dataCompanyTrasnform = this.formatedData(response.data, true);
+      this.dataCompanyTrasnform = this.formatedData(response.data);
       this.dataCompany = response.data;
       this.totalRecord = response.total;
-      if (response.data.length === 0) {
-        this.fieldsTable = ["No se encontraron resultados"];
-        this.columnAlignments = ["center"];
-        this.acciones = false;
-      } else {
-        this.fieldsTable = this.getFieldsTable();
-        this.columnAlignments = this.getColumnAlignments();
-        this.acciones = true;
-      }
+      this.acciones = true;
       this.loadingTable = false;
     }, (error) => {
       this.loadingTable = false;
       console.error('Error fetching data', error);
     });
+  }
+
+  setFilter(event: any) {
+    this.loading = true;
+    this.viewTable = false;
+    this.parameterDefect = {
+      dateInit: event.dateInit,
+      dateFinish: event.dateFinish,
+      company_id: event.company_id,
+      branch_id: event.branch_id,
+      state: event.state,
+      name: event.name,
+      email: event.email,
+      search: '',
+      sortColumn: 'name',
+      sortOrder: 'desc',
+      page: 1,
+      pageSize: 10
+    }
+    this.getData();
   }
 }

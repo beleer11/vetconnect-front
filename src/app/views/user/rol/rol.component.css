@@ -1,25 +1,53 @@
 .tab-custom.disabled {
-    pointer-events: none;
-    opacity: 0.5;
+  pointer-events: none;
+  opacity: 0.5;
 }
 
 .border-tab {
-    border-left: 1px solid #e4e0e0;
-    border-bottom: 1px solid #e4e0e0;
-    border-right: 1px solid #e4e0e0;
+  border-left: 1px solid #e4e0e0;
+  border-bottom: 1px solid #e4e0e0;
+  border-right: 1px solid #e4e0e0;
 }
 
 .btn-back {
-    background-color: #6c757d;
-    border-color: #6c757d;
+  background-color: #6c757d;
+  border-color: #6c757d;
 }
 
 .btn-previous {
-    background-color: #dc3545;
-    border-color: #dc3545;
+  background-color: #dc3545;
+  border-color: #dc3545;
 }
 
 .btn-submit {
-    background-color: #28a745;
-    border-color: #28a745;
+  background-color: #28a745;
+  border-color: #28a745;
+}
+
+.panel-title {
+  color: #343a40;
+  /* Color oscuro para el título */
+  font-weight: 600;
+}
+
+/* Estilos para los grupos */
+.mat-expansion-panel:nth-of-type(odd) .mat-expansion-panel-header {
+  background-color: #f0f2f5;
+  /* Color claro para el fondo de los grupos impares */
+}
+
+.mat-expansion-panel:nth-of-type(even) .mat-expansion-panel-header {
+  background-color: #e9ecef;
+  /* Color ligeramente diferente para el fondo de los grupos pares */
+}
+
+/* Estilos para el acordeón de módulos */
+.mat-accordion.mat-expansion-panel {
+  background-color: #ffffff;
+  /* Fondo blanco para los módulos */
+}
+
+.mat-expansion-panel-header {
+  border: 1px solid #ced4da;
+  /* Línea de borde más visible */
 }

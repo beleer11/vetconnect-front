@@ -16,8 +16,6 @@ import { GeneralService } from '../../../services/general/general.service';
 export class RolComponent implements OnInit {
   public dataRol: any = [];
   public dataRolTrasnform: any = [];
-  public fieldsTable: any = [];
-  public columnAlignments: any = [];
   public showForm: boolean = false;
   public formRol!: FormGroup;
   public action: string = 'save';
@@ -33,13 +31,8 @@ export class RolComponent implements OnInit {
   public totalRecord: number = 0;
   public loadingTable: boolean = false;
   public acciones: boolean = true;
-  public parameterDefect = {
-    search: '',
-    sortColumn: 'name',
-    sortOrder: 'desc',
-    page: 1,
-    pageSize: 10
-  };
+  public parameterDefect = {};
+  public viewTable: boolean = false;
 
   constructor(
     private userService: UserService,
@@ -50,10 +43,6 @@ export class RolComponent implements OnInit {
 
   async ngOnInit() {
     this.createForm();
-    this.dataRolTrasnform = await this.getData();
-    this.fieldsTable = this.getFieldsTable();
-    this.columnAlignments = this.getColumnAlignments();
-    this.loading = false;
   }
 
   public addRole() {
@@ -108,23 +97,28 @@ export class RolComponent implements OnInit {
     }
   }
 
-  private async getData(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.rolService.getDataRoles(this.parameterDefect).subscribe(
-        response => {
-          this.dataRol = response.data;
-          this.totalRecord = response.total;
-          resolve(this.formatedData(response.data));
-          this.loadingTable = false;
-        },
-        error => reject(error)
-      );
-    });
+  private getData() {
+    this.rolService.getDataRoles(this.parameterDefect).subscribe(
+      response => {
+        this.dataRol = response.data;
+        this.totalRecord = response.total;
+        this.dataRolTrasnform = this.formatedData(response.data);
+        this.viewTable = true;
+        this.loading = false;
+      }, error => {
+        this.generalService.alertMessage(
+          '¡Ups! Algo salió mal',
+          'Tuvimos un problema al procesar tu solicitud. Por favor, inténtalo de nuevo o contacta a nuestro equipo de soporte si el problema persiste. ¡Estamos aquí para ayudarte!',
+          'warning'
+        );
+        this.loading = false;
+        this.viewTable = false;
+      }
+    );
   }
 
-  public formatedData(response: any, fecth = false) {
-    if (response.length === 0 && fecth) {
-      // Devuelve un mensaje personalizado cuando no hay datos
+  public formatedData(response: any) {
+    if (response.length === 0) {
       return [{
         "No se encontraron resultados": "No se encontraron registros que coincidan con los criterios de búsqueda. Intente con otros términos.",
       }];
@@ -141,19 +135,20 @@ export class RolComponent implements OnInit {
     });
   }
 
-  private getFieldsTable() {
+  public getFieldsTable() {
     return ['Nombre', 'Descripción', 'Fecha creación', 'Ultima actualización'];
   }
 
-  private getColumnAlignments() {
+  public getColumnAlignments() {
     return ['left', 'left', 'center', 'center'];
   }
 
   public createForm() {
     this.formRol = this.fb.group({
-      nombre: ['', [Validators.required, Validators.minLength(3)]],
-      description: [''],
+      nombre: ['', [Validators.required, Validators.minLength(3), Validators.pattern('^[a-zA-ZáéíóúÁÉÍÓÚÑñ]+(\\s[a-zA-ZáéíóúÁÉÍÓÚÑñ]+)*$')]],
+      description: ['', [Validators.minLength(10), Validators.maxLength(500)]],
     });
+    this.loading = false;
     this.listPermission();
   }
 
@@ -396,7 +391,7 @@ export class RolComponent implements OnInit {
           },
           error: (error) => {
             this.loading = false;
-            this.generalService.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.', 'error');
+            this.generalService.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo. Si el problema persiste, comunícate con soporte técnico', 'error');
           }
         });
       }
@@ -428,7 +423,7 @@ export class RolComponent implements OnInit {
           },
           error: (error) => {
             this.loading = false;
-            this.generalService.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo.', 'error');
+            this.generalService.alertMessage('Error', 'Hubo un problema al procesar la solicitud. Por favor, inténtalo de nuevo. Si el problema persiste, comunícate con soporte técnico', 'error');
           }
         });
       }
@@ -489,23 +484,31 @@ export class RolComponent implements OnInit {
   onFetchData(params: any): void {
     this.loadingTable = true;
     this.rolService.getDataRoles(params).subscribe((response) => {
-      this.dataRolTrasnform = this.formatedData(response.data, true);
+      this.dataRolTrasnform = this.formatedData(response.data);
       this.dataRol = response.data;
       this.totalRecord = response.total;
-      if (response.data.length === 0) {
-        this.fieldsTable = ["No se encontraron resultados"];
-        this.columnAlignments = ["center"];
-        this.acciones = false;
-      } else {
-        this.fieldsTable = this.getFieldsTable();
-        this.columnAlignments = this.getColumnAlignments();
-        this.acciones = true;
-      }
       this.loadingTable = false;
     }, (error) => {
       this.loadingTable = false;
       console.error('Error fetching data', error);
     });
+  }
+
+  setFilter(event: any) {
+    this.loading = true;
+    this.viewTable = false;
+    this.parameterDefect = {
+      dateInit: event.dateInit,
+      dateFinish: event.dateFinish,
+      state: event.state,
+      name: event.name,
+      search: '',
+      sortColumn: 'name',
+      sortOrder: 'desc',
+      page: 1,
+      pageSize: 10
+    }
+    this.getData();
   }
 
 }

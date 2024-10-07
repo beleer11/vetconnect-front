@@ -1,91 +1,103 @@
 <app-loading-spinner *ngIf="loading"></app-loading-spinner>
 <div [hidden]="showForm">
-    <app-group-button-general (buttonClick)="handleButtonClick($event)" [component]="'Módulos'">
-    </app-group-button-general>
-    <app-general-table [columns]="fieldsTable" [transformedData]="dataModuleTrasnform" [data]="dataModule"
-        [acciones]="acciones" [columnAlignments]="columnAlignments" [title]="'Módulos'"
-        (fetchDataEvent)="onFetchData($event)" [totalRecords]="totalRecord" [loadingTable]="loadingTable"
-        (actionEvent)="handleAction($event)">
-    </app-general-table>
+  <app-group-button-general (buttonClick)="handleButtonClick($event)" [component]="'Módulos'">
+  </app-group-button-general>
+  <app-filter-header [date]="true" [state]="true" [name]="true" [title]="'Módulos'"
+    (filterDataEvent)="setFilter($event)" (changeFilter)="viewTable = $event">
+  </app-filter-header>
+  <app-general-table [columns]="getFieldsTable()" [transformedData]="dataModuleTrasnform" [data]="dataModule"
+    [acciones]="acciones" [columnAlignments]="getColumnAlignments()" [title]="'Módulos'"
+    (fetchDataEvent)="onFetchData($event)" [totalRecords]="totalRecord" [loadingTable]="loadingTable"
+    (actionEvent)="handleAction($event)" *ngIf="viewTable">
+  </app-general-table>
 </div>
 <c-row [hidden]="!showForm">
-    <c-col xs>
-        <c-card class="mb-4">
-            <c-card-header>
-                <div class="container">
-                    <div class="row justify-content-between align-items-center mb-2">
-                        <div class="col-12 col-md-auto text-center text-md-start pt-2">
-                            <h1 class="mb-0">Agregar Módulo</h1>
-                        </div>
-                    </div>
+  <c-col xs>
+    <c-card class="mb-4">
+      <c-card-header>
+        <div class="container">
+          <div class="row justify-content-between align-items-center mb-2">
+            <div class="col-12 col-md-auto text-center text-md-start pt-2">
+              <h1 class="mb-0">Agregar Módulo</h1>
+            </div>
+          </div>
+        </div>
+      </c-card-header>
+      <c-card-body>
+        <form [formGroup]="formModule" (ngSubmit)="onSubmit()">
+          <div class="row">
+            <!-- Campos en la misma fila -->
+            <div class="mb-3 col-12 col-md-4">
+              <label for="name" class="form-label bolder">Nombre</label>
+              <input id="name" formControlName="name" class="form-control" [ngClass]="getValidationClass('name')"
+                maxlength="100" />
+              <div
+                *ngIf="formModule.get('name')?.invalid && (formModule.get('name')?.touched || formModule.get('name')?.dirty)"
+                class="invalid-feedback">
+                <div *ngIf="formModule.get('name')?.errors?.['required']">Nombre es requerido.
                 </div>
-            </c-card-header>
-            <c-card-body>
-                <form [formGroup]="formModule" (ngSubmit)="onSubmit()">
-                    <div class="row">
-                        <!-- Campos en la misma fila -->
-                        <div class="mb-3 col-12 col-md-4">
-                            <label for="name" class="form-label bolder">Nombre</label>
-                            <input id="name" formControlName="name" class="form-control"
-                                [ngClass]="getValidationClass('name')" />
-                            <div *ngIf="formModule.controls['name'].invalid && formModule.controls['name'].touched"
-                                class="invalid-feedback">
-                                El nombre es requerido.
-                            </div>
-                        </div>
-                        <div class="mb-3 col-12 col-md-4">
-                            <label for="url" class="form-label bolder">URL</label>
-                            <div class="input-group">
-                                <input id="url" formControlName="url" type="url" class="form-control"
-                                    [ngClass]="getValidationClass('url')" />
-                                <span class="input-group-text" data-bs-toggle="tooltip" data-bs-placement="top"
-                                    (click)="openInformation()" style="cursor: pointer;">?</span>
-                            </div>
-                            <div *ngIf=" formModule.controls['url'].invalid && formModule.controls['url'].touched"
-                                class="invalid-feedback">
-                                La URL es requerida y debe ser válida.
-                            </div>
-                        </div>
-                        <div class="mb-3 col-12 col-md-4">
-                            <label for="group" class="form-label bolder">Grupo</label>
-                            <select id="group" formControlName="group" class="form-select"
-                                [ngClass]="getValidationClass('group')">
-                                <option disabled selected>Seleccionar un grupo</option>
-                                <option *ngFor="let group of groupsModule" [value]="group.id">{{ group.name }}</option>
-                            </select>
-                            <div *ngIf="formModule.controls['group'].invalid && formModule.controls['group'].touched"
-                                class="invalid-feedback">
-                                El grupo es requerido.
-                            </div>
-                        </div>
-                    </div>
+                <div *ngIf="formModule.get('name')?.errors?.['minlength']">Nombre debe tener
+                  al
+                  menos 3 caracteres.</div>
+                <div *ngIf="formModule.get('name')?.errors?.['pattern']">
+                  El nombre solo puede contener letras y un solo espacio entre palabras.
+                </div>
+              </div>
 
-                    <!-- Sección de Iconos con Scroll -->
-                    <div class="mb-3">
-                        <label class="form-label bolder">Seleccionar Ícono</label>
-                        <div class="icon-scroll-container">
-                            <c-row class="text-center">
-                                <c-col *ngFor="let icon of icons" class="mb-4 icon-container" md="3" sm="4" xl="2"
-                                    xs="6" (click)="selectIcon(toKebabCase(icon[0]))"
-                                    [ngClass]="{'selected': isIconSelected(toKebabCase(icon[0]))}">
-                                    <svg cIcon [name]="icon[0]" size="3xl" class="icon-svg"></svg>
-                                    <div>{{ toKebabCase(icon[0]) }}</div>
-                                </c-col>
-                            </c-row>
-                        </div>
-                    </div>
+            </div>
+            <div class="mb-3 col-12 col-md-4">
+              <label for="url" class="form-label bolder">URL</label>
+              <div class="input-group">
+                <input id="url" formControlName="url" type="url" class="form-control"
+                  [ngClass]="getValidationClass('url')" maxlength="100" />
+                <span class="input-group-text" data-bs-toggle="tooltip" data-bs-placement="top"
+                  (click)="openInformation()" style="cursor: pointer;">?</span>
+              </div>
+              <div *ngIf=" formModule.controls['url'].invalid && formModule.controls['url'].touched">
+                La URL es requerida y debe ser válida.
+              </div>
+              <div *ngIf="formModule.get('url')?.errors?.['minlength']">URL debe tener al menos
+                3 caracteres.</div>
+            </div>
+            <div class="mb-3 col-12 col-md-4">
+              <label for="group" class="form-label bolder">Grupo</label>
+              <select id="group" formControlName="group" class="form-select" [ngClass]="getValidationClass('group')">
+                <option disabled selected>Seleccionar un grupo</option>
+                <option *ngFor="let group of groupsModule" [value]="group.id">{{ group.name }}</option>
+              </select>
+              <div *ngIf="formModule.controls['group'].invalid && formModule.controls['group'].touched"
+                class="invalid-feedback">
+                El grupo es requerido.
+              </div>
+            </div>
+          </div>
 
-                    <div class="d-flex justify-content-center align-items-center">
-                        <button class="btn btn-danger text-white me-3" (click)="backToTable()">Atrás</button>
-                        <button type="submit" class="btn btn-primary" [disabled]="formModule.invalid">Guardar</button>
-                    </div>
+          <!-- Sección de Iconos con Scroll -->
+          <div class="mb-3">
+            <label class="form-label bolder">Seleccionar Ícono</label>
+            <div class="icon-scroll-container">
+              <c-row class="text-center">
+                <c-col *ngFor="let icon of icons" class="mb-4 icon-container" md="3" sm="4" xl="2" xs="6"
+                  (click)="selectIcon(toKebabCase(icon[0]))"
+                  [ngClass]="{'selected': isIconSelected(toKebabCase(icon[0]))}">
+                  <svg cIcon [name]="icon[0]" size="3xl" class="icon-svg"></svg>
+                  <div>{{ toKebabCase(icon[0]) }}</div>
+                </c-col>
+              </c-row>
+            </div>
+          </div>
 
-                </form>
-            </c-card-body>
-        </c-card>
-    </c-col>
+          <div class="d-flex justify-content-center align-items-center">
+            <button class="btn btn-danger text-white me-3" (click)="backToTable()">Atrás</button>
+            <button type="submit" class="btn btn-primary" [disabled]="formModule.invalid">Guardar</button>
+          </div>
+
+        </form>
+      </c-card-body>
+    </c-card>
+  </c-col>
 </c-row>
 
 <div id="svg-container" style="display:none;">
-    <svg cIcon [name]="dataTemp.icon" size="3xl" class="icon-svg"></svg>
+  <svg cIcon [name]="dataTemp.icon" size="3xl" class="icon-svg"></svg>
 </div>
