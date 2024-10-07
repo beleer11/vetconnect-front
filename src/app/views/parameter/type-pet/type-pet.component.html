@@ -1,1 +1,8 @@
-<h1>SOY YO PAPÁ!!!</h1>
+<app-loading-spinner *ngIf="loading"></app-loading-spinner>
+<div [hidden]="showForm">
+  <app-group-button-general (buttonClick)="handleButtonClick($event)" [component]="'Tipo de mascotas'">
+  </app-group-button-general>
+  <app-filter-header [date]="true" [state]="true" [name]="true" [title]="'Tipo de mascotas'"
+    (filterDataEvent)="setFilter($event)" (changeFilter)="viewTable = $event">
+  </app-filter-header>
+</div>
