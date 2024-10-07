@@ -4,7 +4,8 @@
   <app-group-button-general [component]="'Sucursales'"
     (buttonClick)="handleButtonClick($event)"></app-group-button-general>
   <app-filter-header [date]="true" [state]="true" [companyAndBranch]="true" [name]="true" [title]="'Sucursales'"
-    (filterDataEvent)="setFilter($event)" (changeFilter)="viewTable = $event">
+    [dataCompany]="dataCompany" [dataBranch]="dataBranch" (filterDataEvent)="setFilter($event)"
+    (changeFilter)="viewTable = $event">
   </app-filter-header>
   <app-general-table [columns]="getFieldsTable()" [transformedData]="dataBranchTrasnform" [data]="dataBranch"
     [acciones]="acciones" [columnAlignments]="getColumnAlignments()" [title]="'Sucursales'"
@@ -43,7 +44,7 @@
                     <div class="form-group">
                       <label for="name" class="bolder mb-1">Nombre</label>
                       <input id="name" formControlName="name" type="text" class="form-control"
-                        [ngClass]="getValidationClass('name')" maxlength="100"/>
+                        [ngClass]="getValidationClass('name')" maxlength="100" />
                       <div *ngIf="
                           formBranch.get('name')?.invalid &&
                           (formBranch.get('name')?.touched ||

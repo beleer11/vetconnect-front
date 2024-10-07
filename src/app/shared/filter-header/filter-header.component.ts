@@ -38,6 +38,9 @@ export class FilterHeaderComponent {
   @Input() name: boolean = false;
   @Input() email: boolean = false;
   @Input() title: string = '';
+  @Input() dataCompany: any = [];
+  @Input() dataBranch: any = [];
+  @Input() dataRol: any = [];
   @Output() filterDataEvent: EventEmitter<any> = new EventEmitter();
   @Output() changeFilter: EventEmitter<any> = new EventEmitter();
 
@@ -49,9 +52,6 @@ export class FilterHeaderComponent {
   public dateInitValue = `${this.year}-${this.month}-01`;
   public dateFinishValue = `${this.year}-${this.month}-${this.day}`;
   public loadingBranch: boolean = false;
-  public dataCompany: any = [];
-  public dataBranch: any = [];
-  public dataRol: any = [];
   public searchControl = new FormControl('');
   public isAccordionOpen = true;
 
@@ -86,13 +86,11 @@ export class FilterHeaderComponent {
 
     if (this.rol) {
       this.formFilter.addControl('rol_id', this.fb.control(''));
-      this.getRol();
     }
 
     if (this.companyAndBranch) {
       this.formFilter.addControl('company_id', this.fb.control(''));
       this.formFilter.addControl('branch_id', this.fb.control({ value: '', disabled: true }));
-      this.getDataCompany();
     }
 
     if (this.name) {
@@ -104,17 +102,6 @@ export class FilterHeaderComponent {
     }
 
     this.formFilter.markAllAsTouched();
-  }
-
-  getDataCompany() {
-    this.branchService.getListCompany().subscribe(
-      response => {
-        this.dataCompany = response;
-      },
-      error => {
-        console.log(error.message);
-      }
-    );
   }
 
   getValidationClass(controlName: string): { [key: string]: any } {
@@ -191,17 +178,6 @@ export class FilterHeaderComponent {
 
   toggleAccordion() {
     this.isAccordionOpen = !this.isAccordionOpen;
-  }
-
-  getRol() {
-    this.rolService.listRol().subscribe(
-      response => {
-        this.dataRol = response;
-      },
-      error => {
-        console.log(error.message);
-      }
-    );
   }
 
 }

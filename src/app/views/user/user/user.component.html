@@ -3,7 +3,8 @@
   <app-group-button-general [component]="'Usuarios'" (buttonClick)="handleButtonClick($event)">
   </app-group-button-general>
   <app-filter-header [date]="true" [state]="true" [companyAndBranch]="true" [name]="true" [email]="true" [rol]="true"
-    [title]="'Usuarios'" (filterDataEvent)="setFilter($event)" (changeFilter)="viewTable = $event">
+    [title]="'Usuarios'" [dataRol]="dataRol" [dataCompany]="dataCompany" [dataBranch]="dataBranch"
+    (filterDataEvent)="setFilter($event)" (changeFilter)="viewTable = $event">
   </app-filter-header>
   <app-general-table [columns]="getFieldsTable()" [transformedData]="dataTransformada" [acciones]="acciones"
     [columnAlignments]="getColumnAlignments()" [title]="'Usuarios'" (fetchDataEvent)="onFetchData($event)"
