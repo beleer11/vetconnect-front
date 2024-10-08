@@ -202,7 +202,7 @@ export class TypePetComponent implements OnInit {
 
   openModalView(data: any) {
     Swal.fire({
-      title: 'Tipo Mascota',
+      title: 'Tipo de Mascota',
       html: `
         <div>
         <p><strong>Nombre : </strong> <span>${data.name}</span> </p>
