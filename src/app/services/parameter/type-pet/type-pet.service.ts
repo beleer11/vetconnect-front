@@ -24,4 +24,47 @@ export class TypePetService {
 
   constructor(private http: HttpClient) { }
 
+  getDataTypePet(params: any): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/type-pet/index`, { params: params, ...this.getHttpOptions() });
+  }
+
+  deleteRecordTypePetById(id: number): Observable<any> {
+    return this.http.delete(
+      `${this.apiUrl}/type-pet/remove/${id}`,
+      this.getHttpOptions()
+    );
+  }
+
+  disableRecordTypePetById(id: number): Observable<any> {
+    return this.http.patch(
+      `${this.apiUrl}/type-pet/disable/${id}`,
+      {},
+      this.getHttpOptions()
+    );
+  }
+
+  enableRecordTypePetById(id: number): Observable<any> {
+    return this.http.patch(
+      `${this.apiUrl}/type-pet/enable/${id}`,
+      {},
+      this.getHttpOptions()
+    );
+  }
+
+  sendTypePet(data: any): Observable<any> {
+    return this.http.post<any>(
+      `${this.apiUrl}/type-pet/setData`,
+      data,
+      this.getHttpOptions()
+    );
+  }
+
+  editTypePet(data: any, id: number): Observable<any> {
+    return this.http.put<any>(
+      `${this.apiUrl}/type-pet/editData/` + id,
+      data,
+      this.getHttpOptions()
+    );
+  }
+
 }

@@ -1,8 +1,81 @@
 <app-loading-spinner *ngIf="loading"></app-loading-spinner>
 <div [hidden]="showForm">
-  <app-group-button-general (buttonClick)="handleButtonClick($event)" [component]="'Tipo de mascotas'">
+  <app-group-button-general (buttonClick)="handleButtonClick($event)" [component]="'Grupo de módulo'">
   </app-group-button-general>
   <app-filter-header [date]="true" [state]="true" [name]="true" [title]="'Tipo de mascotas'"
     (filterDataEvent)="setFilter($event)" (changeFilter)="viewTable = $event">
   </app-filter-header>
+  <app-general-table [columns]="getFieldsTable()" [transformedData]="dataTypePetTrasnform" [data]="dataTypePet"
+    [acciones]="acciones" [columnAlignments]="getColumnAlignments()" [title]="'Tipos de mascotas'"
+    (fetchDataEvent)="onFetchData($event)" [totalRecords]="totalRecord" [loadingTable]="loadingTable"
+    (actionEvent)="handleAction($event)" *ngIf="viewTable">
+  </app-general-table>
 </div>
+<c-row [hidden]="!showForm">
+  <c-col xs>
+    <c-card class="mb-4">
+      <c-card-header>
+        <div class="container">
+          <div class="row justify-content-between align-items-center mb-2">
+            <div class="col-12 col-md-auto text-center text-md-start pt-2">
+              <h1 class="mb-0">Agregar tipos de mascotas</h1>
+            </div>
+          </div>
+        </div>
+      </c-card-header>
+      <c-card-body>
+        <form [formGroup]="formTypePet" (ngSubmit)="onSubmit()">
+          <div class="d-flex flex-column">
+            <div class="container">
+              <div class="form-group mb-0">
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="nombre" class="bolder">Nombre</label>
+                    <input id="nombre" formControlName="nombre" type="text" class="form-control"
+                      [ngClass]="getValidationClass('nombre')" maxlength="100" />
+                    <div
+                      *ngIf="formTypePet.get('nombre')?.invalid && (formTypePet.get('nombre')?.touched || formTypePet.get('nombre')?.dirty)"
+                      class="invalid-feedback">
+                      <div *ngIf="formTypePet.get('nombre')?.errors?.['required']">Nombre es
+                        requerido.
+                      </div>
+                      <div *ngIf="formTypePet.get('nombre')?.errors?.['minlength']">
+                        Nombre debe tener al menos 3 caracteres.
+                      </div>
+                      <div *ngIf="formTypePet.get('nombre')?.errors?.['pattern']">
+                        El nombre solo puede contener letras y un solo espacio entre palabras.
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="description" class="bolder">Descripción</label>
+                    <textarea id="description" formControlName="description" rows="3" class="form-control"
+                      maxlength="500" [ngClass]="getValidationClass('description')">
+                    </textarea>
+                    <div
+                      *ngIf="formTypePet.get('description')?.invalid && (formTypePet.get('description')?.touched || formTypePet.get('description')?.dirty)"
+                      class="invalid-feedback">
+                      <div *ngIf="formTypePet.get('description')?.errors?.['minlength']">
+                        Descripción debe tener al menos 10 caracteres.
+                      </div>
+                    </div>
+                  </div>
+                  <div class="d-flex justify-content-end mt-2">
+                    <button type="submit" class="btn btn-primary" [disabled]="formTypePet.invalid">
+                      Guardar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+        <div class="d-flex justify-content-center mt-3">
+          <button class="btn btn-danger text-white" (click)="backToTable()">
+            Atrás
+          </button>
+        </div>
+      </c-card-body>
+    </c-card>
+  </c-col>
+</c-row>
