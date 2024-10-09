@@ -75,7 +75,7 @@
                 </div>
               </div>
               <!-- Sucursal -->
-              <div class="col-12 col-md-6 col-lg-3 mb-4" *ngIf="companyAndBranch">
+              <div class="col-12 col-md-6 col-lg-3 mb-4" *ngIf="companyAndBranch || onlyBranch">
                 <div class="form-group position-relative">
                   <label for="branch" class="bolder mb-1">Sucursal</label>
                   <mat-select formControlName="branch_id" placeholder="Seleccionar sucursal" multiple="false"

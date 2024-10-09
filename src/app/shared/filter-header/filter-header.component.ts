@@ -37,6 +37,7 @@ export class FilterHeaderComponent {
   @Input() state: boolean = false;
   @Input() name: boolean = false;
   @Input() email: boolean = false;
+  @Input() onlyBranch: boolean = false;
   @Input() title: string = '';
   @Input() dataCompany: any = [];
   @Input() dataBranch: any = [];
@@ -91,6 +92,12 @@ export class FilterHeaderComponent {
     if (this.companyAndBranch) {
       this.formFilter.addControl('company_id', this.fb.control(''));
       this.formFilter.addControl('branch_id', this.fb.control({ value: '', disabled: true }));
+    }
+
+    if (this.onlyBranch) {
+      const companyUser = localStorage.getItem('user_information');
+      this.formFilter.addControl('branch_id', this.fb.control({ value: '', disabled: true }));
+      this.getBranchByCompany(companyUser ? JSON.parse(companyUser).data.company_id : null);
     }
 
     if (this.name) {
