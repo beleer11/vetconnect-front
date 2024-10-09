@@ -310,9 +310,6 @@ export class TypesBreedsComponent implements OnInit {
         <p> <strong>Fecha de Creación: </strong> <span>${moment(
         data.created_at
       ).format('DD/MM / YYYY hh: mm:ss A')}</span></p>
-          <p> <strong>Ultima actualización: </strong> <span>${moment(
-        data.updated_at
-      ).format('DD/MM / YYYY hh: mm:ss A')}</span></p>
             </div>
               `,
       icon: 'info',
