@@ -1,1 +1,23 @@
-<p>customer works!</p>
+<app-loading-spinner *ngIf="loading"></app-loading-spinner>
+<div [hidden]="showForm">
+  <app-group-button-general (buttonClick)="handleButtonClick($event)" [component]="'Clientes'">
+  </app-group-button-general>
+  <app-filter-header [date]="true" [state]="true" [name]="true" [title]="'Clientes'"
+    (filterDataEvent)="setFilter($event)" (changeFilter)="viewTable = $event">
+  </app-filter-header>
+</div>
+<c-row [hidden]="!showForm">
+  <c-col xs>
+    <c-card class="mb-4">
+      <c-card-header>
+        <div class="container">
+          <div class="row justify-content-between align-items-center mb-2">
+            <div class="col-12 col-md-auto text-center text-md-start pt-2">
+              <h1 class="mb-0">Agregar cliente</h1>
+            </div>
+          </div>
+        </div>
+      </c-card-header>
+    </c-card>
+  </c-col>
+</c-row>
