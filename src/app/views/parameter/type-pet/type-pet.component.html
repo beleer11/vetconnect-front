@@ -2,7 +2,7 @@
 <div [hidden]="showForm">
   <app-group-button-general (buttonClick)="handleButtonClick($event)" [component]="'Grupo de módulo'">
   </app-group-button-general>
-  <app-filter-header [date]="true" [state]="true" [name]="true" [phone]="true" [title]="'Tipo de mascotas'"
+  <app-filter-header [date]="true" [state]="true" [name]="true" [title]="'Tipo de mascotas'"
     (filterDataEvent)="setFilter($event)" (changeFilter)="viewTable = $event">
   </app-filter-header>
   <app-general-table [columns]="getFieldsTable()" [transformedData]="dataTypePetTrasnform" [data]="dataTypePet"
