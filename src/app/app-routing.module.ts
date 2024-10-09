@@ -18,6 +18,7 @@ import { TermsAndConditionsComponent } from './shared/terms-and-conditions/terms
 import { UserProfilComponent } from './views/user/user-profil/user-profil.component';
 import { TypesBreedsComponent } from './views/parameter/types-breeds/types-breeds.component';
 import { TypePetComponent } from './views/parameter/type-pet/type-pet.component';
+import { CustomerComponent } from './views/customers/customer/customer.component';
 
 // Define las rutas directamente aquí
 const routes: Routes = [
@@ -85,6 +86,10 @@ const routes: Routes = [
       {
         path: 'type-pet',
         component: TypePetComponent
+      },
+      {
+        path: 'customer',
+        component: CustomerComponent
       },
 
     ],
