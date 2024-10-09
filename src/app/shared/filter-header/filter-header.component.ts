@@ -38,6 +38,7 @@ export class FilterHeaderComponent {
   @Input() name: boolean = false;
   @Input() email: boolean = false;
   @Input() onlyBranch: boolean = false;
+  @Input() phone: boolean = false;
   @Input() title: string = '';
   @Input() dataCompany: any = [];
   @Input() dataBranch: any = [];
@@ -108,6 +109,10 @@ export class FilterHeaderComponent {
       this.formFilter.addControl('email', this.fb.control('', [Validators.email]));
     }
 
+    if (this.phone) {
+      this.formFilter.addControl('phone', this.fb.control('', [Validators.minLength(8)]));
+    }
+
     this.formFilter.markAllAsTouched();
   }
 
@@ -129,6 +134,7 @@ export class FilterHeaderComponent {
       name: (this.formFilter.controls['name']?.value === undefined || this.formFilter.controls['name']?.value === null) ? '' : this.formFilter.controls['name'].value,
       email: (this.formFilter.controls['email']?.value === undefined || this.formFilter.controls['email']?.value === null) ? '' : this.formFilter.controls['email'].value,
       rol_id: (this.formFilter.controls['rol_id']?.value === undefined || this.formFilter.controls['rol_id']?.value === null) ? '' : this.formFilter.controls['rol_id'].value,
+      phone: (this.formFilter.controls['phone']?.value === undefined || this.formFilter.controls['phone']?.value === null) ? '' : this.formFilter.controls['phone'].value,
     }
     this.filterDataEvent.emit(data);
   }
@@ -185,6 +191,15 @@ export class FilterHeaderComponent {
 
   toggleAccordion() {
     this.isAccordionOpen = !this.isAccordionOpen;
+  }
+
+  validateNumberInput(event: KeyboardEvent) {
+    const allowedKeys = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Tab', 'Delete'];
+    const isNumber = /^[0-9]+$/.test(event.key);
+
+    if (!isNumber && !allowedKeys.includes(event.key)) {
+      event.preventDefault();
+    }
   }
 
 }

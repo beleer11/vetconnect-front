@@ -130,6 +130,27 @@
                   </div>
                 </div>
               </div>
+              <!-- Telefono -->
+              <div class="col-12 col-md-6 col-lg-3 mb-4" *ngIf="phone">
+                <div class="form-group">
+                  <label for="phone" class="mb-1 bolder">Teléfono</label>
+                  <input id="phone" formControlName="phone" type="text" class="form-control"
+                    [ngClass]="getValidationClass('phone')" (keydown)="validateNumberInput($event)" maxlength="12"
+                    placeholder="Teléfono" />
+                  <div
+                    *ngIf="formFilter.get('phone')?.invalid && (formFilter.get('phone')?.touched || formFilter.get('phone')?.dirty)"
+                    class="invalid-feedback">
+                    <div *ngIf="formFilter.get('phone')?.errors?.['required']">Teléfono es requerido.</div>
+                    <div *ngIf="formFilter.get('phone')?.errors?.['minlength']">El teléfono debe tener al menos 8
+                      dígitos.</div>
+                    <div *ngIf="formFilter.get('phone')?.errors?.['maxlength']">El teléfono no puede exceder los 12
+                      dígitos.</div>
+                    <div *ngIf="formFilter.get('phone')?.errors?.['pattern']">
+                      Teléfono solo puede contener números.
+                    </div>
+                  </div>
+                </div>
+              </div>
               <!-- Rol -->
               <div class="col-12 col-md-6 col-lg-3 mb-4" *ngIf="rol">
                 <div class="form-group position-relative">
