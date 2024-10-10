@@ -58,6 +58,7 @@ import { FilterHeaderComponent } from './shared/filter-header/filter-header.comp
 import { UserProfilComponent } from './views/user/user-profil/user-profil.component';
 import { TypesBreedsComponent } from './views/parameter/types-breeds/types-breeds.component';
 import { TypePetComponent } from './views/parameter/type-pet/type-pet.component';
+import { TypeAppointmentComponent } from './views/parameter/type-appointment/type-appointment.component';
 
 // Import containers
 import {
@@ -120,6 +121,7 @@ const APP_CONTAINERS = [
     UserProfilComponent,
     TypesBreedsComponent,
     TypePetComponent,
+    TypeAppointmentComponent,
   ],
   imports: [
     BrowserModule,
