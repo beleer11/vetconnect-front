@@ -59,6 +59,7 @@ import { UserProfilComponent } from './views/user/user-profil/user-profil.compon
 import { TypesBreedsComponent } from './views/parameter/types-breeds/types-breeds.component';
 import { TypePetComponent } from './views/parameter/type-pet/type-pet.component';
 import { CustomerComponent } from './views/customers/customer/customer.component';
+import { TypeAppointmentComponent } from './views/parameter/type-appointment/type-appointment.component';
 
 // Import containers
 import {
@@ -121,7 +122,8 @@ const APP_CONTAINERS = [
     UserProfilComponent,
     TypesBreedsComponent,
     TypePetComponent,
-    CustomerComponent
+    CustomerComponent,
+    TypeAppointmentComponent,
   ],
   imports: [
     BrowserModule,

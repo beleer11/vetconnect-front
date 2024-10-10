@@ -19,6 +19,7 @@ import { UserProfilComponent } from './views/user/user-profil/user-profil.compon
 import { TypesBreedsComponent } from './views/parameter/types-breeds/types-breeds.component';
 import { TypePetComponent } from './views/parameter/type-pet/type-pet.component';
 import { CustomerComponent } from './views/customers/customer/customer.component';
+import { TypeAppointmentComponent } from './views/parameter/type-appointment/type-appointment.component';
 
 // Define las rutas directamente aquí
 const routes: Routes = [
@@ -91,7 +92,10 @@ const routes: Routes = [
         path: 'customer',
         component: CustomerComponent
       },
-
+      {
+        path: 'type-appointment',
+        component: TypeAppointmentComponent
+      }
     ],
   },
   { path: 'login', component: LoginComponent },
