@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { GeneralService } from 'src/app/services/general/general.service';
 import { CustomerService } from '../../../services/customers/customer/customer.service';
 import moment from 'moment';
 import { environment } from 'src/environments/environment';
+import { IconSetService } from '@coreui/icons-angular';
 
 @Component({
   selector: 'app-customer',
@@ -19,17 +20,24 @@ export class CustomerComponent {
   public parameterDefect = {};
   public totalRecord: number = 0;
   public dataCustomer: any = [];
-  public dataCustomerTrasnform: any = [];
+  public dataCustomerTransform: any = [];
+  public icons: any;
+  public filteredCustomer: any[] = this.dataCustomer;
+  public searchControl = new FormControl('');
+  public dataBranch: any = [];
+  public loadingBranch: boolean = false;
 
   constructor(
     private generalService: GeneralService,
     private customerService: CustomerService,
+    public iconSet: IconSetService,
+    private fb: FormBuilder,
   ) { }
 
 
   async ngOnInit(): Promise<void> {
-    //this.icons = this.getIconsView('cil');
-    //this.createForm();
+    this.icons = this.getIconsView('cil');
+    this.createForm();
     this.loading = false;
   }
 
@@ -38,7 +46,7 @@ export class CustomerComponent {
       response => {
         this.dataCustomer = response.data;
         this.totalRecord = response.total;
-        this.dataCustomerTrasnform = this.formatedData(response.data);
+        this.dataCustomerTransform = this.formatedData(response.data);
         this.loading = false;
         this.viewTable = true;
       }, error => {
@@ -51,6 +59,22 @@ export class CustomerComponent {
         this.viewTable = false;
       });
   }
+
+  public createForm() {
+    this.formCustomer = this.fb.group({
+      name: ['', [Validators.required, Validators.minLength(3), Validators.pattern('^[a-zA-ZáéíóúÁÉÍÓÚÑñ]+(\\s[a-zA-ZáéíóúÁÉÍÓÚÑñ]+)*$')]],
+      address: ['', [Validators.minLength(10)]],
+      phone: ['', [Validators.required, Validators.minLength(10)]],
+      email: ['', [Validators.email]],
+      document: ['', [Validators.minLength(10), Validators.maxLength(20)]],
+      is_disabled: [true],
+      branch_id: [{ value: {}, disabled: true }],
+      pet_id: [{ value: {}, disabled: true }, Validators.required],
+    });
+    this.loading = false;
+    this.getCustomer();
+  }
+
   public formatedData(response: any) {
     if (response.length === 0) {
       return [{
@@ -93,6 +117,33 @@ export class CustomerComponent {
     this.generalService.alertMessageInCreation();
   }
 
+  getCustomer() {
+    this.customerService.listCustomer().subscribe(
+      (response: any) => {
+        this.dataCustomer = response?.data;
+        this.filteredCustomer = this.dataCustomer;
+        this.getData();
+      },
+      error => {
+        console.log(error.message);
+      }
+    );
+  }
+
+  getIconsView(prefix: string) {
+    return Object.entries(this.iconSet.icons).filter((icon) => {
+      return icon[0].startsWith(prefix);
+    });
+  }
+
+  getValidationClass(controlName: string): { [key: string]: any } {
+    const control = this.formCustomer.get(controlName);
+    return {
+      'is-invalid': control?.invalid && (control?.touched || control?.dirty),
+      'is-valid': control?.valid && (control?.touched || control?.dirty),
+    };
+  }
+
   public addCustomer() {
     this.showForm = true;
     this.formCustomer.reset();
@@ -119,5 +170,55 @@ export class CustomerComponent {
     this.getData();
   }
 
+  onSubmit() {
+    if (this.formCustomer.valid) {
+      let data = {
+        name: this.formCustomer.get('name')?.value,
+        address: this.formCustomer.get('address')?.value,
+        phone: this.formCustomer.get('phone')?.value,
+        email: this.formCustomer.get('email')?.value,
+        branch_id: this.formCustomer.get('branch_id')?.value,
+        pet_id: this.formCustomer.get('pet_id')?.value,
+        is_disabled: (this.formCustomer.get('is_disabled')?.value === null) ? false : this.formCustomer.get('is_disabled')?.value,
+      };
+
+      /* if (this.action === 'save') {
+        this.saveNewRol(data);
+      }
+
+      if (this.action === 'edit') {
+        this.editRol(data, this.dataTemp.id);
+      } */
+    }
+  }
+
+  onlyNumbers(event: KeyboardEvent): boolean {
+    const char = String.fromCharCode(event.which ? event.which : event.keyCode);
+
+    if (
+      event.key === 'Backspace' ||
+      event.key === 'ArrowLeft' ||
+      event.key === 'ArrowRight' ||
+      event.key === 'Delete'
+    ) {
+      return true;
+    }
+
+    if (!/^[0-9]+$/.test(char)) {
+      event.preventDefault();
+      return false;
+    }
+
+    return true;
+  }
+
+  clearSelection(): void {
+    this.formCustomer.get('company_id')?.reset();
+  }
+
+  clearSelectionBranch(): void {
+    this.formCustomer.get('branch_id')?.reset();
+    this.formCustomer.get('branch_id')?.markAsTouched();
+  }
 
 }

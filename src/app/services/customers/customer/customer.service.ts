@@ -31,4 +31,8 @@ export class CustomerService {
       ...this.getHttpOptions(),
     });
   }
+
+  listCustomer() {
+    return this.http.get<string>(`${this.apiUrl}/customer/listCustomer`, this.getHttpOptions());
+  }
 }
