@@ -1,34 +1,34 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { GeneralService } from 'src/app/services/general/general.service';
+import { TypeAppointmentService } from '../../../services/parameter/type-appointment/type-appointment.service';
 import { IconSetService } from '@coreui/icons-angular';
-import { GeneralService } from '../../../services/general/general.service';
 import moment from 'moment';
-import { TypeBreedService } from '../../../services/parameter/type-breed/type-breed.service';
 import Swal from 'sweetalert2';
 import { Observable } from 'rxjs';
 
 @Component({
-  selector: 'app-types-breeds',
-  templateUrl: './types-breeds.component.html',
-  styleUrl: './types-breeds.component.css'
+  selector: 'app-type-appointment',
+  templateUrl: './type-appointment.component.html',
+  styleUrl: './type-appointment.component.css'
 })
-export class TypesBreedsComponent implements OnInit {
+export class TypeAppointmentComponent {
   public loading: boolean = true;
   public showForm: boolean = false;
-  public formTypesBreeds!: FormGroup;
+  public formTypeAppointment!: FormGroup;
   public action: string = 'save';
   public viewTable: boolean = false;
   public parameterDefect = {};
-  public dataTypesBreeds: any = [];
+  public dataTypeAppointment: any = [];
   public totalRecord: number = 0;
-  public dataTypesBreedsTransform: any = [];
+  public dataTypeAppointmentTransform: any = [];
   public acciones: boolean = true;
   public loadingTable: boolean = false;
   public dataTemp: any = [];
   public icons: any;
 
   constructor(
-    private typeBreedsService: TypeBreedService,
+    private typeAppointmentService: TypeAppointmentService,
     private fb: FormBuilder,
     public iconSet: IconSetService,
     private generalService: GeneralService
@@ -41,7 +41,7 @@ export class TypesBreedsComponent implements OnInit {
   }
 
   public createForm() {
-    this.formTypesBreeds = this.fb.group({
+    this.formTypeAppointment = this.fb.group({
       nombre: ['', [Validators.required, Validators.minLength(3), Validators.pattern('^[a-zA-ZáéíóúÁÉÍÓÚÑñ]+(\\s[a-zA-ZáéíóúÁÉÍÓÚÑñ]+)*$')]],
       description: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(500)]],
     });
@@ -53,86 +53,10 @@ export class TypesBreedsComponent implements OnInit {
     });
   }
 
-  onSubmit() {
-    if (this.formTypesBreeds.valid) {
-      let data = {
-        name: this.formTypesBreeds.get('nombre')?.value,
-        description: this.formTypesBreeds.get('description')?.value,
-      };
-      if (this.action === 'save') {
-        this.saveNewTypesBreeds(data);
-      }
-
-      if (this.action === 'edit') {
-        this.editTypesBreeds(data, this.dataTemp.id);
-      }
-    }
-  }
-
-  public editTypesBreeds(data: any, id: number) {
-    this.loading = true;
-    this.typeBreedsService.editTypesBreeds(data, id).subscribe({
-      next: (response) => {
-        if (response.original.success) {
-          this.onFetchData(this.parameterDefect);
-          this.loading = false;
-          this.showForm = false;
-          this.generalService.alertMessage('¡Éxito!', response.original.message, 'success');
-        } else {
-          this.loading = false;
-          this.generalService.alertMessage('Advertencia', response.original.message, 'warning');
-        }
-      },
-      error: (error) => {
-        this.loading = false;
-        this.generalService.alertMessage(
-          'Error',
-          'Hubo un problema al procesar tu solicitud. Por favor, inténtalo de nuevo.',
-          'error'
-        );
-      },
-    });
-  }
-
-  private getData() {
-    this.typeBreedsService.getDataTypesBreeds(this.parameterDefect).subscribe(
-      response => {
-        this.dataTypesBreeds = response.data;
-        this.totalRecord = response.total;
-        this.dataTypesBreedsTransform = this.formatedData(response.data);
-        this.loading = false;
-        this.viewTable = true;
-      }, error => {
-        this.generalService.alertMessage(
-          '¡Ups! Algo salió mal',
-          'Tuvimos un problema al procesar tu solicitud. Por favor, inténtalo de nuevo o contacta a nuestro equipo de soporte si el problema persiste. ¡Estamos aquí para ayudarte!',
-          'warning'
-        );
-        this.loading = false;
-        this.viewTable = false;
-      });
-  }
-
-  getFieldsTable() {
-    return ['Nombre', 'Descripción', 'Fecha de creación'];
-  }
-
-  getColumnAlignments() {
-    return ['left', 'center', 'center'];
-  }
-
-  getValidationClass(controlName: string): { [key: string]: any } {
-    const control = this.formTypesBreeds.get(controlName);
-    return {
-      'is-invalid': control?.invalid && (control?.touched || control?.dirty),
-      'is-valid': control?.valid && (control?.touched || control?.dirty),
-    };
-  }
-
   handleButtonClick(action: string) {
     switch (action) {
       case 'add':
-        this.addTypesBreeds();
+        this.addTypeAppointment();
         break;
       case 'import':
         this.importData();
@@ -143,9 +67,9 @@ export class TypesBreedsComponent implements OnInit {
     }
   }
 
-  public addTypesBreeds() {
+  public addTypeAppointment() {
     this.showForm = true;
-    this.formTypesBreeds.reset();
+    this.formTypeAppointment.reset();
     this.action = 'save';
   }
 
@@ -155,31 +79,6 @@ export class TypesBreedsComponent implements OnInit {
 
   public exportData() {
     this.generalService.alertMessageInCreation();
-  }
-
-  public saveNewTypesBreeds(data: any) {
-    this.loading = true;
-    this.typeBreedsService.sendTypesBreeds(data).subscribe({
-      next: (response) => {
-        if (response.original.success) {
-          this.onFetchData(this.parameterDefect);
-          this.loading = false;
-          this.showForm = false;
-          this.generalService.alertMessage('¡Éxito!', response.original.message, 'success');
-        } else {
-          this.loading = false;
-          this.generalService.alertMessage('Advertencia', response.original.message, 'warning');
-        }
-      },
-      error: (error) => {
-        this.loading = false;
-        this.generalService.alertMessage(
-          'Error',
-          'Hubo un problema al procesar tu solicitud. Por favor, inténtalo de nuevo.',
-          'error'
-        );
-      },
-    });
   }
 
   setFilter(event: any) {
@@ -220,12 +119,39 @@ export class TypesBreedsComponent implements OnInit {
     });
   }
 
+  private getData() {
+    this.typeAppointmentService.getDataTypeAppointment(this.parameterDefect).subscribe(
+      response => {
+        this.dataTypeAppointment = response.data;
+        this.totalRecord = response.total;
+        this.dataTypeAppointmentTransform = this.formatedData(response.data);
+        this.loading = false;
+        this.viewTable = true;
+      }, error => {
+        this.generalService.alertMessage(
+          '¡Ups! Algo salió mal',
+          'Tuvimos un problema al procesar tu solicitud. Por favor, inténtalo de nuevo o contacta a nuestro equipo de soporte si el problema persiste. ¡Estamos aquí para ayudarte!',
+          'warning'
+        );
+        this.loading = false;
+        this.viewTable = false;
+      });
+  }
+
+  getFieldsTable() {
+    return ['Nombre', 'Descripción', 'Fecha de creación'];
+  }
+
+  getColumnAlignments() {
+    return ['left', 'center', 'center'];
+  }
+
   onFetchData(params: any): void {
     this.loadingTable = true;
-    this.typeBreedsService.getDataTypesBreeds(params).subscribe(
+    this.typeAppointmentService.getDataTypeAppointment(params).subscribe(
       (response) => {
-        this.dataTypesBreedsTransform = this.formatedData(response.data);
-        this.dataTypesBreeds = response.data;
+        this.dataTypeAppointmentTransform = this.formatedData(response.data);
+        this.dataTypeAppointment = response.data;
         this.totalRecord = response.total;
         this.acciones = true;
         this.loadingTable = false;
@@ -240,11 +166,11 @@ export class TypesBreedsComponent implements OnInit {
   handleAction(event: { id: number; action: string }) {
     const { id, action } = event;
     this.action = action;
-    this.dataTemp = this.dataTypesBreeds.find((item: any) => item.id === id);
+    this.dataTemp = this.dataTypeAppointment.find((item: any) => item.id === id);
     if (action === 'edit') {
-      this.formTypesBreeds.controls['nombre'].setValue(this.dataTemp.name);
-      this.formTypesBreeds.controls['description'].setValue(this.dataTemp.description);
-      this.formTypesBreeds.markAllAsTouched();
+      this.formTypeAppointment.controls['nombre'].setValue(this.dataTemp.name);
+      this.formTypeAppointment.controls['description'].setValue(this.dataTemp.description);
+      this.formTypeAppointment.markAllAsTouched();
       this.showForm = true;
     }
     if (action === 'delete') {
@@ -271,7 +197,7 @@ export class TypesBreedsComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.loading = true;
-        this.typeBreedsService.deleteRecordById(id).subscribe({
+        this.typeAppointmentService.deleteRecordById(id).subscribe({
           next: (response) => {
             this.onFetchData(this.parameterDefect);
             this.loading = false;
@@ -294,15 +220,9 @@ export class TypesBreedsComponent implements OnInit {
     });
   }
 
-  private actionMap: { [key: string]: (id: number) => Observable<any> } = {
-    enable: (id: number) => this.typeBreedsService.enableRecordTypesBreedsById(id),
-    disable: (id: number) =>
-      this.typeBreedsService.disableRecordTypesBreedsById(id),
-  };
-
   openModalView(data: any) {
     Swal.fire({
-      title: 'Tipo de raza',
+      title: 'Tipo de cita',
       html: `
         <div>
         <p><strong>Nombre : </strong> <span>${data.name}</span> </p>
@@ -357,9 +277,89 @@ export class TypesBreedsComponent implements OnInit {
     });
   }
 
-  public backToTable() {
-    this.showForm = false;
-    this.formTypesBreeds.reset();
+  private actionMap: { [key: string]: (id: number) => Observable<any> } = {
+    enable: (id: number) => this.typeAppointmentService.enableRecordTypeAppointmentById(id),
+    disable: (id: number) =>
+      this.typeAppointmentService.disableRecordTypeAppointmentById(id),
+  };
+
+  getValidationClass(controlName: string): { [key: string]: any } {
+    const control = this.formTypeAppointment.get(controlName);
+    return {
+      'is-invalid': control?.invalid && (control?.touched || control?.dirty),
+      'is-valid': control?.valid && (control?.touched || control?.dirty),
+    };
   }
 
+  onSubmit() {
+    if (this.formTypeAppointment.valid) {
+      let data = {
+        name: this.formTypeAppointment.get('nombre')?.value,
+        description: this.formTypeAppointment.get('description')?.value,
+      };
+      if (this.action === 'save') {
+        this.saveNewTypeAppointment(data);
+      }
+
+      if (this.action === 'edit') {
+        this.editTypeAppointment(data, this.dataTemp.id);
+      }
+    }
+  }
+
+  public saveNewTypeAppointment(data: any) {
+    this.loading = true;
+    this.typeAppointmentService.sendTypeAppointment(data).subscribe({
+      next: (response) => {
+        if (response.original.success) {
+          this.onFetchData(this.parameterDefect);
+          this.loading = false;
+          this.showForm = false;
+          this.generalService.alertMessage('¡Éxito!', response.original.message, 'success');
+        } else {
+          this.loading = false;
+          this.generalService.alertMessage('Advertencia', response.original.message, 'warning');
+        }
+      },
+      error: (error) => {
+        this.loading = false;
+        this.generalService.alertMessage(
+          'Error',
+          'Hubo un problema al procesar tu solicitud. Por favor, inténtalo de nuevo.',
+          'error'
+        );
+      },
+    });
+  }
+
+  public editTypeAppointment(data: any, id: number) {
+    this.loading = true;
+    this.typeAppointmentService.editTypeAppointment(data, id).subscribe({
+      next: (response) => {
+        if (response.original.success) {
+          this.onFetchData(this.parameterDefect);
+          this.loading = false;
+          this.showForm = false;
+          this.generalService.alertMessage('¡Éxito!', response.original.message, 'success');
+        } else {
+          this.loading = false;
+          this.generalService.alertMessage('Advertencia', response.original.message, 'warning');
+        }
+      },
+      error: (error) => {
+        this.loading = false;
+        this.generalService.alertMessage(
+          'Error',
+          'Hubo un problema al procesar tu solicitud. Por favor, inténtalo de nuevo.',
+          'error'
+        );
+      },
+    });
+  }
+
+  public backToTable() {
+    this.showForm = false;
+    this.formTypeAppointment.reset();
+  }
 }
+
