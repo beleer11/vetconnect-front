@@ -3,8 +3,6 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { GeneralService } from 'src/app/services/general/general.service';
 import { CustomerService } from '../../../services/customers/customer/customer.service';
 import moment from 'moment';
-import { environment } from 'src/environments/environment';
-import { IconSetService } from '@coreui/icons-angular';
 
 @Component({
   selector: 'app-customer',
@@ -30,13 +28,11 @@ export class CustomerComponent {
   constructor(
     private generalService: GeneralService,
     private customerService: CustomerService,
-    public iconSet: IconSetService,
     private fb: FormBuilder,
   ) { }
 
 
   async ngOnInit(): Promise<void> {
-    this.icons = this.getIconsView('cil');
     this.createForm();
     this.loading = false;
   }
@@ -128,12 +124,6 @@ export class CustomerComponent {
         console.log(error.message);
       }
     );
-  }
-
-  getIconsView(prefix: string) {
-    return Object.entries(this.iconSet.icons).filter((icon) => {
-      return icon[0].startsWith(prefix);
-    });
   }
 
   getValidationClass(controlName: string): { [key: string]: any } {
