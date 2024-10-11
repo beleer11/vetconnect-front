@@ -181,10 +181,93 @@
                   </div>
                 </div>
               </div>
+              <!-- Tipo mascota -->
+              <div class="col-12 col-md-6 col-lg-3 mb-4" *ngIf="type_pet">
+                <div class="form-group position-relative">
+                  <label for="type_pet_id" class="bolder mb-1">Tipo mascota</label>
+                  <mat-select formControlName="type_pet_id" placeholder="Seleccionar tipo mascota" multiple="false"
+                    class="form-control" [ngClass]="getValidationClass('type_pet_id')">
+                    <ngx-mat-select-search [formControl]="searchControl" placeholderLabel="Buscar tipo mascota"
+                      noEntriesFoundLabel="No se encontraron resultados">
+                    </ngx-mat-select-search>
+                    <mat-option *ngFor="let typePet of dataTypePet | filterRol : searchControl.value"
+                      [value]="typePet.id">
+                      {{typePet.name}}
+                    </mat-option>
+                  </mat-select>
+                  <ng-container *ngIf="dataTypePet.length <= 0; else closeButton">
+                    <mat-spinner diameter="24" strokeWidth="3" class="spinner me-3"></mat-spinner>
+                  </ng-container>
+                  <ng-template #closeButton>
+                    <button *ngIf="formFilter.get('type_pet_id')?.value" mat-icon-button
+                      (click)="clearSelectionTypePet()" class="clear-icon">
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  </ng-template>
+                  <div
+                    *ngIf="formFilter.get('type_pet_id')?.invalid && (formFilter.get('type_pet_id')?.touched || formFilter.get('type_pet_id')?.dirty)"
+                    class="invalid-feedback position-absolute">
+                    <div *ngIf="formFilter.get('type_pet_id')?.errors?.['required']">Tipo mascota es
+                      requerido.</div>
+                  </div>
+                </div>
+              </div>
+              <!-- Tipo raza -->
+              <div class="col-12 col-md-6 col-lg-3 mb-4" *ngIf="type_breed">
+                <div class="form-group position-relative">
+                  <label for="type_breed_id" class="bolder mb-1">Tipo raza</label>
+                  <mat-select formControlName="type_breed_id" placeholder="Seleccionar raza" multiple="false"
+                    class="form-control" [ngClass]="getValidationClass('type_breed_id')">
+                    <ngx-mat-select-search [formControl]="searchControl" placeholderLabel="Buscar tipo raza"
+                      noEntriesFoundLabel="No se encontraron resultados">
+                    </ngx-mat-select-search>
+                    <mat-option *ngFor="let typeBreed of dataTypeBreed | filterRol : searchControl.value"
+                      [value]="typeBreed.id">
+                      {{typeBreed.name}}
+                    </mat-option>
+                  </mat-select>
+                  <ng-container *ngIf="dataTypeBreed.length <= 0; else closeButton">
+                    <mat-spinner diameter="24" strokeWidth="3" class="spinner me-3"></mat-spinner>
+                  </ng-container>
+                  <ng-template #closeButton>
+                    <button *ngIf="formFilter.get('type_breed_id')?.value" mat-icon-button
+                      (click)="clearSelectionTypeBreed()" class="clear-icon">
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  </ng-template>
+                  <div
+                    *ngIf="formFilter.get('type_breed_id')?.invalid && (formFilter.get('type_breed_id')?.touched || formFilter.get('type_breed_id')?.dirty)"
+                    class="invalid-feedback position-absolute">
+                    <div *ngIf="formFilter.get('type_breed_id')?.errors?.['required']">Tipo raza es
+                      requerido.</div>
+                  </div>
+                </div>
+              </div>
+              <!-- Edad mascota -->
+              <div class="col-12 col-md-6 col-lg-3 mb-4" *ngIf="age">
+                <div class="form-group">
+                  <label for="age" class="mb-1 bolder">Edad</label>
+                  <input id="age" formControlName="age" type="text" class="form-control"
+                    [ngClass]="getValidationClass('age')" (keydown)="validateNumberInput($event)" maxlength="12"
+                    placeholder="Edad" />
+                  <div
+                    *ngIf="formFilter.get('age')?.invalid && (formFilter.get('age')?.touched || formFilter.get('age')?.dirty)"
+                    class="invalid-feedback">
+                    <div *ngIf="formFilter.get('age')?.errors?.['required']">Edad es requerido.</div>
+                    <div *ngIf="formFilter.get('age')?.errors?.['minlength']">El Edad debe tener al menos 8
+                      dígitos.</div>
+                    <div *ngIf="formFilter.get('age')?.errors?.['maxlength']">El Edad no puede exceder los 12
+                      dígitos.</div>
+                    <div *ngIf="formFilter.get('age')?.errors?.['pattern']">
+                      Edad solo puede contener números.
+                    </div>
+                  </div>
+                </div>
+              </div>
               <!-- Estado -->
               <div class="col-12 col-md-6 col-lg-3 mb-4" *ngIf="state">
                 <div class="form-group">
-                  <label for="dateFinish" class="mb-2 bolder">Estado</label>
+                  <label for="state" class="mb-2 bolder">Estado</label>
                   <div class="d-flex align-items-center">
                     <input class="form-control switch-custom" type="checkbox" id="state" formControlName="state" />
                     <label class="form-check-label ms-2 bolder mb-0" for="state" [ngClass]="getTextClass()">{{

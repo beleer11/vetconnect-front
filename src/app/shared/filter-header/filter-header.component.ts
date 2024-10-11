@@ -39,10 +39,15 @@ export class FilterHeaderComponent {
   @Input() email: boolean = false;
   @Input() onlyBranch: boolean = false;
   @Input() phone: boolean = false;
+  @Input() type_pet: boolean = false;
+  @Input() type_breed: boolean = false;
+  @Input() age: boolean = false;
   @Input() title: string = '';
   @Input() dataCompany: any = [];
   @Input() dataBranch: any = [];
   @Input() dataRol: any = [];
+  @Input() dataTypePet: any = [];
+  @Input() dataTypeBreed: any = [];
   @Output() filterDataEvent: EventEmitter<any> = new EventEmitter();
   @Output() changeFilter: EventEmitter<any> = new EventEmitter();
 
@@ -113,6 +118,18 @@ export class FilterHeaderComponent {
       this.formFilter.addControl('phone', this.fb.control('', [Validators.minLength(8)]));
     }
 
+    if (this.type_pet) {
+      this.formFilter.addControl('type_pet_id', this.fb.control(''));
+    }
+
+    if (this.type_breed) {
+      this.formFilter.addControl('type_breed_id', this.fb.control(''));
+    }
+
+    if (this.age) {
+      this.formFilter.addControl('age', this.fb.control(''));
+    }
+
     this.formFilter.markAllAsTouched();
   }
 
@@ -135,6 +152,8 @@ export class FilterHeaderComponent {
       email: (this.formFilter.controls['email']?.value === undefined || this.formFilter.controls['email']?.value === null) ? '' : this.formFilter.controls['email'].value,
       rol_id: (this.formFilter.controls['rol_id']?.value === undefined || this.formFilter.controls['rol_id']?.value === null) ? '' : this.formFilter.controls['rol_id'].value,
       phone: (this.formFilter.controls['phone']?.value === undefined || this.formFilter.controls['phone']?.value === null) ? '' : this.formFilter.controls['phone'].value,
+      type_pet_id: (this.formFilter.controls['type_pet_id']?.value === undefined || this.formFilter.controls['type_pet_id']?.value === null) ? '' : this.formFilter.controls['type_pet_id'].value,
+      type_breed_id: (this.formFilter.controls['type_breed_id']?.value === undefined || this.formFilter.controls['type_breed_id']?.value === null) ? '' : this.formFilter.controls['type_breed_id'].value,
     }
     this.filterDataEvent.emit(data);
   }
@@ -170,6 +189,16 @@ export class FilterHeaderComponent {
   clearSelectionRol(): void {
     this.formFilter.get('rol_id')?.reset();
     this.formFilter.get('rol_id')?.markAsTouched();
+  }
+
+  clearSelectionTypePet(): void {
+    this.formFilter.get('type_pet_id')?.reset();
+    this.formFilter.get('type_pet_id')?.markAsTouched();
+  }
+
+  clearSelectionTypeBreed(): void {
+    this.formFilter.get('type_breed_id')?.reset();
+    this.formFilter.get('type_breed_id')?.markAsTouched();
   }
 
   clearForm() {

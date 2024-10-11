@@ -70,4 +70,8 @@ export class TypeBreedService {
       this.getHttpOptions()
     );
   }
+
+  listTypeBreed(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/type-breed/list`, { ...this.getHttpOptions() });
+  }
 }

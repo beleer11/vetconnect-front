@@ -67,4 +67,8 @@ export class TypePetService {
     );
   }
 
+  listTypePet(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/type-pet/list`, { ...this.getHttpOptions() });
+  }
+
 }
