@@ -5,6 +5,11 @@
   <app-filter-header [onlyBranch]="true" [phone]="true" [date]="true" [state]="true" [name]="true" [title]="'Clientes'"
     (filterDataEvent)="setFilter($event)" (changeFilter)="viewTable = $event">
   </app-filter-header>
+  <app-general-table [columns]="getFieldsTable()" [transformedData]="dataTransformada" [acciones]="acciones"
+    [columnAlignments]="getColumnAlignments()" [title]="'Clientes'" (fetchDataEvent)="onFetchData($event)"
+    [totalRecords]="totalRecord" [loadingTable]="loadingTable" [data]="dataCustomer"
+    (actionEvent)="handleAction($event)" *ngIf="viewTable">
+  </app-general-table>
 </div>
 <c-row [hidden]="!showForm">
   <c-col xs>
@@ -13,7 +18,7 @@
         <div class="container">
           <div class="row justify-content-between align-items-center mb-2">
             <div class="col-12 col-md-auto text-center text-md-start pt-2">
-              <h1 class="mb-0">Agregar cliente</h1>
+              <h1 class="mb-0">{{(action !== 'save') ? 'Editar' : 'Agregar'}} cliente</h1>
             </div>
           </div>
         </div>
@@ -26,48 +31,51 @@
               <span class="bolder">Información General</span>
             </button>
           </li>
+          <!-- *ngIf="action !== 'save'" ------------------>
           <li class="nav-item" role="presentation">
-            <button class="nav-link tab-custom" id="permissions-tab" [class.disabled]="!formCustomer.valid"
-              [attr.aria-disabled]="!formCustomer.valid" data-bs-toggle="tab" data-bs-target="#permissions"
-              type="button" role="tab" aria-controls="permissions" aria-selected="false">
-              <span class="bolder">Mascotas</span>
+            <button class="nav-link tab-custom" id="pet-tab" data-bs-toggle="tab" data-bs-target="#pet" type="button"
+              role="tab" aria-controls="pet" aria-selected="false">
+              <span class="bolder">Ver mascotas</span>
             </button>
           </li>
         </ul>
         <div class="tab-content border-tab" id="myTabContent">
           <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab">
-            <form [formGroup]="formCustomer" class="pt-3" (ngSubmit)="onSubmit()">
+            <form [formGroup]="formCustomer" class="pt-3">
               <div class="d-flex flex-column">
                 <div class="container">
                   <div class="form-group mb-0">
+                    <!-- Nombre y teléfono-->
                     <div class="row">
                       <div class="col-md-6 mb-3">
-                        <label for="name" class="bolder">Nombre</label>
-                        <input id="nombre" formControlName="name" type="text" class="form-control"
-                          [ngClass]="getValidationClass('name')" maxlength="100" />
-                        <div
-                          *ngIf="formCustomer.get('name')?.invalid && (formCustomer.get('nombre')?.touched || formCustomer.get('name')?.dirty)"
-                          class="invalid-feedback">
-                          <div *ngIf="formCustomer.get('name')?.errors?.['required']">Nombre es
-                            requerido.
-                          </div>
-                          <div *ngIf="formCustomer.get('name')?.errors?.['minlength']">
-                            Nombre debe tener al menos 3 caracteres.
-                          </div>
-                          <div *ngIf="formCustomer.get('name')?.errors?.['pattern']">
-                            El nombre solo puede contener letras y un solo espacio entre palabras.
+                        <div class="form-group position-relative">
+                          <label for="name" class="bolder">Nombre</label>
+                          <input id="nombre" formControlName="name" type="text" class="form-control"
+                            [ngClass]="getValidationClass('name')" maxlength="100" />
+                          <div
+                            *ngIf="formCustomer.get('name')?.invalid && (formCustomer.get('name')?.touched || formCustomer.get('name')?.dirty)"
+                            class="invalid-feedback position-absolute">
+                            <div *ngIf="formCustomer.get('name')?.errors?.['required']">Nombre es
+                              requerido.
+                            </div>
+                            <div *ngIf="formCustomer.get('name')?.errors?.['minlength']">
+                              Nombre debe tener al menos 3 caracteres.
+                            </div>
+                            <div *ngIf="formCustomer.get('name')?.errors?.['pattern']">
+                              El nombre solo puede contener letras y un solo espacio entre palabras.
+                            </div>
                           </div>
                         </div>
                       </div>
                       <div class="col-md-6 mb-4">
-                        <div class="form-group">
+                        <div class="form-group position-relative">
                           <label for="phone" class="bolder mb-1">Teléfono</label>
                           <input id="phone" formControlName="phone" type="text" class="form-control" maxlength="10"
                             [ngClass]="getValidationClass('phone')" (keypress)="onlyNumbers($event)" />
                           <div *ngIf="
                               formCustomer.get('phone')?.invalid &&
                               (formCustomer.get('phone')?.touched || formCustomer.get('phone')?.dirty)
-                            " class="invalid-feedback">
+                            " class="invalid-feedback position-absolute">
                             <div *ngIf="formCustomer.get('phone')?.errors?.['required']">
                               Teléfono es requerido.
                             </div>
@@ -78,9 +86,10 @@
                         </div>
                       </div>
                     </div>
+                    <!-- Dirección y correo electrónico -->
                     <div class="row mb-md-4">
                       <div class="col-md-6 mb-4 mb-md-0">
-                        <div class="form-group ">
+                        <div class="form-group position-relative">
                           <label for="address" class="bolder mb-1">Dirección</label>
                           <input id="address" formControlName="address" type="text" class="form-control"
                             [ngClass]="getValidationClass('address')" />
@@ -88,7 +97,7 @@
                               formCustomer.get('address')?.invalid &&
                               (formCustomer.get('address')?.touched ||
                               formCustomer.get('address')?.dirty)
-                            " class="invalid-feedback">
+                            " class="invalid-feedback position-absolute">
                             <div *ngIf="formCustomer.get('address')?.errors?.['required']">
                               Dirección es requerida.
                             </div>
@@ -99,13 +108,13 @@
                         </div>
                       </div>
                       <div class="col-md-6 mb-4 mb-md-0">
-                        <div class="form-group">
+                        <div class="form-group position-relative">
                           <label for="email" class="bolder mb-1">Correo Electrónico</label>
                           <input id="email" formControlName="email" type="email" class="form-control"
                             [ngClass]="getValidationClass('email')" />
                           <div
                             *ngIf="formCustomer.get('email')?.invalid && (formCustomer.get('email')?.touched || formCustomer.get('email')?.dirty)"
-                            class="invalid-feedback">
+                            class="invalid-feedback position-absolute">
                             <div *ngIf="formCustomer.get('email')?.errors?.['required']">Correo
                               electrónico es requerido.</div>
                             <div *ngIf="formCustomer.get('email')?.errors?.['email']">Correo electrónico
@@ -114,9 +123,10 @@
                         </div>
                       </div>
                     </div>
+                    <!-- Sucursal e identifiacaión -->
                     <div class="row mb-md-4">
                       <div class="col-md-6">
-                        <div class="form-group">
+                        <div class="form-group position-relative">
                           <label for="role" class="bolder mb-1">Sucursal</label>
                           <mat-select formControlName="branch_id" placeholder="Seleccionar sucursal" multiple="false"
                             class="form-control" [ngClass]="getValidationClass('branch_id')">
@@ -128,7 +138,7 @@
                               {{branch.name}}
                             </mat-option>
                           </mat-select>
-                          <ng-container *ngIf="loadingBranch; else closeButton">
+                          <ng-container *ngIf="dataBranch.length <= 0; else closeButton">
                             <mat-spinner diameter="24" strokeWidth="3" class="spinner"></mat-spinner>
                           </ng-container>
                           <ng-template #closeButton>
@@ -139,14 +149,14 @@
                           </ng-template>
                           <div
                             *ngIf="formCustomer.get('branch_id')?.invalid && (formCustomer.get('branch_id')?.touched || formCustomer.get('branch_id')?.dirty)"
-                            class="invalid-feedback">
+                            class="invalid-feedback position-absolute">
                             <div *ngIf="formCustomer.get('branch_id')?.errors?.['required']">Sucursal es
                               requerida.</div>
                           </div>
                         </div>
                       </div>
                       <div class="col-md-6 mb-4">
-                        <div class="form-group">
+                        <div class="form-group position-relative">
                           <label for="document" class="bolder mb-1">Identificación</label>
                           <input id="document" formControlName="document" type="text" class="form-control"
                             [ngClass]="getValidationClass('document')" (keypress)="onlyNumbers($event)"
@@ -154,7 +164,7 @@
                           <div *ngIf="
                               formCustomer.get('document')?.invalid &&
                               (formCustomer.get('document')?.touched || formCustomer.get('document')?.dirty)
-                            " class="invalid-feedback">
+                            " class="invalid-feedback position-absolute">
                             <div *ngIf="formCustomer.get('document')?.errors?.['required']">
                               Identificación es requerida.
                             </div>
@@ -165,9 +175,20 @@
                         </div>
                       </div>
                     </div>
-                    <div class="row mb-md-4">
-                      <div class="col-md-6">
-
+                    <!-- Activo y Botón Siguiente -->
+                    <div class="row mb-4">
+                      <div class="col-md-6 mb-4">
+                        <div class="form-group form-switch d-flex justify-content-center align-items-center"
+                          style="height: 40px; background-color: white;">
+                          <input class="form-check-input switch-custom" type="checkbox" id="is_active"
+                            formControlName="is_active" />
+                          <label class="form-check-label ms-4 bolder mb-1" for="is_active" [ngClass]="getTextClass()">
+                            {{ formCustomer.get('is_active')?.value ? 'Activo' : 'Inactivo' }}
+                          </label>
+                        </div>
+                      </div>
+                      <div class="col-12 col-md-6 d-flex justify-content-end" style="height: 40px;">
+                        <button class="btn btn-submit text-white me-2" (click)="onSubmit()">Enviar</button>
                       </div>
                     </div>
                   </div>
@@ -175,6 +196,76 @@
               </div>
             </form>
           </div>
+          <div class="tab-pane fade" id="pet" role="tabpanel" aria-labelledby="pet-tab">
+            <div class="container pt-5">
+              <div class="row justify-content-center">
+                <div class="col-md-10 col-lg-8">
+                  <div class="card shadow-lg">
+                    <div class="row g-0">
+                      <!-- Imagen grande con borde gris claro a los cuatro lados -->
+                      <div class="col-md-4 img-pet"></div>
+                      <!-- Contenido de la card con borde gris alrededor de las características -->
+                      <div class="col-md-8">
+                        <div class="card-body p-4 background-image">
+                          <div class="col-12 title-pet d-flex justify-content-center align-items-center mb-4">
+                            Roky
+                          </div>
+                          <!-- Distribución de las características en dos columnas -->
+                          <div class="row">
+                            <div class="col-6 mb-3">
+                              <p class="mb-1 title-blue-bold">Edad:</p>
+                              <p class="mb-0 text-blue">12 años</p>
+                            </div>
+                            <div class="col-6 mb-3">
+                              <p class="mb-1">Raza:</p>
+                              <p class="mb-0">Golden Retriever</p>
+                            </div>
+                            <div class="col-6 mb-3">
+                              <p class="mb-1">Mascota:
+                              </p>
+                              <p class="mb-0">Perro</p>
+                            </div>
+                            <div class="col-6 mb-3">
+                              <p class="mb-1">Sexo:</p>
+                              <p class="mb-0">Macho</p>
+                            </div>
+                            <div class="col-6 mb-3">
+                              <p class="mb-1">
+                                Descripción:</p>
+                              <p class="mb-0">Perro hermoso de ojos azules</p>
+                            </div>
+                            <div class="col-6 mb-3">
+                              <p class="mb-1">Fecha de
+                                Nacimiento:</p>
+                              <p class="mb-0">10/04/2012</p>
+                            </div>
+                            <div class="col-6 mb-3">
+                              <p class="mb-1">Estado:</p>
+                              <p class="mb-0">Activo</p>
+                            </div>
+                            <div class="col-6 mb-3">
+                              <p class="mb-1">
+                                Esterilización:</p>
+                              <p class="mb-0">Sí</p>
+                            </div>
+                            <div class="col-12">
+                              <p class="mb-1">
+                                Propietario:</p>
+                              <p class="mb-0">Juan Pérez</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <div class="d-flex justify-content-center mt-3">
+          <button class="btn btn-back text-white" (click)="backToTable()">Atrás</button>
         </div>
       </c-card-body>
     </c-card>
