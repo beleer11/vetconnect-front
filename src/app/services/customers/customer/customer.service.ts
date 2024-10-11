@@ -35,4 +35,24 @@ export class CustomerService {
   listCustomer() {
     return this.http.get<string>(`${this.apiUrl}/customer/listCustomer`, this.getHttpOptions());
   }
+
+  sendCustomer(data: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/customer/setData`, data, this.getHttpOptions());
+  }
+
+  editCustomer(data: any, id: number): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/customer/editData/${id}`, data, this.getHttpOptions());
+  }
+
+  deleteRecordById(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/customer/remove/${id}`, this.getHttpOptions());
+  }
+
+  disableRecordById(id: number): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/customer/disable/${id}`, {}, this.getHttpOptions());
+  }
+
+  enableRecordById(id: number): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/customer/enable/${id}`, {}, this.getHttpOptions());
+  }
 }

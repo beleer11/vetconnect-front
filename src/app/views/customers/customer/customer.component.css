@@ -3,3 +3,140 @@
   border-bottom: 1px solid #e4e0e0;
   border-right: 1px solid #e4e0e0;
 }
+
+.btn-back,
+.btn-previous,
+.btn-submit {
+  color: #fff;
+}
+
+.btn-back:hover,
+.btn-previous:hover,
+.btn-submit:hover {
+  opacity: 0.9;
+}
+
+.btn-back {
+  background-color: #6c757d;
+  border-color: #6c757d;
+}
+
+.btn-previous {
+  background-color: #dc3545;
+  border-color: #dc3545;
+}
+
+.btn-submit {
+  background-color: #28a745;
+  border-color: #28a745;
+}
+
+.switch-custom {
+  width: 50px;
+  height: 26px;
+  background-color: #ddd;
+  border-radius: 25px;
+  position: relative;
+  transition: background-color 0.3s ease;
+}
+
+.switch-custom:checked {
+  background-color: #28a745;
+}
+
+.switch-custom::before {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  background-color: white;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+}
+
+.switch-custom:checked::before {
+  transform: translateX(24px);
+}
+
+.clear-icon {
+  position: absolute;
+  top: 79%;
+  right: 52px;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  outline: none;
+  padding: 0;
+  cursor: pointer;
+  color: rgba(0, 0, 0, 0.54);
+}
+
+.spinner {
+  position: absolute;
+  top: 70%;
+  right: 35px;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  outline: none;
+  padding: 0;
+  cursor: pointer;
+  color: rgba(0, 0, 0, 0.54);
+}
+
+.background-image {
+  position: relative;
+  overflow: hidden; /* Asegura que la imagen no salga del contenedor */
+}
+
+.background-image::before {
+  content: "";
+  background-image: url("../../../../assets/images/prueva-veterinaria.jpg");
+  background-size: cover;
+  background-position: center;
+  filter: grayscale(100%);
+  opacity: 0.1; /* Opacidad solo en la imagen */
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  background-repeat: no-repeat;
+}
+
+.card-body {
+  position: relative;
+  z-index: 2; /* Asegura que el contenido esté encima del fondo */
+}
+
+.title-blue-bold {
+  color: #02507f !important;
+  font-family: sans-serif !important;
+  font-weight: 800 !important;
+  font-size: 20px !important;
+  z-index: 3; /* Asegura que el texto esté por encima del pseudo-elemento */
+}
+
+.text-blue {
+  color: #02507f !important;
+  font-family: sans-serif !important;
+  font-size: 16px !important;
+  z-index: 3; /* Asegura que el texto esté por encima del pseudo-elemento */
+}
+
+.title-pet {
+  color: #02507f !important;
+  font-family: sans-serif !important;
+  font-size: 35px !important;
+  font-weight: 900 !important;
+  z-index: 3;
+}
+
+.img-pet {
+  background-image: url("https://www.shutterstock.com/image-photo/vertical-portrait-adorable-dog-field-260nw-2197924517.jpg");
+  background-size: cover;
+  background-position: center;
+}
