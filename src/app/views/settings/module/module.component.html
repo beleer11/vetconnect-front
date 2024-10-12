@@ -18,7 +18,7 @@
         <div class="container">
           <div class="row justify-content-between align-items-center mb-2">
             <div class="col-12 col-md-auto text-center text-md-start pt-2">
-              <h1 class="mb-0">Agregar Módulo</h1>
+              <h1 class="mb-0">{{(action !== 'save') ? 'Editar' : 'Agregar'}} Módulo</h1>
             </div>
           </div>
         </div>
@@ -27,13 +27,13 @@
         <form [formGroup]="formModule" (ngSubmit)="onSubmit()">
           <div class="row">
             <!-- Campos en la misma fila -->
-            <div class="mb-3 col-12 col-md-4">
+            <div class="mb-3 col-12 col-md-4 position-relative">
               <label for="name" class="form-label bolder">Nombre</label>
               <input id="name" formControlName="name" class="form-control" [ngClass]="getValidationClass('name')"
                 maxlength="100" />
               <div
                 *ngIf="formModule.get('name')?.invalid && (formModule.get('name')?.touched || formModule.get('name')?.dirty)"
-                class="invalid-feedback">
+                class="invalid-feedback position-absolute">
                 <div *ngIf="formModule.get('name')?.errors?.['required']">Nombre es requerido.
                 </div>
                 <div *ngIf="formModule.get('name')?.errors?.['minlength']">Nombre debe tener
@@ -47,26 +47,29 @@
             </div>
             <div class="mb-3 col-12 col-md-4">
               <label for="url" class="form-label bolder">URL</label>
-              <div class="input-group">
+              <div class="input-group position-relative">
                 <input id="url" formControlName="url" type="url" class="form-control"
                   [ngClass]="getValidationClass('url')" maxlength="100" />
                 <span class="input-group-text" data-bs-toggle="tooltip" data-bs-placement="top"
                   (click)="openInformation()" style="cursor: pointer;">?</span>
               </div>
-              <div *ngIf=" formModule.controls['url'].invalid && formModule.controls['url'].touched">
-                La URL es requerida y debe ser válida.
+              <div *ngIf="formModule.controls['url'].invalid && formModule.controls['url'].touched"
+                class="invalid-feedback position-absolute">
+                <div *ngIf="formModule.get('url')?.errors?.['minlength']">URL
+                  debe tener al menos3 caracteres.</div>
+                <div *ngIf="formModule.get('url')?.errors?.['required']">
+                  La URL es requerida y debe ser válida.
+                </div>
               </div>
-              <div *ngIf="formModule.get('url')?.errors?.['minlength']">URL debe tener al menos
-                3 caracteres.</div>
             </div>
-            <div class="mb-3 col-12 col-md-4">
+            <div class="mb-3 col-12 col-md-4 position-relative">
               <label for="group" class="form-label bolder">Grupo</label>
               <select id="group" formControlName="group" class="form-select" [ngClass]="getValidationClass('group')">
                 <option disabled selected>Seleccionar un grupo</option>
                 <option *ngFor="let group of groupsModule" [value]="group.id">{{ group.name }}</option>
               </select>
               <div *ngIf="formModule.controls['group'].invalid && formModule.controls['group'].touched"
-                class="invalid-feedback">
+                class="invalid-feedback position-absolute">
                 El grupo es requerido.
               </div>
             </div>
@@ -88,8 +91,8 @@
           </div>
 
           <div class="d-flex justify-content-center align-items-center">
-            <button class="btn btn-danger text-white me-3" (click)="backToTable()">Atrás</button>
-            <button type="submit" class="btn btn-primary" [disabled]="formModule.invalid">Guardar</button>
+            <button class="btn btn-back text-white me-3" (click)="backToTable()">Atrás</button>
+            <button type="submit" class="btn btn-submit" [disabled]="formModule.invalid">Guardar</button>
           </div>
 
         </form>

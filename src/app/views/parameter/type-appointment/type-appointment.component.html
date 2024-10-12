@@ -5,11 +5,11 @@
   <app-filter-header [date]="true" [state]="true" [name]="true" [title]="'Tipos de citas'"
     (filterDataEvent)="setFilter($event)" (changeFilter)="viewTable = $event">
   </app-filter-header>
-  <app-general-table [columns]="getFieldsTable()" [transformedData]="dataTypeAppointmentTransform" [data]="dataTypeAppointment"
-  [acciones]="acciones" [columnAlignments]="getColumnAlignments()" [title]="'Grupo de módulo'"
-  (fetchDataEvent)="onFetchData($event)" [totalRecords]="totalRecord" [loadingTable]="loadingTable"
-  (actionEvent)="handleAction($event)" *ngIf="viewTable">
-</app-general-table>
+  <app-general-table [columns]="getFieldsTable()" [transformedData]="dataTypeAppointmentTransform"
+    [data]="dataTypeAppointment" [acciones]="acciones" [columnAlignments]="getColumnAlignments()"
+    [title]="'Grupo de módulo'" (fetchDataEvent)="onFetchData($event)" [totalRecords]="totalRecord"
+    [loadingTable]="loadingTable" (actionEvent)="handleAction($event)" *ngIf="viewTable">
+  </app-general-table>
 </div>
 <c-row [hidden]="!showForm">
   <c-col xs>
@@ -18,7 +18,7 @@
         <div class="container">
           <div class="row justify-content-between align-items-center mb-2">
             <div class="col-12 col-md-auto text-center text-md-start pt-2">
-              <h1 class="mb-0">Agregar tipo de cita</h1>
+              <h1 class="mb-0">{{(action !== 'save') ? 'Editar' : 'Agregar'}} tipo de cita</h1>
             </div>
           </div>
         </div>
@@ -29,13 +29,13 @@
             <div class="container">
               <div class="form-group mb-0">
                 <div class="row">
-                  <div class="col-md-6 mb-3">
+                  <div class="col-md-6 mb-3 position-relative">
                     <label for="nombre" class="bolder">Nombre</label>
                     <input id="nombre" formControlName="nombre" type="text" class="form-control"
                       [ngClass]="getValidationClass('nombre')" maxlength="100" />
                     <div
                       *ngIf="formTypeAppointment.get('nombre')?.invalid && (formTypeAppointment.get('nombre')?.touched || formTypeAppointment.get('nombre')?.dirty)"
-                      class="invalid-feedback">
+                      class="invalid-feedback position-absolute">
                       <div *ngIf="formTypeAppointment.get('nombre')?.errors?.['required']">Nombre es
                         requerido.
                       </div>
@@ -47,14 +47,14 @@
                       </div>
                     </div>
                   </div>
-                  <div class="col-md-6 mb-3">
+                  <div class="col-md-6 mb-3 position-relative">
                     <label for="description" class="bolder">Descripción</label>
                     <textarea id="description" formControlName="description" rows="3" class="form-control"
                       [ngClass]="getValidationClass('description')">
                     </textarea>
                     <div
                       *ngIf="formTypeAppointment.get('description')?.invalid && (formTypeAppointment.get('description')?.touched || formTypeAppointment.get('description')?.dirty)"
-                      class="invalid-feedback">
+                      class="invalid-feedback position-absolute">
                       <div *ngIf="formTypeAppointment.get('description')?.errors?.['minlength']">
                         Descripción debe tener al menos 10 caracteres.
                       </div>

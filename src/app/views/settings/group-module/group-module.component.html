@@ -18,7 +18,7 @@
         <div class="container">
           <div class="row justify-content-between align-items-center mb-2">
             <div class="col-12 col-md-auto text-center text-md-start pt-2">
-              <h1 class="mb-0">Agregar grupos de módulos</h1>
+              <h1 class="mb-0">{{(action !== 'save') ? 'Editar' : 'Agregar'}} grupos de módulos</h1>
             </div>
           </div>
         </div>
@@ -26,13 +26,13 @@
       <c-card-body>
         <form [formGroup]="formGroupModule" (ngSubmit)="onSubmit()">
           <div class="d-flex flex-column">
-            <div class="form-group mb-0">
+            <div class="form-group mb-0 position-relative">
               <label for="nombre" class="bolder">Nombre</label>
               <input id="nombre" formControlName="nombre" type="text" class="form-control"
                 [ngClass]="getValidationClass('nombre')" />
               <div
                 *ngIf="formGroupModule.get('nombre')?.invalid && (formGroupModule.get('nombre')?.touched || formGroupModule.get('nombre')?.dirty)"
-                class="invalid-feedback">
+                class="invalid-feedback position-absolute">
                 <div *ngIf="formGroupModule.get('nombre')?.errors?.['required']">
                   Nombre es requerido.
                 </div>
@@ -45,14 +45,14 @@
               </div>
             </div>
             <div class="d-flex justify-content-end mt-2">
-              <button type="submit" class="btn btn-primary" [disabled]="formGroupModule.invalid">
+              <button type="submit" class="btn btn-submit" [disabled]="formGroupModule.invalid">
                 Guardar
               </button>
             </div>
           </div>
         </form>
         <div class="d-flex justify-content-center mt-3">
-          <button class="btn btn-danger text-white" (click)="backToTable()">
+          <button class="btn btn-back text-white" (click)="backToTable()">
             Atrás
           </button>
         </div>

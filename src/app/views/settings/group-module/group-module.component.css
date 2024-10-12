@@ -1,0 +1,19 @@
+.btn-back,
+.btn-submit {
+  color: #fff;
+}
+
+.btn-back:hover,
+.btn-submit:hover {
+  opacity: 0.9;
+}
+
+.btn-back {
+  background-color: #6c757d;
+  border-color: #6c757d;
+}
+
+.btn-submit {
+  background-color: #28a745;
+  border-color: #28a745;
+}
