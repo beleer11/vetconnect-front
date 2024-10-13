@@ -6,11 +6,7 @@
     [dataTypePet]="dataTypePet" [dataTypeBreed]="dataTypeBreed" [onlyBranch]="true" [title]="'Mascotas'"
     (filterDataEvent)="setFilter($event)" (changeFilter)="viewTable = $event">
   </app-filter-header>
-  <app-general-table [columns]="getFieldsTable()" [transformedData]="dataPetTransform" [acciones]="acciones"
-    [columnAlignments]="getColumnAlignments()" [title]="'Usuarios'" (fetchDataEvent)="onFetchData($event)"
-    [totalRecords]="totalRecord" [loadingTable]="loadingTable" [data]="dataPet" (actionEvent)="handleAction($event)"
-    *ngIf="viewTable">
-  </app-general-table>
+  <app-card-pet [dataPet]="dataPet"></app-card-pet>
 </div>
 <c-row [hidden]="!showForm">
   <c-col xs>

@@ -1,0 +1,137 @@
+<c-card>
+  <c-card-body>
+    <c-row>
+      <c-col xs="12" sm="6" md="6" lg="6" *ngFor="let pet of dataPet; let i = index">
+        <c-card class="mb-3 card-pet">
+          <c-card-body class="p-0">
+            <div class="card-container" [class.flipped]="flippedCards[i]">
+              <!-- Parte frontal -->
+              <div class="front" id="card-front-{{ i }}">
+                <c-row>
+                  <c-col xs="12" sm="12" md="4" lg="4" class="p-0 m-0 d-flex align-items-center justify-content-center">
+                    <img [src]="pet.image" alt="Imagen de la mascota" class="image-pet">
+                  </c-col>
+                  <c-col xs="12" sm="12" md="8" lg="8" class="pt-2 pb-2 ps-md-3 pe-4 ps-4 card-background">
+                    <img [src]="'../../../assets/images/prueva-veterinaria.jpg'"
+                      class="background-image pe-2 ps-2 pe-md-0 ps-md-0" alt="Imagen de fondo">
+                    <div class="content">
+                      <c-col xs="12" class="d-flex align-items-center justify-content-center pb-4 pt-3">
+                        <span class="name-pet">{{ pet.name }}</span>
+                      </c-col>
+                      <c-col xs="12" class="d-flex align-items-center justify-content-center pb-3">
+                        <p class="text-center">{{ pet.description }}</p>
+                      </c-col>
+                      <div class="d-flex justify-content-between align-items-center pb-3">
+                        <div class="text-center">
+                          <span class="title">Edad</span><br>
+                          <span class="mb-1">{{ pet.age }}</span>
+                        </div>
+                        <div class="text-center">
+                          <span class="title">Mascota</span><br>
+                          <span class="mb-1">{{ pet.pet_type_name }}</span>
+                        </div>
+                        <div class="text-center">
+                          <span class="title">Sexo</span><br>
+                          <span class="mb-1">{{ pet.sex }}</span>
+                        </div>
+                      </div>
+                      <div class="d-flex justify-content-between align-items-center pb-3">
+                        <div class="text-center">
+                          <span class="title">Estado</span><br>
+                          <span class="mb-1">{{ pet.is_active }}</span>
+                        </div>
+                        <div class="text-center">
+                          <span class="title">Esterilizado</span><br>
+                          <span class="mb-1">{{ pet.sterilized }}</span>
+                        </div>
+                        <div class="text-center">
+                          <span class="title">Raza</span><br>
+                          <span class="mb-1">{{ pet.type_breed_name }}</span>
+                        </div>
+                      </div>
+                      <div class="d-flex justify-content-between align-items-center pb-3">
+                        <div class="text-center flex-grow-1">
+                          <span class="title">Propietario</span><br>
+                          <span class="mb-1">{{ pet.customer_name }}</span>
+                        </div>
+                        <div class="text-center flex-grow-1">
+                          <span class="title">Nacimiento</span><br>
+                          <span class="mb-1">{{ pet.birth_date }}</span>
+                        </div>
+                      </div>
+                      <div class="text-center mt-3">
+                        <button class="btn btn-warning me-2" matTooltip="Girar" matTooltipPosition="before"
+                          (click)="toggleFlip(i)">
+                          <i class="fa-solid fa-arrows-rotate"></i>
+                        </button>
+                        <button class="btn btn-success" matTooltip="Imprimir Pdf" matTooltipPosition="after"
+                          (click)="generatePDF(pet)">
+                          <i class="fa-solid fa-file-pdf"></i>
+                        </button>
+                      </div>
+                      <div class="text-center mt-3">
+                        <small class="text-grey">VetConnect</small>
+                      </div>
+                    </div>
+                  </c-col>
+                </c-row>
+              </div>
+              <!-- Parte posterior -->
+              <div class="back pt-2 pe-3 ps-3 pb-5" id="card-back-{{ i }}">
+                <img [src]="'../../../assets/images/prueva-veterinaria.jpg'"
+                  class="background-image pe-2 ps-2 pe-md-0 ps-md-0" alt="Imagen de fondo">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="text-center">
+                    <span class="title">Veterinaria</span><br>
+                    <span class="mb-1">{{ pet.company_name }}</span>
+                  </div>
+                  <div class="text-center">
+                    <span class="title">Sucursal</span><br>
+                    <span class="mb-1">{{ pet.branch_name }}</span>
+                  </div>
+                  <div class="text-center">
+                    <span class="title">Teléfono</span><br>
+                    <span class="mb-1">{{ pet.phone }}</span>
+                  </div>
+                  <div class="text-center">
+                    <qrcode [qrdata]="pet.id.toString()" [allowEmptyString]="true"
+                      [ariaLabel]="'QR Code image with the following content...'" [cssClass]="'center'"
+                      [colorDark]="'#000000ff'" [colorLight]="'#ffffffff'" [elementType]="'canvas'"
+                      [errorCorrectionLevel]="'M'" [margin]="4" [scale]="1" [title]="'Qr mascota' + pet.name"
+                      [width]="100"></qrcode>
+                  </div>
+                </div>
+                <c-col xs="12" class="d-flex align-items-center justify-content-center pb-4">
+                  <p class="text-center">Este carnet garantiza la autenticidad y el seguimiento médico de su mascota
+                    siempre y cuando esté vinculada a nuestra red de veterinarias. Su fiel compañero recibirá el cuidado
+                    y la atención que merece, asegurando su bienestar en cada visita.<br>
+                    <span class="title">¡Juntos, velamos por su salud y felicidad!</span>
+                  </p>
+                </c-col>
+                <div class="d-flex justify-content-center align-items-center pb-3">
+                  <div class="text-center col-6">
+                    <span class="mb-1">{{ pet.doc_vet_name }}</span><br>
+                    <span class="title">Médico Veterinario</span>
+                  </div>
+                  <div class="text-center col-6">
+                    <img [src]="pet.img_firma" alt="Firma del Veterinario" class="image-firma"><br>
+                    <span class=" title">Firma</span>
+                  </div>
+                </div>
+                <div class="text-center">
+                  <button class="btn btn-warning me-2" matTooltip="Girar" matTooltipPosition="before"
+                    (click)="toggleFlip(i)">
+                    <i class="fa-solid fa-arrows-rotate"></i>
+                  </button>
+                </div>
+                <div class="text-center mt-2">
+                  <small class="text-grey">VetConnect</small>
+                </div>
+              </div>
+            </div>
+          </c-card-body>
+        </c-card>
+      </c-col>
+    </c-row>
+  </c-card-body>
+</c-card>

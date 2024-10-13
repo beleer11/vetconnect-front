@@ -21,7 +21,43 @@ export class PetComponent {
   public viewTable: boolean = false;
   public parameterDefect = {};
   public totalRecord: number = 0;
-  public dataPet: any = [];
+  public dataPet: any = [{
+    id: 1,
+    name: "Bruno",
+    pet_type_name: "Canino",
+    type_breed_name: "Criollo",
+    age: 2,
+    image: "https://st4.depositphotos.com/27201292/41849/i/450/depositphotos_418498294-stock-photo-vertical-shot-white-dog-forest.jpg",
+    sex: "Macho",
+    description: "Esta algo feito pero no le falta amor",
+    birth_date: "12 de febrero 2022",
+    sterilized: "No",
+    is_active: "Si",
+    customer_name: "Antonio Ledezma Madas",
+    company_name: "Animal House",
+    branch_name: "Gigante Huila",
+    phone: "00000000000",
+    doc_vet_name: "Fabián Mauricio Quintero Trujillo",
+    img_firma: "https://static.vecteezy.com/system/resources/previews/025/866/358/non_2x/fake-autograph-samples-hand-drawn-signatures-examples-of-documents-certificates-and-contracts-with-inked-and-handwritten-lettering-vector.jpg"
+  }, {
+    id: 2,
+    name: "Ringo",
+    pet_type_name: "Canino",
+    type_breed_name: "Criollo",
+    age: 2,
+    image: "https://st4.depositphotos.com/27201292/41849/i/450/depositphotos_418498294-stock-photo-vertical-shot-white-dog-forest.jpg",
+    sex: "Macho",
+    description: "Esta algo feito pero no le falta amor",
+    birth_date: "12 de febrero 2022",
+    sterilized: "No",
+    is_active: "Si",
+    customer_name: "Antonio Ledezma Madas",
+    company_name: "Animal House",
+    branch_name: "Centro Huila",
+    phone: "00000000000",
+    doc_vet_name: "Fabián Mauricio Quintero Trujillo",
+    img_firma: "https://static.vecteezy.com/system/resources/previews/025/866/358/non_2x/fake-autograph-samples-hand-drawn-signatures-examples-of-documents-certificates-and-contracts-with-inked-and-handwritten-lettering-vector.jpg"
+  }];
   public dataTypePet: any = [];
   public dataTypeBreed: any = [];
   public dataPetTransform: any = [];

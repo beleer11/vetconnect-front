@@ -1,0 +1,137 @@
+.card-container {
+  perspective: 1000px;
+  width: 100%;
+  height: 385px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.5s ease;
+}
+
+.front,
+.back {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  backface-visibility: hidden;
+  transition: transform 0.5s ease;
+}
+
+.front {
+  z-index: 2;
+}
+
+.back {
+  transform: rotateY(180deg);
+}
+
+.card-container.flipped .front {
+  transform: rotateY(180deg);
+}
+
+.card-container.flipped .back {
+  transform: rotateY(0);
+}
+
+.card-pet {
+  font-family: 'Garet', sans-serif;
+  color: #035180;
+  font-size: 16px;
+  height: auto;
+  overflow: hidden;
+}
+
+button {
+  position: relative;
+  z-index: 20;
+}
+
+.name-pet {
+  font-family: 'Doublebass';
+  font-size: 40px;
+  font-weight: bold;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.image-pet {
+  width: 104%;
+  height: 108%;
+  object-fit: cover;
+  border-radius: 2%;
+
+}
+
+.card-background {
+  position: relative;
+  padding: 20px;
+  overflow: hidden;
+}
+
+.background-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 101%;
+  height: 100%;
+  object-fit: inherit;
+  filter: grayscale(100%);
+  opacity: 0.07;
+  z-index: 0;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+}
+
+.text-grey {
+  color: #6c757d;
+}
+
+.image-firma {
+  width: 20%;
+  height: 20%;
+  object-fit: cover;
+  border-radius: 2%;
+}
+
+canvas {
+  margin-top: 10px;
+}
+
+@media (max-width: 576px) {
+
+  .image-pet {
+    width: 94%;
+    height: auto;
+    object-fit: cover;
+    border-radius: 2%;
+    max-height: 300px;
+  }
+
+  .background-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .card-background {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    padding: 20px;
+  }
+
+  .card-container {
+    perspective: 1000px;
+    width: 100%;
+    height: 710px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.5s ease;
+  }
+
+}
