@@ -38,6 +38,7 @@ import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { MatSpinner } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressBar } from '@angular/material/progress-bar';
+import { QRCodeModule } from 'angularx-qrcode';
 
 //pages
 import { LoginComponent } from './pages/login/login.component';
@@ -62,6 +63,7 @@ import { TypeAppointmentComponent } from './views/parameter/type-appointment/typ
 import { CustomerComponent } from './views/customers/customer/customer.component';
 import { PetComponent } from './views/customers/pet/pet.component';
 import { ImportExcelComponent } from './shared/import-excel/import-excel.component';
+import { CardPetComponent } from './shared/card-pet/card-pet.component';
 
 // Import containers
 import {
@@ -128,6 +130,7 @@ const APP_CONTAINERS = [
     CustomerComponent,
     PetComponent,
     ImportExcelComponent,
+    CardPetComponent,
   ],
   imports: [
     BrowserModule,
@@ -175,6 +178,7 @@ const APP_CONTAINERS = [
     MatSpinner,
     MatTooltipModule,
     MatProgressBar,
+    QRCodeModule,
     RouterModule.forRoot([], { useHash: false }),
   ],
   providers: [
