@@ -1,18 +1,24 @@
-<div class="container">
-  <div class="row">
-    <div class="col-md-12">
-      <button type="button" class="btn btn-primary">Importar datos cliente</button>
-      <button type="button" class="btn btn-success download-button">Descargar Excel y sigue instrucciones</button>
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="myModalLabel">Importar {{ title }}</h5>
+      </div>
+      <div class="modal-body">
+        Aquí va el contenido del modal general con PETS.
+        <button type="button" class="close btn btn-success text-white" (click)="downloadExcel()">
+          Descarga excel
+        </button>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="close btn btn-danger text-white" data-dismiss="modal" aria-label="Close">
+          Cerrar
+        </button>
+        <button type="button" class="btn btn-primary text-white" (click)="setDataImport()">
+          Importar
+        </button>
+      </div>
     </div>
-  </div>
-  <div class="row loading-container">
-    <div class="col-md-12">
-      <p>Cargando datos...</p>
-    </div>
-  </div>
-  <div class="row success-container">
-    <div class="col-md-12">
-      <p>Datos importados con éxito.</p>
-    </div>
+
   </div>
 </div>

@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { GeneralService } from 'src/app/services/general/general.service';
 import { CustomerService } from '../../../services/customers/customer/customer.service';
 import moment from 'moment';
 import * as bootstrap from 'bootstrap';
-import { BranchService } from 'src/app/services/companies/branch/branch.service';
 import Swal from 'sweetalert2';
+import { BranchService } from './../../../services/companies/branch/branch.service';
+import { GeneralService } from './../../../services/general/general.service';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -106,11 +106,7 @@ export class CustomerComponent {
         this.addCustomer();
         break;
       case 'import':
-        const modalElement = document.getElementById('myModal');
-        if (modalElement) {
-          const modal = new bootstrap.Modal(modalElement);
-          modal.show();
-        }
+        this.importData();
         break;
       case 'export':
         this.exportData();
@@ -119,7 +115,11 @@ export class CustomerComponent {
   }
 
   public importData() {
-    this.generalService.alertMessageInCreation();
+    const modalElement = document.getElementById('myModal');
+    if (modalElement) {
+      const modal = new bootstrap.Modal(modalElement);
+      modal.show();
+    }
   }
 
   public exportData() {
