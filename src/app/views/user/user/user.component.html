@@ -19,7 +19,7 @@
         <div class="container">
           <div class="row justify-content-between align-items-center mb-2">
             <div class="col-12 col-md-auto text-center text-md-start pt-2">
-              <h1 class="mb-0">Agregar usuario</h1>
+              <h1 class="mb-0">{{(action !== 'save') ? 'Editar' : 'Agregar'}} usuario</h1>
             </div>
           </div>
         </div>
@@ -48,13 +48,13 @@
                 <!-- Nombre y Nombre de Usuario -->
                 <div class="row mb-4">
                   <div class="col-md-6 mb-4 mb-md-0">
-                    <div class="form-group">
+                    <div class="form-group position-relative">
                       <label for="name" class="bolder mb-1">Nombre</label>
                       <input id="name" formControlName="name" type="text" class="form-control"
                         [ngClass]="getValidationClass('name')" maxlength="100" />
                       <div
                         *ngIf="formUser.get('name')?.invalid && (formUser.get('name')?.touched || formUser.get('name')?.dirty)"
-                        class="invalid-feedback">
+                        class="invalid-feedback position-absolute">
                         <div *ngIf="formUser.get('name')?.errors?.['required']">Nombre es
                           requerido.</div>
                         <div *ngIf="formUser.get('name')?.errors?.['minlength']">Nombre debe
@@ -66,7 +66,7 @@
                     </div>
                   </div>
                   <div class="col-md-6">
-                    <div class="form-group">
+                    <div class="form-group position-relative">
                       <label for="username" class="bolder mb-1">Nombre de Usuario</label>
                       <div class="d-flex">
                         <div class="input-group">
@@ -86,13 +86,13 @@
                 <!-- Correo Electrónico y Rol -->
                 <div class="row mb-4">
                   <div class="col-md-6 mb-4 mb-md-0">
-                    <div class="form-group">
+                    <div class="form-group position-relative">
                       <label for="email" class="bolder mb-1">Correo Electrónico</label>
                       <input id="email" formControlName="email" type="email" class="form-control"
                         [ngClass]="getValidationClass('email')" />
                       <div
                         *ngIf="formUser.get('email')?.invalid && (formUser.get('email')?.touched || formUser.get('email')?.dirty)"
-                        class="invalid-feedback">
+                        class="invalid-feedback position-absolute">
                         <div *ngIf="formUser.get('email')?.errors?.['required']">Correo
                           electrónico es requerido.</div>
                         <div *ngIf="formUser.get('email')?.errors?.['email']">Correo electrónico
@@ -101,7 +101,7 @@
                     </div>
                   </div>
                   <div class="col-md-6">
-                    <div class="form-group">
+                    <div class="form-group position-relative">
                       <label for="role" class="bolder mb-1">Rol</label>
                       <mat-select formControlName="rol_id" placeholder="Seleccionar rol"
                         (selectionChange)="selectRol($event.value)" multiple="false" class="form-control"
@@ -119,7 +119,7 @@
                       </button>
                       <div
                         *ngIf="formUser.get('rol_id')?.invalid && (formUser.get('rol_id')?.touched || formUser.get('rol_id')?.dirty)"
-                        class="invalid-feedback">
+                        class="invalid-feedback position-absolute">
                         <div *ngIf="formUser.get('rol_id')?.errors?.['required']">Rol es
                           requerido.</div>
                       </div>
@@ -129,7 +129,7 @@
                 <!-- Compañia y Sucursal -->
                 <div class="row mb-4">
                   <div class="col-md-6 mb-4 mb-md-0">
-                    <div class="form-group">
+                    <div class="form-group position-relative">
                       <label for="company" class="bolder mb-1">Compañía</label>
                       <mat-select formControlName="company_id" placeholder="Seleccionar compañia" ultiple="false"
                         class="form-control" [ngClass]="getValidationClass('company_id')"
@@ -148,7 +148,7 @@
                       </button>
                       <div
                         *ngIf="formUser.get('company_id')?.invalid && (formUser.get('company_id')?.touched ||formUser.get('company_id')?.dirty)"
-                        class="invalid-feedback">
+                        class="invalid-feedback position-absolute">
                         <div *ngIf="formUser.get('company_id')?.errors?.['required']">
                           Compañia es requerida.
                         </div>
@@ -156,7 +156,7 @@
                     </div>
                   </div>
                   <div class="col-md-6">
-                    <div class="form-group">
+                    <div class="form-group position-relative">
                       <label for="role" class="bolder mb-1">Sucursal</label>
                       <mat-select formControlName="branch_id" placeholder="Seleccionar sucursal" multiple="false"
                         class="form-control" [ngClass]="getValidationClass('branch_id')">
@@ -179,7 +179,7 @@
                       </ng-template>
                       <div
                         *ngIf="formUser.get('branch_id')?.invalid && (formUser.get('branch_id')?.touched || formUser.get('branch_id')?.dirty)"
-                        class="invalid-feedback">
+                        class="invalid-feedback position-absolute">
                         <div *ngIf="formUser.get('branch_id')?.errors?.['required']">Sucursal es
                           requerida.</div>
                       </div>
@@ -189,7 +189,7 @@
                 <!-- Foto de Perfil y Contraseña -->
                 <div class="row mb-4">
                   <div class="col-md-6 mb-4 mb-md-0">
-                    <div class="form-group">
+                    <div class="form-group position-relative">
                       <label for="image_profile" class="bolder mb-1">Foto de Perfil</label>
                       <div class="input-group">
                         <input id="image_profile" formControlName="image_profile" type="file" class="form-control"

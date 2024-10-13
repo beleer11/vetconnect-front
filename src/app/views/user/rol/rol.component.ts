@@ -46,9 +46,10 @@ export class RolComponent implements OnInit {
   }
 
   public addRole() {
-    this.action = 'save';
     this.showForm = true;
     this.resetForms();
+    this.formRol.controls['description'].markAsTouched();
+    this.action = 'save';
   }
 
   public backToTable() {

@@ -153,6 +153,7 @@ export class UserComponent implements OnInit {
     this.showForm = true;
     this.resetForms();
     this.action = 'save';
+    this.formUser.controls['image_profile'].markAsTouched();
   }
 
   public importData() {

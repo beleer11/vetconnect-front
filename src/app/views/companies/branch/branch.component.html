@@ -20,7 +20,7 @@
         <div class="container">
           <div class="row justify-content-between align-items-center mb-2">
             <div class="col-12 col-md-auto text-center text-md-start pt-2">
-              <h1 class="mb-0">Agregar sucursal</h1>
+              <h1 class="mb-0">{{(action !== 'save') ? 'Editar' : 'Agregar'}} sucursal</h1>
             </div>
           </div>
         </div>
@@ -41,7 +41,7 @@
                 <!--Nombre y compañía -->
                 <div class="row mb-4">
                   <div class="col-md-6 mb-4 mb-md-0">
-                    <div class="form-group">
+                    <div class="form-group position-relative">
                       <label for="name" class="bolder mb-1">Nombre</label>
                       <input id="name" formControlName="name" type="text" class="form-control"
                         [ngClass]="getValidationClass('name')" maxlength="100" />
@@ -49,7 +49,7 @@
                           formBranch.get('name')?.invalid &&
                           (formBranch.get('name')?.touched ||
                             formBranch.get('name')?.dirty)
-                        " class="invalid-feedback">
+                        " class="invalid-feedback position-absolute">
                         <div *ngIf="formBranch.get('name')?.errors?.['required']">
                           Nombre es requerido.
                         </div>
@@ -63,7 +63,7 @@
                     </div>
                   </div>
                   <div class="col-md-6">
-                    <div class="form-group">
+                    <div class="form-group position-relative">
                       <label for="company" class="bolder mb-1">Compañía</label>
                       <mat-select formControlName="company_id" placeholder="Seleccionar compañía" multiple="false"
                         class="form-control" [ngClass]="getValidationClass('company_id')">
@@ -85,7 +85,7 @@
                           formBranch.get('company_id')?.invalid &&
                           (formBranch.get('company_id')?.touched ||
                             formBranch.get('company_id')?.dirty)
-                        " class="invalid-feedback">
+                        " class="invalid-feedback position-absolute">
                         <div *ngIf="formBranch.get('company_id')?.errors?.['required']">
                           Compañía es requerida.
                         </div>
@@ -97,7 +97,7 @@
                 <!--descripción y dirección -->
                 <div class="row mb-md-4">
                   <div class="col-md-6 mb-4 mb-md-0">
-                    <div class="form-group">
+                    <div class="form-group position-relative">
                       <label for="description" class="bolder mb-1">Descripción</label>
                       <textarea id="description" formControlName="description" type="text" rows="3" class="form-control"
                         [ngClass]="getValidationClass('description')"> </textarea>
@@ -105,7 +105,7 @@
                           formBranch.get('description')?.invalid &&
                           (formBranch.get('description')?.touched ||
                             formBranch.get('description')?.dirty)
-                        " class="invalid-feedback">
+                        " class="invalid-feedback position-absolute">
                         <div *ngIf="formBranch.get('description')?.errors?.['required']">
                           Descripción es requerida.
                         </div>
@@ -116,7 +116,7 @@
                     </div>
                   </div>
                   <div class="col-md-6 mb-4 mb-md-0">
-                    <div class="form-group ">
+                    <div class="form-group position-relative">
                       <label for="address" class="bolder mb-1">Dirección</label>
                       <input id="address" formControlName="address" type="text" class="form-control"
                         [ngClass]="getValidationClass('address')" />
@@ -124,7 +124,7 @@
                           formBranch.get('address')?.invalid &&
                           (formBranch.get('address')?.touched ||
                             formBranch.get('address')?.dirty)
-                        " class="invalid-feedback">
+                        " class="invalid-feedback position-absolute">
                         <div *ngIf="formBranch.get('address')?.errors?.['required']">
                           Dirección es requerida.
                         </div>
@@ -139,14 +139,14 @@
                 <!-- Teléfono -->
                 <div class="row mb-1">
                   <div class="col-md-6 mb-4">
-                    <div class="form-group">
+                    <div class="form-group position-relative">
                       <label for="phone" class="bolder mb-1">Teléfono</label>
                       <input id="phone" formControlName="phone" type="text" class="form-control" maxlength="10"
                         [ngClass]="getValidationClass('phone')" (keypress)="onlyNumbers($event)" />
                       <div *ngIf="
                           formBranch.get('phone')?.invalid &&
                           (formBranch.get('phone')?.touched || formBranch.get('phone')?.dirty)
-                        " class="invalid-feedback">
+                        " class="invalid-feedback position-absolute">
                         <div *ngIf="formBranch.get('phone')?.errors?.['required']">
                           Teléfono es requerido.
                         </div>

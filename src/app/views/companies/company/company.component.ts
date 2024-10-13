@@ -109,6 +109,7 @@ export class CompanyComponent implements OnInit {
   public addCompany() {
     this.showForm = true;
     this.formCompany.reset();
+    this.formCompany.controls['logo'].markAsTouched();
     this.action = 'save';
   }
 
