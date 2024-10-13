@@ -106,7 +106,11 @@ export class CustomerComponent {
         this.addCustomer();
         break;
       case 'import':
-        this.importData();
+        const modalElement = document.getElementById('myModal');
+        if (modalElement) {
+          const modal = new bootstrap.Modal(modalElement);
+          modal.show();
+        }
         break;
       case 'export':
         this.exportData();
@@ -479,10 +483,4 @@ export class CustomerComponent {
     cardContainer?.classList.toggle('is-flipped');
     console.log('entra');
   }
-
-
-
-
-
-
 }

@@ -61,6 +61,7 @@ import { TypePetComponent } from './views/parameter/type-pet/type-pet.component'
 import { TypeAppointmentComponent } from './views/parameter/type-appointment/type-appointment.component';
 import { CustomerComponent } from './views/customers/customer/customer.component';
 import { PetComponent } from './views/customers/pet/pet.component';
+import { ImportExcelComponent } from './shared/import-excel/import-excel.component';
 
 // Import containers
 import {
@@ -126,6 +127,7 @@ const APP_CONTAINERS = [
     TypeAppointmentComponent,
     CustomerComponent,
     PetComponent,
+    ImportExcelComponent,
   ],
   imports: [
     BrowserModule,
