@@ -1,24 +1,32 @@
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
+<div class="modal modal-static" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+  aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="myModalLabel">Importar {{ title }}</h5>
+      <div class="modal-header justify-content-center">
+        <h3 class="modal-title text-center fs-3" id="myModalLabel">Importar {{ title }}</h3>
       </div>
       <div class="modal-body">
-        Aquí va el contenido del modal general con PETS.
-        <button type="button" class="close btn btn-success text-white" (click)="downloadExcel()">
-          Descarga excel
-        </button>
+        <p>
+          Al importar el archivo Excel, es fundamental que éste incluya un mínimo de tres datos.
+          Además, te recomendamos revisar cuidadosamente las instrucciones proporcionadas dentro del archivo Excel,
+          ya que estas te guiarán en el formato y contenido específicos que se requieren para una validación exitosa de
+          los datos.
+        </p>
+        <div class="text-center">
+          <button type="button" class="btn btn-success text-white" (click)="downloadExcel()">
+            Descargar excel <i class="fa-solid fa-file-excel ms-2"></i>
+          </button>
+        </div>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="close btn btn-danger text-white" data-dismiss="modal" aria-label="Close">
-          Cerrar
+      <div class="modal-footer d-flex justify-content-between">
+        <button type="button" class="btn btn-danger text-white" (click)="closeModal()" data-bs-dismiss="modal"
+          aria-label="Close">
+          Atrás <i class="fa-solid fa-arrow-left ms-2"></i>
         </button>
         <button type="button" class="btn btn-primary text-white" (click)="setDataImport()">
-          Importar
+          Importar <i class="fa fa-upload icon-spacing ms-2"></i>
         </button>
       </div>
     </div>
-
   </div>
 </div>

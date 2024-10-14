@@ -6,6 +6,7 @@ import { PetService } from '../../../services/customers/pet/pet.service';
 import { TypePetService } from '../../../services/parameter/type-pet/type-pet.service';
 import { TypeBreedService } from '../../../services/parameter/type-breed/type-breed.service';
 import Swal from 'sweetalert2';
+import * as bootstrap from 'bootstrap';
 
 @Component({
   selector: 'app-pet',
@@ -180,7 +181,11 @@ export class PetComponent {
   }
 
   public importData() {
-    this.generalService.alertMessageInCreation();
+    const modalElement = document.getElementById('myModal');
+    if (modalElement) {
+      const modal = new bootstrap.Modal(modalElement);
+      modal.show();
+    }
   }
 
   public exportData() {

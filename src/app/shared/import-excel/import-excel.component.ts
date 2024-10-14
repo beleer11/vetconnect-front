@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+declare var bootstrap: any;
 
 @Component({
   selector: 'app-import-excel',
@@ -18,5 +19,13 @@ export class ImportExcelComponent {
   public downloadExcel() {
     console.log("Aca se va a consumir el servicio que va a ahacer brahiam")
 
+  }
+
+  closeModal() {
+    const modalElement = document.getElementById('myModal');
+    if (modalElement) {
+      const modal = bootstrap.Modal.getInstance(modalElement);
+      modal.hide();
+    }
   }
 }
