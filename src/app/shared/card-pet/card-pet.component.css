@@ -102,6 +102,12 @@ canvas {
   margin-top: 10px;
 }
 
+@media (min-width: 577px) {
+  .show {
+    display: none;
+  }
+}
+
 @media (max-width: 576px) {
 
   .image-pet {
@@ -133,5 +139,71 @@ canvas {
     overflow: hidden;
     transition: transform 0.5s ease;
   }
+
+  .disguise {
+    display: none;
+  }
+
+  .first-line,
+  .second-line {
+    width: 100%;
+  }
+
+  .first-line {
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .second-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+  }
+
+  p .title {
+    margin-top: 0.625rem;
+    display: inline-block;
+  }
+
+  .signature {
+    text-align: center;
+    padding: 0.625rem 0 1.5625rem 0;
+    /* 10px 0 25px 0 -> 0.625rem 0 1.5625rem 0 */
+  }
+
+  .spin {
+    margin: 1.875rem 0 2.8125rem 0;
+    /* 30px 0 45px 0 -> 1.875rem 0 2.8125rem 0 */
+  }
+
+}
+
+@media (max-width: 320px) {
+
+  .back .title {
+    font-size: 1rem;
+}
+
+.back .mb-1,
+.back .description {
+    font-size: 0.875rem;
+}
+
+p .title {
+    margin-top: 0.3rem;
+    display: inline-block;
+}
+
+.signature {
+    text-align: center;
+    padding: 0.1rem 0 0.8rem;
+}
+
+.spin {
+    margin: 0.5rem 0 2rem;
+}
 
 }

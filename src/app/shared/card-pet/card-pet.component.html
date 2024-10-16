@@ -77,7 +77,7 @@
                 </c-row>
               </div>
               <!-- Parte posterior -->
-              <div class="back pt-2 pe-3 ps-3 pb-5" id="card-back-{{ i }}">
+              <div class="back pt-2 pe-3 ps-3 pb-5 disguise" id="card-back-{{ i }}">
                 <img [src]="'../../../assets/images/prueva-veterinaria.jpg'"
                   class="background-image pe-2 ps-2 pe-md-0 ps-md-0" alt="Imagen de fondo">
                 <div class="d-flex justify-content-between align-items-center">
@@ -103,7 +103,8 @@
                 </div>
                 <c-col xs="12" class="d-flex align-items-center justify-content-center pb-4">
                   <p class="text-center">Este carnet garantiza la autenticidad y el seguimiento médico de su mascota
-                    siempre y cuando esté vinculada a nuestra red de veterinarias. Su fiel compañero recibirá el cuidado
+                    siempre y cuando esté vinculada a nuestra red de veterinarias. Su fiel compañero recibirá el
+                    cuidado
                     y la atención que merece, asegurando su bienestar en cada visita.<br>
                     <span class="title">¡Juntos, velamos por su salud y felicidad!</span>
                   </p>
@@ -128,6 +129,64 @@
                   <small class="text-grey">VetConnect</small>
                 </div>
               </div>
+
+              <!-- Vista móvil exclusivamente-->
+              <div class="back pt-2 pe-3 ps-3 pb-5 show" id="card-back-{{ i }}">
+                <img [src]="'../../../assets/images/prueva-veterinaria.jpg'" class="background-image pe-2 ps-2"
+                  alt="Imagen de fondo">
+                <div class="d-flex flex-column justify-content-between align-items-center">
+                  <div class="first-line w-100">
+                    <div class="text-center">
+                      <span class="title">Veterinaria</span><br>
+                      <span class="mb-1">{{ pet.company_name }}</span>
+                    </div>
+                    <div class="text-center">
+                      <qrcode [qrdata]="pet.id.toString()" [allowEmptyString]="true"
+                        [ariaLabel]="'QR Code image with the following content...'" [cssClass]="'center'"
+                        [colorDark]="'#000000ff'" [colorLight]="'#ffffffff'" [elementType]="'canvas'"
+                        [errorCorrectionLevel]="'M'" [margin]="4" [scale]="1" [title]="'Qr mascota' + pet.name"
+                        [width]="100"></qrcode>
+                    </div>
+                  </div>
+                  <div class="second-line w-100">
+                    <div class="text-center">
+                      <span class="title">Sucursal</span><br>
+                      <span class="mb-1">{{ pet.branch_name }}</span>
+                    </div>
+                    <div class="text-center">
+                      <span class="title">Teléfono</span><br>
+                      <span class="mb-1">{{ pet.phone }}</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="d-flex align-items-center justify-content-center pb-4">
+                  <p class="text-center description">Este carnet garantiza la autenticidad y el seguimiento médico de su mascota
+                    siempre y cuando esté vinculada a nuestra red de veterinarias. Su fiel compañero recibirá el
+                    cuidado y la atención que merece, asegurando su bienestar en cada visita.<br>
+                    <span class="title">¡Juntos, velamos por su salud y felicidad!</span>
+                  </p>
+                </div>
+                <div class="d-flex justify-content-center align-items-center pb-3">
+                  <div class="text-center veterinarian-doctor">
+                    <span class="mb-1">{{ pet.doc_vet_name }}</span><br>
+                    <span class="title">Médico Veterinario</span>
+                  </div>
+                </div>
+                <div class=" signature">
+                  <img [src]="pet.img_firma" alt="Firma del Veterinario" class="image-firma"><br>
+                  <span class="title">Firma</span>
+                </div>
+                <div class="text-center spin">
+                  <button class="btn btn-warning me-2" matTooltip="Girar" matTooltipPosition="before"
+                    (click)="toggleFlip(i)">
+                    <i class="fa-solid fa-arrows-rotate"></i>
+                  </button>
+                </div>
+                <div class="text-center mt-2">
+                  <small class="text-grey">VetConnect</small>
+                </div>
+              </div>
+
             </div>
           </c-card-body>
         </c-card>
