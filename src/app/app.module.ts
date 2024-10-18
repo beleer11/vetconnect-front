@@ -64,6 +64,7 @@ import { CustomerComponent } from './views/customers/customer/customer.component
 import { PetComponent } from './views/customers/pet/pet.component';
 import { ImportExcelComponent } from './shared/import-excel/import-excel.component';
 import { CardPetComponent } from './shared/card-pet/card-pet.component';
+import { ExportDataComponent } from './shared/export-data/export-data.component';
 
 // Import containers
 import {
@@ -131,6 +132,7 @@ const APP_CONTAINERS = [
     PetComponent,
     ImportExcelComponent,
     CardPetComponent,
+    ExportDataComponent
   ],
   imports: [
     BrowserModule,

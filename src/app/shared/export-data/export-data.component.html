@@ -1,0 +1,36 @@
+<div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true"
+  data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header justify-content-center">
+        <h3 class="modal-title fs-3 text-center" id="exportModalLabel">Exportar {{ title }}</h3>
+      </div>
+      <div class="modal-body">
+        Puede exportar los datos de tres maneras diferentes: descargando toda la información disponible, exportando
+        únicamente los datos de la página actual, o seleccionando una página específica para descargar.
+        <ul class="export-options-list">
+          <li>
+            <input type="radio" id="descargarTodo" name="exportOption" value="todo" checked>
+            <label for="descargarTodo">Descargar todo</label>
+          </li>
+          <li>
+            <input type="radio" id="descargarPaginaActual" name="exportOption" value="paginaActual">
+            <label for="descargarPaginaActual">Descargar página actual</label>
+          </li>
+          <li>
+            <input type="radio" id="descargarPorPagina" name="exportOption" value="porPagina">
+            <label for="descargarPorPagina">Descargar por página</label>
+          </li>
+        </ul>
+        <!-- Modal Footer con los botones alineados -->
+        <div class="modal-footer d-flex justify-content-between">
+          <button type="button" class="btn btn-danger text-white me-2" data-bs-dismiss="modal">
+            Atrás <i class="fa-solid fa-arrow-left ps-2"></i>
+          </button>
+          <button type="button" class="btn btn-warning text-white me-2">
+            Exportar <i class="fa-solid fa-file-arrow-down ps-2"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>

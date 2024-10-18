@@ -284,7 +284,11 @@ export class PetComponent {
   }
 
   public exportData() {
-    this.generalService.alertMessageInCreation();
+    const modalElement = document.getElementById('exportModal');
+    if (modalElement) {
+      const modal = new bootstrap.Modal(modalElement);
+      modal.show();
+    }
   }
 
   setFilter(event: any) {
