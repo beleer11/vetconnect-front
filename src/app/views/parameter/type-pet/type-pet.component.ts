@@ -37,7 +37,6 @@ export class TypePetComponent implements OnInit {
   ) { }
 
   async ngOnInit(): Promise<void> {
-    this.icons = this.getIconsView('cil');
     this.createForm();
     this.loading = false;
   }
@@ -221,12 +220,6 @@ export class TypePetComponent implements OnInit {
     this.formTypePet = this.fb.group({
       nombre: ['', [Validators.required, Validators.minLength(3), Validators.pattern('^[a-zA-ZáéíóúÁÉÍÓÚÑñ]+(\\s[a-zA-ZáéíóúÁÉÍÓÚÑñ]+)*$')]],
       description: ['', [Validators.required, Validators.minLength(10)]],
-    });
-  }
-
-  getIconsView(prefix: string) {
-    return Object.entries(this.iconSet.icons).filter((icon) => {
-      return icon[0].startsWith(prefix);
     });
   }
 

@@ -129,7 +129,6 @@
                   <small class="text-grey">VetConnect</small>
                 </div>
               </div>
-
               <!-- Vista móvil exclusivamente-->
               <div class="back pt-2 pe-3 ps-3 pb-5 show" id="card-back-{{ i }}">
                 <img [src]="'../../../assets/images/prueva-veterinaria.jpg'" class="background-image pe-2 ps-2"
@@ -160,7 +159,8 @@
                   </div>
                 </div>
                 <div class="d-flex align-items-center justify-content-center pb-4">
-                  <p class="text-center description">Este carnet garantiza la autenticidad y el seguimiento médico de su mascota
+                  <p class="text-center description">Este carnet garantiza la autenticidad y el seguimiento médico de su
+                    mascota
                     siempre y cuando esté vinculada a nuestra red de veterinarias. Su fiel compañero recibirá el
                     cuidado y la atención que merece, asegurando su bienestar en cada visita.<br>
                     <span class="title">¡Juntos, velamos por su salud y felicidad!</span>
@@ -186,11 +186,23 @@
                   <small class="text-grey">VetConnect</small>
                 </div>
               </div>
-
             </div>
           </c-card-body>
         </c-card>
       </c-col>
     </c-row>
+    <!--Paginación-->
+    <div class="pagination mt-3 d-flex flex-column flex-md-row align-items-center justify-content-center">
+      <div class="d-flex align-items-center mb-2 mb-md-0">
+        <button class="btn btn-outline-secondary btn-sm me-2" [disabled]="totalPages === 1" (click)="prevPage()">
+          <svg cIcon name="cil-chevron-left"></svg>
+        </button>
+        <span class="mx-2">Página {{ currentPage }} de {{ totalPages }}</span>
+        <button class="btn btn-outline-secondary btn-sm me-2" [disabled]="totalPages === 1" (click)="nextPage()">
+          <svg cIcon name="cil-chevron-right"></svg>
+        </button>
+      </div>
+      <span class="mx-2 mt-1 mt-md-0">Total de registros: {{ totalRecords }}</span>
+    </div>
   </c-card-body>
 </c-card>
