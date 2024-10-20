@@ -1,34 +1,46 @@
-.export-options-list {
-  list-style: none;
-  padding: 0;
-  margin: 15px 0;
-
-  li {
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-
-    input[type="radio"] {
-      margin-right: 10px;
-      accent-color: #007bff;
-      cursor: pointer;
-      transition: transform 0.2s;
-      &:hover {
-        transform: scale(1.2);
-      }
-    }
-
-    label {
-      font-size: 16px;
-      color: #333;
-      cursor: pointer;
-      transition: color 0.2s, font-size 0.2s;
-    }
-
-    &:hover label {
-      color: #007bff;
-      font-size: 17px;
-    }
-  }
+label {
+  font-size: 16px;
+  color: #333;
+  cursor: pointer;
+  transition: color 0.2s, transform 0.2s;
 }
 
+.export-options-list input[type="radio"] {
+  cursor: pointer;
+}
+
+.export-options-list li:hover label {
+  color: #007bff;
+  transform: scale(1.05);
+}
+
+.export-options-list li:hover input[type="radio"] {
+  transform: scale(1.2);
+}
+
+.export-options-list li {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: 50px;
+  margin-bottom: 10px;
+}
+
+.text-danger {
+  color: red;
+  font-size: 14px;
+}
+
+.page-range label {
+  display: block;
+  margin: 5px 0;
+}
+
+.page-input {
+  width: 50px;
+}
+
+.page-input::-webkit-inner-spin-button,
+.page-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
