@@ -8,11 +8,15 @@ import { Component, Input } from '@angular/core';
 export class ExportDataComponent {
   @Input() component: string = '';
   @Input() title: string = '';
+  @Input() filters: any = {};
   exportOption: string = 'all';
   pageFrom: number | null = null;
   pageTo: number | null = null;
   pageErrorEqual: boolean = false;
   pageErrorOrder: boolean = false;
+  constructor() {
+    console.log(this.filters)
+  }
 
   validatePages() {
     if (this.exportOption === 'byPage') {

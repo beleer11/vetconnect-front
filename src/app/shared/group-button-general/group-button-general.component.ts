@@ -8,6 +8,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 export class GroupButtonGeneralComponent {
   @Input() buttonText: string = 'Agregar';
   @Input() component: string = '';
+  @Input() btnExportDisable: boolean = true;
   public showAddButton: boolean = false;
   public showImportButton: boolean = false;
   public showExportButton: boolean = false;

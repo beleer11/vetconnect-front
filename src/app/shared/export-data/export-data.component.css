@@ -18,12 +18,13 @@ label {
   transform: scale(1.2);
 }
 
+/* Reduce el margen inferior en los elementos li */
 .export-options-list li {
   display: flex;
   align-items: center;
   justify-content: flex-start;
   padding-left: 50px;
-  margin-bottom: 10px;
+  margin-bottom: 5px; /* Cambiado de 10px a 5px */
 }
 
 .text-danger {
@@ -43,4 +44,9 @@ label {
 .page-input::-webkit-inner-spin-button,
 .page-input::-webkit-outer-spin-button {
   -webkit-appearance: none;
+}
+
+/* Ajusta los márgenes de los botones */
+button {
+  margin: 0.5rem; /* Ajuste general de margen */
 }

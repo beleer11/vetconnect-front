@@ -3,54 +3,54 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header justify-content-center">
-        <h3 class="modal-title fs-3 text-center m-3" id="exportModalLabel">Exportar {{ title }}</h3>
+        <h3 class="modal-title fs-3 text-center m-1" id="exportModalLabel">Exportar {{ title }}</h3>
       </div>
       <div class="modal-body">
         Puede exportar los datos de tres maneras diferentes: descargando toda la información disponible, exportando
         únicamente los datos de la página actual, o seleccionando una página específica para descargar.
-        <div class="d-flex justify-content-lg-center align-items-center justify-content-start">
-          <ul class="export-options-list list-unstyled m-2 ">
-            <li>
-              <input type="radio" id="downloadAll" name="exportOption" value="all" [(ngModel)]="exportOption" checked
-                class="me-2" (change)="onExportOptionChange();">
-              <label for="downloadAll">Descargar todo</label>
-            </li>
-            <li>
-              <input class="me-2" type="radio" id="downloadCurrentPage" name="exportOption" value="currentPage"
-                [(ngModel)]="exportOption" (change)="onExportOptionChange();">
-              <label for="downloadCurrentPage">Descargar página actual</label>
-            </li>
-            <li>
-              <input class="me-2" type="radio" id="downloadByPage" name="exportOption" value="byPage"
-                [(ngModel)]="exportOption" (change)="onExportOptionChange();">
-              <label for="downloadByPage">Descargar por página</label>
-            </li>
-          </ul>
+      </div>
+      <div class="d-flex justify-content-lg-center align-items-center justify-content-start">
+        <ul class="export-options-list list-unstyled">
+          <li>
+            <input type="radio" id="downloadAll" name="exportOption" value="all" [(ngModel)]="exportOption" checked
+              class="me-2" (change)="onExportOptionChange();">
+            <label for="downloadAll">Descargar todo</label>
+          </li>
+          <li>
+            <input class="me-2" type="radio" id="downloadCurrentPage" name="exportOption" value="currentPage"
+              [(ngModel)]="exportOption" (change)="onExportOptionChange();">
+            <label for="downloadCurrentPage">Descargar página actual</label>
+          </li>
+          <li>
+            <input class="me-2" type="radio" id="downloadByPage" name="exportOption" value="byPage"
+              [(ngModel)]="exportOption" (change)="onExportOptionChange();">
+            <label for="downloadByPage">Descargar por página</label>
+          </li>
+        </ul>
+      </div>
+      <div *ngIf="exportOption === 'byPage'" class="mb-3 page-range d-flex justify-content-center align-items-center">
+        <div class="input-wrapper">
+          <input type="number" id="pageFrom" [(ngModel)]="pageFrom" (ngModelChange)="validatePages()" min="1" required
+            class="page-input text-center">
         </div>
-        <div *ngIf="exportOption === 'byPage'" class="page-range d-flex justify-content-center align-items-center">
-          <div class="input-wrapper">
-            <input type="number" id="pageFrom" [(ngModel)]="pageFrom" (ngModelChange)="validatePages()" min="1" required
-              class="page-input text-center">
-          </div>
-          <span class="mx-2">a</span>
-          <div class="input-wrapper">
-            <input type="number" id="pageTo" [(ngModel)]="pageTo" (ngModelChange)="validatePages()" min="2" required
-              class="page-input text-center">
-          </div>
+        <span class="mx-2">a</span>
+        <div class="input-wrapper">
+          <input type="number" id="pageTo" [(ngModel)]="pageTo" (ngModelChange)="validatePages()" min="2" required
+            class="page-input text-center">
         </div>
-        <div class="d-flex justify-content-center m-2">
-          <div *ngIf="pageErrorEqual" class="text-danger">Las páginas no pueden ser iguales.</div>
-          <div *ngIf="pageErrorOrder" class="text-danger ms-4">La página final no puede ser menor que la inicial.</div>
-        </div>
-        <div class="modal-footer d-flex justify-content-between">
-          <button type="button" class="btn btn-danger text-white custom-margin" data-bs-dismiss="modal" (click)="resetModal()">
-            Atrás <i class="fa-solid fa-arrow-left ps-2"></i>
-          </button>
-          <button type="button" class="btn btn-warning text-white custom-margin">
-            Exportar <i class="fa-solid fa-file-arrow-down ps-2"></i>
-          </button>
-        </div>
-
+      </div>
+      <div class="d-flex justify-content-center">
+        <div *ngIf="pageErrorEqual" class="text-danger">Las páginas no pueden ser iguales.</div>
+        <div *ngIf="pageErrorOrder" class="text-danger ms-4">La página final no puede ser menor que la inicial.</div>
+      </div>
+      <div class="modal-footer d-flex justify-content-between">
+        <button type="button" class="btn btn-danger text-white m-2" data-bs-dismiss="modal" (click)="resetModal()">
+          Atrás <i class="fa-solid fa-arrow-left ps-2"></i>
+        </button>
+        <button type="button" class="btn btn-warning text-white m-2">
+          Exportar <i class="fa-solid fa-file-arrow-down ps-2"></i>
+        </button>
       </div>
     </div>
   </div>
+</div>

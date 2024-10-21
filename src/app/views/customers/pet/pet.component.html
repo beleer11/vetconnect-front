@@ -1,10 +1,10 @@
 <app-loading-spinner *ngIf="loading"></app-loading-spinner>
 <div [hidden]="showForm">
-  <app-group-button-general (buttonClick)="handleButtonClick($event)" [component]="'Mascotas'">
+  <app-group-button-general (buttonClick)="handleButtonClick($event)" [component]="'Mascotas'" [btnExportDisable]="btnExportDisable">
   </app-group-button-general>
   <app-filter-header [date]="true" [state]="true" [name]="true" [type_pet]="true" [type_breed]="true" [age]="true"
     [dataTypePet]="dataTypePet" [dataTypeBreed]="dataTypeBreed" [onlyBranch]="true" [title]="'Mascotas'"
-    (filterDataEvent)="setFilter($event)" (changeFilter)="viewTable = $event">
+    (filterDataEvent)="setFilter($event)" (changeFilter)="changeFilter($event)">
   </app-filter-header>
   <app-card-pet [dataPet]="dataPet"></app-card-pet>
 </div>
@@ -252,4 +252,4 @@
   </c-col>
 </c-row>
 <app-import-excel [component]="'pet'" [title]="'mascotas'"></app-import-excel>
-<app-export-data [component]="'pet'" [title]="'mascotas'"></app-export-data>
+<app-export-data [component]="'pet'" [title]="'mascotas'" [filters]="parameterDefect"></app-export-data>

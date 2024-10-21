@@ -167,6 +167,7 @@ export class PetComponent {
   public acciones: boolean = true;
   public loadingTable: boolean = false;
   public dataTemp: any = [];
+  public btnExportDisable: boolean = true;
 
   constructor(
     private generalService: GeneralService,
@@ -224,6 +225,7 @@ export class PetComponent {
         this.dataPetTransform = this.formatedData(response.data);
         this.loading = false;
         this.viewTable = true;
+        this.btnExportDisable = false;
       }, error => {
         this.generalService.alertMessage(
           '¡Ups! Algo salió mal',
@@ -305,7 +307,6 @@ export class PetComponent {
       page: 1,
       pageSize: 10
     }
-    console.log(this.parameterDefect);
     this.getData();
   }
 
@@ -469,4 +470,8 @@ export class PetComponent {
     this.resetForms();
   }
 
+  changeFilter(event: any){
+    this.viewTable = false;
+    this.btnExportDisable = true;
+  }
 }
