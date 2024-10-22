@@ -1,9 +1,10 @@
-<div class="modal modal-static" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-  aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+  data-bs-backdrop="static" data-bs-keyboard="false">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
-      <div class="modal-header justify-content-center">
-        <h3 class="modal-title text-center fs-3" id="myModalLabel">Importar {{ title }}</h3>
+      <div class="modal-header d-flex justify-content-center align-items-center">
+        <h3 class="modal-title text-center fs-3 m-2" id="myModalLabel">
+          Importar {{ title }}</h3>
       </div>
       <div class="modal-body">
         <p>
@@ -12,18 +13,25 @@
           ya que estas te guiarán en el formato y contenido específicos que se requieren para una validación exitosa de
           los datos.
         </p>
+        <p class="text-black fw-bold text-center">
+          <strong>¡Importante!</strong> No modifiques el nombre del archivo ni los valores de las columnas, ya que esto
+          puede causar errores en la importación de los datos.
+        </p>
         <div class="text-center">
-          <button type="button" class="btn btn-success text-white" (click)="downloadExcel()">
-            Descargar excel <i class="fa-solid fa-file-excel ms-2"></i>
+          <button type="button" class="btn btn-success text-white" [disabled]="btnDisabled" (click)="downloadExcel()">
+            <span *ngIf="!btnDisabled">
+              Descargar excel <i class="fa-solid fa-file-excel ms-2"></i>
+            </span>
+            <mat-spinner *ngIf="btnDisabled" diameter="24" strokeWidth="3" class="spinner"></mat-spinner>
           </button>
         </div>
       </div>
       <div class="modal-footer d-flex justify-content-between">
-        <button type="button" class="btn btn-danger text-white" (click)="closeModal()" data-bs-dismiss="modal"
-          aria-label="Close">
+        <button type="button" class="btn btn-danger text-white" [disabled]="btnDisabled" (click)="closeModal()"
+          data-bs-dismiss="modal" aria-label="Close">
           Atrás <i class="fa-solid fa-arrow-left ms-2"></i>
         </button>
-        <button type="button" class="btn btn-primary text-white" (click)="setDataImport()">
+        <button type="button" class="btn btn-primary text-white" [disabled]="btnDisabled" (click)="setDataImport()">
           Importar <i class="fa fa-upload icon-spacing ms-2"></i>
         </button>
       </div>
